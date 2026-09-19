@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXO — Operações & Facilitação Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+:root{
+  --black-raspberry:#1c0408;
+  --bronze:#99785a;
+  --soft-dove:#998e82;
+  --ivory:#f5f1e8;
+  --graphite:#6B6E7B;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Work Sans',Calibri,sans-serif;
+  --ease:cubic-bezier(.19,1,.22,1);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:#1c0408;font-family:var(--sans);color:var(--ivory);text-wrap:pretty;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;}
+::selection{background:rgba(153,120,90,.4);color:var(--ivory);}
+
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:50;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(28,4,8,.5);border-bottom:1px solid rgba(153,120,90,.2);transition:all .4s var(--ease);}
+
+.nav-wrap.scrolled{padding:12px 40px;background:rgba(28,4,8,.75);}
+
+.logo{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:2px;color:var(--ivory);}
+
+.nav-links{display:flex;gap:40px;align-items:center;}
+
+.nav-link{font-size:13px;letter-spacing:.05em;opacity:.7;transition:all .4s ease;position:relative;}
+
+.nav-link:hover{opacity:1;}
+
+.nav-link::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:var(--bronze);transition:width .5s var(--ease);}
+
+.nav-link:hover::after{width:100%;}
+
+.btn-primary{padding:13px 28px;border-radius:18px;background:linear-gradient(135deg, #99785a 0%, #b8976b 100%);color:#1c0408;font-weight:700;font-size:12px;letter-spacing:.05em;border:none;cursor:pointer;transition:all .3s ease;box-shadow:0 10px 25px -8px rgba(153,120,90,.3);}
+
+.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
+
+a.btn-primary{display:inline-block;text-decoration:none;color:#1c0408;}
+
+a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
+
+.hero{position:relative;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;}
+
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg, #0d0204 0%, #1c0408 35%, #2d1419 65%, #160305 100%);animation:gradient-shift 8s ease infinite alternate;z-index:0;}
+
+@keyframes gradient-shift{0%{background:linear-gradient(135deg, #0d0204 0%, #1c0408 35%, #2d1419 65%, #160305 100%);}100%{background:linear-gradient(45deg, #160305 0%, #2d1419 30%, #1c0408 70%, #0d0204 100%);}}
+
+.hero-blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.6;mix-blend-mode:screen;}
+
+.blob-1{width:500px;height:500px;background:radial-gradient(circle, rgba(153,120,90,.4) 0%, transparent 70%);top:-200px;right:-150px;animation:blob-float 15s ease-in-out infinite;}
+
+.blob-2{width:400px;height:400px;background:radial-gradient(circle, rgba(157,140,123,.3) 0%, transparent 70%);bottom:-150px;left:-100px;animation:blob-float 18s ease-in-out infinite reverse;}
+
+@keyframes blob-float{0%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-40px) scale(1.1);}100%{transform:translate(0,0) scale(1);}}
+
+.hero-content{position:relative;z-index:10;max-width:900px;padding:40px;}
+
+.hero h1{font-size:clamp(42px,8vw,80px);line-height:1.1;margin:0;font-weight:700;letter-spacing:-1px;text-shadow:0 20px 60px rgba(0,0,0,.7);}
+
+.hero p{font-size:clamp(16px,2vw,22px);line-height:1.8;color:rgba(245,241,232,.85);margin:30px 0 50px;max-width:700px;margin-left:auto;margin-right:auto;font-weight:300;}
+
+.hero-ctas{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+
+.section{padding:120px 60px;position:relative;overflow:hidden;}
+
+.section-dark{background:#29070d;}
+
+.section-light{background:linear-gradient(180deg, #2d1419 0%, #1c0408 100%);}
+
+.container{max-width:1200px;margin:0 auto;position:relative;z-index:2;}
+
+.section h2{font-size:clamp(32px,5vw,56px);margin-bottom:60px;position:relative;}
+
+.section h2::before{content:'';position:absolute;width:60px;height:3px;background:linear-gradient(90deg, #99785a 0%, #b8976b 100%);bottom:-20px;left:0;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;margin-top:40px;}
+
+.card{position:relative;background:rgba(153,120,90,.08);backdrop-filter:blur(10px);border:1px solid rgba(153,120,90,.3);border-radius:20px;padding:40px 30px;cursor:pointer;transition:all .3s ease;}
+
+.card:hover{border-color:rgba(153,120,90,.6);background:rgba(153,120,90,.12);box-shadow:0 15px 40px -20px rgba(153,120,90,.3);}
+
+.card h3{font-size:22px;margin-top:0;margin-bottom:15px;color:var(--ivory);}
+
+.card p{font-size:14px;line-height:1.75;color:rgba(245,241,232,.8);margin:0;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:40px;margin:60px 0;}
+
+.stat{text-align:center;padding:40px 30px;background:rgba(153,120,90,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(153,120,90,.3);border-radius:20px;transition:all .3s ease;}
+
+.stat:hover{border-color:rgba(153,120,90,.6);background:rgba(153,120,90,.12);box-shadow:0 15px 40px -20px rgba(153,120,90,.3);}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:70px;}
+
+.chart-card{background:rgba(153,120,90,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(153,120,90,.3);border-radius:20px;padding:34px 30px 26px;transition:all .3s ease;}
+
+.chart-card:hover{border-color:rgba(153,120,90,.6);background:rgba(153,120,90,.12);box-shadow:0 15px 40px -20px rgba(153,120,90,.3);}
+
+.chart-kicker{margin:0 0 12px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:rgba(184,151,107,.95);}
+
+.chart-card h3{font-family:var(--serif);font-size:23px;font-weight:600;margin:0 0 10px;color:var(--ivory);}
+
+.chart-sub{margin:0;font-size:13.5px;line-height:1.6;color:rgba(245,241,232,.6);}
+
+.chart-box{position:relative;height:300px;margin-top:26px;}
+
+.chart-note{margin:24px 0 0;padding-top:18px;border-top:1px solid rgba(153,120,90,.18);font-size:13px;line-height:1.65;color:rgba(245,241,232,.65);}
+
+.chart-note strong{color:#d4b88a;font-weight:700;}
+
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr;}}
+
+.stat-number{font-family:var(--serif);font-size:clamp(36px,6vw,64px);font-weight:700;background:linear-gradient(135deg, #99785a 0%, #b8976b 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+.stat-label{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,241,232,.7);margin-top:10px;}
+
+.modal-trigger{cursor:pointer;position:relative;display:inline-block;}
+
+.modal-trigger::after{content:'';position:absolute;inset:-10px;border:2px solid transparent;border-radius:20px;transition:border-color .4s ease;}
+
+.modal-trigger:hover::after{border-color:rgba(153,120,90,.5);}
+
+.modal{display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+
+.modal.active{display:flex;}
+
+.modal-content{position:relative;background:linear-gradient(135deg, #2d1419 0%, #1c0408 100%);border:1px solid rgba(153,120,90,.3);border-radius:30px;padding:50px;max-width:600px;max-height:80vh;overflow-y:auto;box-shadow:0 50px 150px rgba(0,0,0,.8);}
+
+.modal-close{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:rgba(153,120,90,.2);border-radius:50%;cursor:pointer;color:var(--ivory);font-size:24px;transition:all .3s ease;}
+
+.modal-close:hover{background:rgba(153,120,90,.5);transform:rotate(90deg);}
+
+.chart-container{position:relative;height:400px;margin:60px 0;}
+
+.parallax{position:relative;}
+
+.parallax-bg{position:absolute;top:0;left:0;right:0;height:150%;background-size:cover;background-position:center;will-change:transform;z-index:1;}
+
+.parallax-content{position:relative;z-index:2;}
+
+.text-gradient{background:linear-gradient(135deg, #99785a 0%, #b8976b 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+@media(max-width:768px){
+  .nav-links{gap:20px;}
+  .section{padding:60px 30px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .modal-content{padding:30px;}
+}
+
+
+
+.scroll-reveal{opacity:0;transform:translateY(30px);transition:all .8s var(--ease);}
+
+.scroll-reveal.in-view{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="logo">NEXO</div>
+  <div class="nav-links">
+    <a href="#sobre" class="nav-link">Sobre</a>
+    <a href="#servicos" class="nav-link">Serviços</a>
+    <a href="#dados" class="nav-link">Resultados</a>
+    <a href="#precos" class="nav-link">Preços</a>
+    <a href="#contato" class="nav-link">Contato</a>
+    <button class="btn-primary">Agendar</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-blob blob-1"></div>
+  <div class="hero-blob blob-2"></div>
+  <div class="hero-content">
+    <h1>Operações que<br><span class="text-gradient">Transformam</span></h1>
+    <p>Organização, automação e clareza para o seu negócio crescer com método, proximidade e resultado visível.</p>
+    <div class="hero-ctas">
+      <a href="https://wa.me/5566999735872?text=Olá, acessei o site da NEXO e quero entender melhor como está a gestão da minha empresa, gostaria de solicitar um diagnóstico, pode me ajudar ?" target="_blank" class="btn-primary" style="display:inline-block;padding:13px 28px;border-radius:18px;text-decoration:none;">Diagnóstico Gratuito</a>
+      <a href="https://wa.me/5566999735872?text=Olá, eu vim pelo site da NEXO e tenho interesse nos seus serviços, poderia me explicar mais ?" target="_blank" class="btn-primary" style="display:inline-block;padding:13px 28px;border-radius:18px;text-decoration:none;background:rgba(153,120,90,.2);border:1px solid rgba(153,120,90,.5);">Saiba Mais</a>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre" class="section section-light parallax">
+  <div class="parallax-bg" style="background:linear-gradient(180deg, rgba(153,120,90,.1) 0%, transparent 100%);"></div>
+  <div class="parallax-content container">
+    <h2>Qualquer negócio merece<br>operações que funcionem</h2>
+    <p style="font-size:18px;opacity:.85;line-height:1.8;max-width:700px;margin:40px 0 80px;">Consultores, agências, prestadores, pequenas empresas, equipes em crescimento. O tamanho não importa. Se você trabalha demais, gasta tempo em tarefas repetitivas e não consegue enxergar seus números — a gente transforma isso.</p>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:50px;margin:80px 0;text-align:center;">
+      <div class="scroll-reveal">
+        <div style="font-size:48px;margin-bottom:15px;">👤</div>
+        <h4 style="font-family:var(--serif);margin:0 0 10px;color:var(--ivory);">Profissional Solo</h4>
+        <p style="opacity:.75;font-size:14px;">Consultores, freelancers, prestadores que carregam tudo sozinhos.</p>
+      </div>
+      <div class="scroll-reveal">
+        <div style="font-size:48px;margin-bottom:15px;">🏢</div>
+        <h4 style="font-family:var(--serif);margin:0 0 10px;color:var(--ivory);">Pequenas Equipes</h4>
+        <p style="opacity:.75;font-size:14px;">Agências, escritórios, empresas com 2-10 pessoas na operação.</p>
+      </div>
+      <div class="scroll-reveal">
+        <div style="font-size:48px;margin-bottom:15px;">📈</div>
+        <h4 style="font-family:var(--serif);margin:0 0 10px;color:var(--ivory);">Em Crescimento</h4>
+        <p style="opacity:.75;font-size:14px;">Negócios escalando que precisam estruturar antes do caos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos" class="section section-dark">
+  <div class="container">
+    <h2>Serviços Especializados</h2>
+    <div class="cards-grid" style="margin-top:80px;">
+      <div class="card scroll-reveal modal-trigger" onclick="openModal('modal1')">
+        <h3>🗂️ Organização</h3>
+        <p>Agenda, planilhas, documentos — tudo estruturado e acessível.</p>
+        <p style="margin-top:20px;color:#99785a;font-size:12px;font-weight:600;">Clique para detalhes →</p>
+      </div>
+      <div class="card scroll-reveal modal-trigger" onclick="openModal('modal2')">
+        <h3>⚙️ Automação</h3>
+        <p>Elimine tarefas repetitivas. Seu time foca no que realmente importa.</p>
+        <p style="margin-top:20px;color:#99785a;font-size:12px;font-weight:600;">Clique para detalhes →</p>
+      </div>
+      <div class="card scroll-reveal modal-trigger" onclick="openModal('modal3')">
+        <h3>📊 Dashboards</h3>
+        <p>Números em tempo real. Decisões baseadas em dados reais.</p>
+        <p style="margin-top:20px;color:#99785a;font-size:12px;font-weight:600;">Clique para detalhes →</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DADOS / CHARTS -->
+<section id="dados" class="section section-light">
+  <div class="container">
+    <h2>Impacto Comprovado</h2>
+    <div class="charts-grid">
+      <div class="chart-card scroll-reveal">
+        <p class="chart-kicker">Primeiro ciclo</p>
+        <h3>Horas devolvidas por semana</h3>
+        <p class="chart-sub">Tempo que deixa de ser gasto em tarefa manual e volta para a operação.</p>
+        <div class="chart-box"><canvas id="chart1"></canvas></div>
+        <p class="chart-note">De <strong>8h</strong> na primeira semana para <strong>32h</strong> na sexta — <strong>4× mais tempo livre</strong> em pouco mais de um mês.</p>
+      </div>
+      <div class="chart-card scroll-reveal">
+        <p class="chart-kicker">Composição do ganho</p>
+        <h3>De onde vem esse tempo</h3>
+        <p class="chart-sub">Participação de cada frente no total de horas recuperadas.</p>
+        <div class="chart-box"><canvas id="chart2"></canvas></div>
+        <p class="chart-note">A automação responde por <strong>35%</strong> do ganho — a maior fatia isolada.</p>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-top:100px;">
+      <div class="stat scroll-reveal">
+        <div class="stat-number">87%</div>
+        <div class="stat-label">Redução de Tempo Operacional</div>
+      </div>
+      <div class="stat scroll-reveal">
+        <div class="stat-number">340h</div>
+        <div class="stat-label">Recuperadas por Ano</div>
+      </div>
+      <div class="stat scroll-reveal">
+        <div class="stat-number">12.5k</div>
+        <div class="stat-label">Em Economia Anual</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAIS -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('modal1')">×</button>
+    <h2 style="margin-top:0;">🗂️ Organização</h2>
+    <p>A base de tudo. Quando sua operação está caótica, nada mais funciona.</p>
+    <h4>O que fazemos:</h4>
+    <ul style="line-height:2;opacity:.9;">
+      <li>Mapeamento completo de processos</li>
+      <li>Organização de documentos e arquivos</li>
+      <li>Estruturação de planilhas</li>
+      <li>Criação de fluxos visuais</li>
+      <li>Treinamento da equipe</li>
+    </ul>
+    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Solicitar Organização</button>
+  </div>
+</div>
+
+<div id="modal2" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('modal2')">×</button>
+    <h2 style="margin-top:0;">⚙️ Automação</h2>
+    <p>Elimine trabalho repetitivo. Seus recursos merecem tarefas estratégicas.</p>
+    <h4>O que automatizamos:</h4>
+    <ul style="line-height:2;opacity:.9;">
+      <li>Fluxos de dados entre sistemas</li>
+      <li>Envio de relatórios automáticos</li>
+      <li>Processamento de pedidos</li>
+      <li>Notificações inteligentes</li>
+      <li>Backups e sincronizações</li>
+    </ul>
+    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Automatizar Agora</button>
+  </div>
+</div>
+
+<div id="modal3" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('modal3')">×</button>
+    <h2 style="margin-top:0;">📊 Dashboards</h2>
+    <p>Ver seu negócio em tempo real. Números que contam histórias.</p>
+    <h4>Métricas que acompanhamos:</h4>
+    <ul style="line-height:2;opacity:.9;">
+      <li>Receita e lucratividade</li>
+      <li>Taxa de conversão</li>
+      <li>Produtividade da equipe</li>
+      <li>Ciclo de vendas</li>
+      <li>Previsões e tendências</li>
+    </ul>
+    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Criar Dashboard</button>
+  </div>
+</div>
+
+<!-- PREÇOS -->
+<section id="precos" class="section section-light">
+  <div class="container">
+    <h2>Tabela de Investimento</h2>
+    <p style="font-size:16px;opacity:.85;line-height:1.8;margin-bottom:60px;max-width:800px;">Serviços avulsos com cobrança única. Todos os valores em Reais brasileiros (R$).</p>
+    
+    <div style="overflow-x:auto;margin-bottom:80px;">
+      <table style="width:100%;border-collapse:collapse;background:rgba(153,120,90,.08);border:1px solid rgba(153,120,90,.3);border-radius:16px;overflow:hidden;">
+        <thead>
+          <tr style="background:rgba(28,4,8,.8);">
+            <th style="padding:18px 24px;text-align:left;color:#f5f1e8;font-weight:700;border-bottom:2px solid rgba(153,120,90,.3);">Serviço</th>
+            <th style="padding:18px 24px;text-align:right;color:#f5f1e8;font-weight:700;border-bottom:2px solid rgba(153,120,90,.3);">Investimento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Diagnóstico de Organização</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 297</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.08);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Organização de Agenda</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 697</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Organização de Planilhas</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 897</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.08);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Organização de Documentos</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 997</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Auditoria de Ferramentas Digitais</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 497</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.08);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Onboarding Digital de Novo Funcionário</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 690</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Central de Documentos (nuvem + backup)</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 1.100</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.08);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Padronização de Atendimento (WhatsApp)</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 1.297</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Automação de Processo</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 1.497</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.08);">
+            <td style="padding:16px 24px;border-bottom:1px solid rgba(153,120,90,.2);color:#f5f1e8;">Montagem de Painel de Serviço (Notion)</td>
+            <td style="padding:16px 24px;text-align:right;border-bottom:1px solid rgba(153,120,90,.2);color:#b8976b;font-weight:600;">R$ 1.797</td>
+          </tr>
+          <tr style="background:rgba(153,120,90,.04);">
+            <td style="padding:16px 24px;color:#f5f1e8;">Dashboard de Indicadores (Looker Studio) — <span style="color:#b8976b;font-size:13px;">com automação de base de dados</span></td>
+            <td style="padding:16px 24px;text-align:right;color:#b8976b;font-weight:600;">R$ 2.497</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:rgba(153,120,90,.08);border:1.5px solid rgba(153,120,90,.4);border-radius:20px;padding:40px;margin-bottom:80px;">
+      <h3 style="margin-top:0;color:#f5f1e8;font-size:18px;">Plataforma Sob Medida</h3>
+      <p style="margin:15px 0 25px;color:rgba(245,241,232,.85);line-height:1.8;"><strong>Investimento inicial:</strong> A partir de R$ 12.000 (projeto simples: 1 painel + login) até R$ 35.000+ (plataforma completa multiusuário)</p>
+      
+      <div style="background:rgba(153,120,90,.05);border-left:3px solid #99785a;padding:20px;border-radius:8px;margin-bottom:20px;">
+        <p style="margin:0;color:rgba(245,241,232,.85);font-size:15px;line-height:1.8;">
+          <strong>Por que varia tanto?</strong> Cada negócio tem operação diferente. Uma plataforma simples pode funcionar com 1 painel + 1 login (startup/freelancer). Já uma empresa com múltiplos departamentos precisa de: múltiplos painéis por setor, controle de acessos, integrações com seus sistemas, relatórios customizados, automações complexas. Quanto mais complexa, maior o custo de desenvolvimento, design e testes.
+        </p>
+      </div>
+
+      <p style="margin:0;color:rgba(245,241,232,.75);font-size:14px;line-height:1.8;">
+        <strong>O que inclui em todos os casos:</strong> levantamento aprofundado de requisitos, design exclusivo (UI/UX), desenvolvimento web customizado, integração de dados, treinamento completo da equipe, hospedagem segura, backups automáticos, suporte técnico contínuo por 6 meses.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="contato" class="section section-dark" style="text-align:center;padding:150px 60px;">
+  <div class="container">
+    <h2 style="text-align:center;font-size:48px;margin-bottom:30px;">Pronto para transformar?</h2>
+    <p style="font-size:18px;opacity:.85;margin-bottom:50px;">Diagnóstico gratuito. Sem compromisso. 30 minutos que mudam tudo.</p>
+    <a href="https://wa.me/5566999735872?text=Olá, acessei o site da NEXO e quero entender melhor como está a gestão da minha empresa, gostaria de solicitar um diagnóstico, pode me ajudar ?" target="_blank" class="btn-primary" style="display:inline-block;padding:16px 40px;font-size:14px;border-radius:18px;text-decoration:none;">Agendar Diagnóstico</a>
+  </div>
+</section>
+
+<script>
+// Parallax
+window.addEventListener('scroll',()=>{
+  document.querySelectorAll('.parallax-bg').forEach(el=>{
+    let scrollPos=window.scrollY;
+    el.style.transform=`translateY(${scrollPos*0.5}px)`;
+  });
+});
+
+// Scroll Reveal
+const reveals=document.querySelectorAll('.scroll-reveal');
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+    }
+  });
+},{threshold:.1});
+reveals.forEach(el=>observer.observe(el));
+
+// Nav Scroll
+window.addEventListener('scroll',()=>{
+  document.querySelector('.nav-wrap').classList.toggle('scrolled',window.scrollY>50);
+});
+
+// Modais
+function openModal(id){
+  document.getElementById(id).classList.add('active');
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('active');
+}
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{
+    if(e.target===m) closeModal(m.id);
+  });
+});
+
+// Charts
+const INK       = '#f5f1e8';
+const INK_SOFT  = 'rgba(245,241,232,.55)';
+const BRONZE    = '#b8976b';
+const BRONZE_LT = '#d4b88a';
+const SURFACE   = 'rgba(28,4,8,.9)';
+
+// Rotulos de valor desenhados direto no canvas - sempre visiveis.
+const valueLabels={
+  id:'valueLabels',
+  afterDatasetsDraw:function(chart){
+    const ctx=chart.ctx, ca=chart.chartArea, horizontal=chart.options.indexAxis==='y';
+    ctx.save();
+    chart.data.datasets.forEach(function(ds,di){
+      const meta=chart.getDatasetMeta(di);
+      if(meta.hidden) return;
+      meta.data.forEach(function(el,i){
+        const v=ds.data[i];
+        if(v===null||v===undefined) return;
+        if(horizontal){
+          ctx.font='700 14px "Work Sans", sans-serif';
+          ctx.textAlign='left';
+          ctx.textBaseline='middle';
+          ctx.fillStyle=BRONZE_LT;
+          ctx.fillText(v+'%', el.x+12, el.y);
+        }else{
+          const txt=v+'h';
+          ctx.font='700 13px "Work Sans", sans-serif';
+          ctx.textAlign='center';
+          ctx.textBaseline='middle';
+          let x=el.x, y=el.y-20;
+          const half=ctx.measureText(txt).width/2+2;
+          if(x-half<ca.left) x=ca.left+half;
+          if(x+half>ca.right) x=ca.right-half;
+          ctx.lineWidth=4;
+          ctx.lineJoin='round';
+          ctx.strokeStyle=SURFACE;
+          ctx.strokeText(txt,x,y);
+          ctx.fillStyle=(i===ds.data.length-1)?BRONZE_LT:INK;
+          ctx.fillText(txt,x,y);
+        }
+      });
+    });
+    ctx.restore();
+  }
+};
+
+const baseTooltip={
+  backgroundColor:'rgba(20,3,6,.96)',
+  titleColor:INK,
+  bodyColor:INK,
+  borderColor:'rgba(153,120,90,.5)',
+  borderWidth:1,
+  padding:12,
+  cornerRadius:10,
+  displayColors:false,
+  titleFont:{family:"'Work Sans'",size:12,weight:'600'},
+  bodyFont:{family:"'Work Sans'",size:13,weight:'700'}
+};
+
+// 1 - area: horas recuperadas por semana
+const ctx1=document.getElementById('chart1').getContext('2d');
+const fade=ctx1.createLinearGradient(0,0,0,300);
+fade.addColorStop(0,'rgba(184,151,107,.34)');
+fade.addColorStop(1,'rgba(184,151,107,0)');
+
+new Chart(ctx1,{
+  type:'line',
+  plugins:[valueLabels],
+  data:{
+    labels:['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6'],
+    datasets:[{
+      label:'Horas recuperadas',
+      data:[8,14,18,24,28,32],
+      borderColor:BRONZE,
+      backgroundColor:fade,
+      borderWidth:2.5,
+      fill:true,
+      tension:.35,
+      pointBackgroundColor:['#1c0408','#1c0408','#1c0408','#1c0408','#1c0408',BRONZE_LT],
+      pointBorderColor:BRONZE,
+      pointRadius:[4,4,4,4,4,6],
+      pointBorderWidth:2,
+      pointHoverRadius:7,
+      pointHitRadius:24
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    layout:{padding:{top:30,right:10,left:2,bottom:0}},
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:Object.assign({},baseTooltip,{
+        callbacks:{label:function(c){return c.parsed.y+' horas por semana';}}
+      })
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        max:40,
+        border:{display:false},
+        ticks:{
+          color:INK_SOFT,
+          font:{family:"'Work Sans'",size:11},
+          padding:10,
+          stepSize:10,
+          callback:function(v){return v+'h';}
+        },
+        grid:{color:'rgba(153,120,90,.14)',drawTicks:false}
+      },
+      x:{
+        border:{display:false},
+        ticks:{color:INK_SOFT,font:{family:"'Work Sans'",size:12},padding:8},
+        grid:{display:false}
+      }
+    }
+  }
+});
+
+// 2 - barras: de onde vem o tempo recuperado
+const ctx2=document.getElementById('chart2').getContext('2d');
+new Chart(ctx2,{
+  type:'bar',
+  plugins:[valueLabels],
+  data:{
+    labels:['Tempo automatizado','Retrabalho eliminado','Erros reduzidos','Capacidade recuperada'],
+    datasets:[{
+      label:'Participa\u00e7\u00e3o no ganho',
+      data:[35,28,22,15],
+      backgroundColor:BRONZE,
+      hoverBackgroundColor:BRONZE_LT,
+      borderRadius:4,
+      borderSkipped:false,
+      barThickness:22
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,
+    maintainAspectRatio:false,
+    layout:{padding:{top:4,right:52,left:0,bottom:4}},
+    plugins:{
+      legend:{display:false},
+      tooltip:Object.assign({},baseTooltip,{
+        callbacks:{label:function(c){return c.parsed.x+'% do tempo recuperado';}}
+      })
+    },
+    scales:{
+      x:{
+        display:false,
+        beginAtZero:true,
+        max:40
+      },
+      y:{
+        border:{display:false},
+        ticks:{color:'rgba(245,241,232,.85)',font:{family:"'Work Sans'",size:12.5},padding:10,crossAlign:'far'},
+        grid:{display:false}
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
