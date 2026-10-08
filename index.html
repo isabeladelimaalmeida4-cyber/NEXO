@@ -150,13 +150,38 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
 .text-gradient{background:linear-gradient(135deg, #99785a 0%, #b8976b 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
 
 @media(max-width:768px){
+  .nav-wrap,.nav-wrap.scrolled{padding:14px 20px;}
   .nav-links{gap:20px;}
+  .nav-link{display:none;}
   .section{padding:60px 30px;}
   .cards-grid{grid-template-columns:1fr;}
   .modal-content{padding:30px;}
 }
 
 
+
+/* PROJETOS — vídeos curtos em loop dos sites entregues */
+.section-proj{background:#160306;}
+.proj-intro{font-size:17px;line-height:1.8;color:rgba(245,241,232,.78);max-width:640px;margin:0 0 70px;}
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;}
+.proj-feature{grid-column:1 / -1;}
+.proj{margin:0;}
+.proj-frame{position:relative;border-radius:16px;overflow:hidden;background:#0d0204;border:1px solid rgba(153,120,90,.32);box-shadow:0 40px 80px -40px rgba(0,0,0,.85);transition:border-color .4s ease,transform .6s var(--ease);}
+.proj:hover .proj-frame{border-color:rgba(184,151,107,.65);transform:translateY(-4px);}
+.proj-bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;background:rgba(245,241,232,.05);border-bottom:1px solid rgba(153,120,90,.2);}
+.proj-bar i{width:9px;height:9px;border-radius:50%;background:rgba(245,241,232,.18);}
+.proj-bar span{margin-left:10px;font-size:11px;letter-spacing:.08em;color:rgba(245,241,232,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proj-frame video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#0d0204;}
+.proj-info{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:22px 4px 0;}
+.proj-info h3{font-size:22px;font-weight:600;margin:6px 0 0;color:var(--ivory);}
+.proj-tag{margin:0;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:rgba(184,151,107,.95);}
+.proj-info p.proj-desc{margin:0;max-width:440px;font-size:14px;line-height:1.7;color:rgba(245,241,232,.7);}
+.proj-cta{margin-top:70px;display:flex;flex-wrap:wrap;align-items:center;gap:24px;padding-top:40px;border-top:1px solid rgba(153,120,90,.2);}
+.proj-cta p{margin:0;font-family:var(--serif);font-size:24px;color:var(--ivory);}
+@media(max-width:900px){
+  .proj-grid{grid-template-columns:1fr;gap:46px;}
+  .proj-info{flex-direction:column;gap:10px;}
+}
 
 .scroll-reveal{opacity:0;transform:translateY(30px);transition:all .8s var(--ease);}
 
@@ -171,9 +196,10 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
   <div class="nav-links">
     <a href="#sobre" class="nav-link">Sobre</a>
     <a href="#servicos" class="nav-link">Serviços</a>
+    <a href="#projetos" class="nav-link">Projetos</a>
     <a href="#dados" class="nav-link">Resultados</a>
     <a href="#contato" class="nav-link">Contato</a>
-    <button class="btn-primary">Agendar</button>
+    <a href="https://wa.me/5566999735872?text=Olá, vim pelo site da NEXO e quero agendar uma conversa." target="_blank" rel="noopener" class="btn-primary">Agendar</a>
   </div>
 </nav>
 
@@ -242,6 +268,59 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
   </div>
 </section>
 
+<!-- PROJETOS -->
+<section id="projetos" class="section section-proj">
+  <div class="container">
+    <h2>Projetos que já entregamos</h2>
+    <p class="proj-intro">Alguns segundos de cada um, do jeito que aparece na tela do cliente.</p>
+    <div class="proj-grid">
+    <figure class="proj proj-feature scroll-reveal">
+      <div class="proj-frame">
+        <div class="proj-bar" aria-hidden="true"><i></i><i></i><i></i><span>Órbita 33 · Casa Timbre</span></div>
+        <video muted loop playsinline preload="none" poster="assets/projetos/orbita.jpg" aria-label="Vídeo curto do site Órbita 33, com o toca-discos em 3D se movendo conforme a rolagem">
+          <source src="assets/projetos/orbita.webm" type="video/webm">
+          <source src="assets/projetos/orbita.mp4" type="video/mp4">
+        </video>
+      </div>
+      <figcaption class="proj-info">
+        <div><p class="proj-tag">Site 3D de produto</p><h3>Órbita 33 — Casa Timbre</h3></div>
+        <p class="proj-desc">O toca-discos vira filme: a câmera percorre cada peça conforme a pessoa rola a página.</p>
+      </figcaption>
+    </figure>
+    <figure class="proj scroll-reveal">
+      <div class="proj-frame">
+        <div class="proj-bar" aria-hidden="true"><i></i><i></i><i></i><span>Painel de parcelas</span></div>
+        <video muted loop playsinline preload="none" poster="assets/projetos/parcelas.jpg" aria-label="Vídeo curto do painel de controle de parcelas, filtrando as parcelas vencidas e pagas">
+          <source src="assets/projetos/parcelas.webm" type="video/webm">
+          <source src="assets/projetos/parcelas.mp4" type="video/mp4">
+        </video>
+      </div>
+      <figcaption class="proj-info">
+        <div><p class="proj-tag">Painel interno</p><h3>Controle de Parcelas</h3></div>
+        <p class="proj-desc">Recebimentos, atrasos e alertas num só lugar, com filtros de um clique.</p>
+      </figcaption>
+    </figure>
+    <figure class="proj scroll-reveal">
+      <div class="proj-frame">
+        <div class="proj-bar" aria-hidden="true"><i></i><i></i><i></i><span>Torno Lento · Ateliê</span></div>
+        <video muted loop playsinline preload="none" poster="assets/projetos/torno.jpg" aria-label="Vídeo curto do site do ateliê Torno Lento, rolando pelas peças de cerâmica">
+          <source src="assets/projetos/torno.webm" type="video/webm">
+          <source src="assets/projetos/torno.mp4" type="video/mp4">
+        </video>
+      </div>
+      <figcaption class="proj-info">
+        <div><p class="proj-tag">Site institucional</p><h3>Torno Lento — Ateliê de cerâmica</h3></div>
+        <p class="proj-desc">Vitrine das peças, história do ateliê e encomenda direto pelo site.</p>
+      </figcaption>
+    </figure>
+    </div>
+    <div class="proj-cta">
+      <p>Quer um desses para o seu negócio?</p>
+      <a href="https://wa.me/5566999735872?text=Olá, vi os projetos no site da NEXO e quero um site ou painel para o meu negócio." target="_blank" rel="noopener" class="btn-primary">Falar com a NEXO</a>
+    </div>
+  </div>
+</section>
+
 <!-- DADOS / CHARTS -->
 <section id="dados" class="section section-light">
   <div class="container">
@@ -293,7 +372,7 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
       <li>Criação de fluxos visuais</li>
       <li>Treinamento da equipe</li>
     </ul>
-    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Solicitar Organização</button>
+    <a href="https://wa.me/5566999735872?text=Olá, vim pelo site da NEXO e quero organizar a operação da minha empresa." target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;width:100%;margin-top:30px;border-radius:18px;">Solicitar Organização</a>
   </div>
 </div>
 
@@ -310,7 +389,7 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
       <li>Notificações inteligentes</li>
       <li>Backups e sincronizações</li>
     </ul>
-    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Automatizar Agora</button>
+    <a href="https://wa.me/5566999735872?text=Olá, vim pelo site da NEXO e quero automatizar processos da minha empresa." target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;width:100%;margin-top:30px;border-radius:18px;">Automatizar Agora</a>
   </div>
 </div>
 
@@ -327,7 +406,7 @@ a.btn-primary:hover{box-shadow:0 15px 35px -6px rgba(153,120,90,.4);}
       <li>Ciclo de vendas</li>
       <li>Previsões e tendências</li>
     </ul>
-    <button class="btn-primary" style="width:100%;margin-top:30px;border-radius:18px;">Criar Dashboard</button>
+    <a href="https://wa.me/5566999735872?text=Olá, vim pelo site da NEXO e quero um dashboard com os números da minha empresa." target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;width:100%;margin-top:30px;border-radius:18px;">Criar Dashboard</a>
   </div>
 </div>
 
@@ -359,6 +438,22 @@ const observer=new IntersectionObserver((entries)=>{
   });
 },{threshold:.1});
 reveals.forEach(el=>observer.observe(el));
+
+// Vídeos dos projetos: tocam em loop só enquanto estão visíveis
+(function(){
+  const vids=[...document.querySelectorAll('.proj video')];
+  if(!vids.length) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+    vids.forEach(v=>{v.controls=true;v.preload='metadata';});
+    return;
+  }
+  const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{});};
+  if(!('IntersectionObserver' in window)){vids.forEach(play);return;}
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{e.isIntersecting?play(e.target):e.target.pause();});
+  },{threshold:.35});
+  vids.forEach(v=>io.observe(v));
+})();
 
 // Nav Scroll
 window.addEventListener('scroll',()=>{
