@@ -268,7 +268,8 @@ var DEFAULT_BIZ = [
   {id:"faculdade",   name:"Faculdade (EAD)",                   color:"#3f6d8c", day:3, next:""},
   {id:"joias",       name:"Joias (Leilão → Joalherias)",       color:"#a8741a", day:4, next:""},
   {id:"revendedora", name:"Revendedora (sociedade)",           color:"#7a4a7a", day:5, next:""},
-  {id:"trabalho",    name:"Projeto interno (trabalho fixo)",   color:"#5a6b72", day:-1,next:""}
+  {id:"trabalho",    name:"Projeto interno (trabalho fixo)",   color:"#5a6b72", day:-1,next:""},
+  {id:"nexo",        name:"NEXO",                              color:"#8c2f3f", day:-1,next:""}
 ];
 
 var state = {businesses:JSON.parse(JSON.stringify(DEFAULT_BIZ)), tasks:[], entries:[], weekFocus:"", removed:{}};
@@ -384,6 +385,7 @@ function mergeDefaults(){
 async function load(){
   var local=localLoad();
   if(local) applyData(local);
+  mergeDefaults();
   render();
 
   db = await connect();
