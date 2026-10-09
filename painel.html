@@ -239,6 +239,7 @@ function waitClaude(){
     var n=0;(function chk(){ if(hasClaude()) return res(true); if(++n>50) return res(false); setTimeout(chk,200); })();
   });
 }
+var USE_GCAL=false;
 var GOOGLE_CLIENT_ID="";
 var GCAL="Google Calendar";
 var TZ=(function(){ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone||"America/Cuiaba"; }catch(e){ return "America/Cuiaba"; } })();
@@ -597,6 +598,7 @@ async function gapi(method,path,body){
   return j;
 }
 async function initCal(){
+  if(!USE_GCAL){ cal.status="none"; try{localStorage.removeItem(CACHE_KEY);}catch(e){} return; }
   cacheLoad();
   if(SOLO){
     cal.mode="rest";
@@ -675,12 +677,12 @@ function renderAgFocus(){
   }else if(cal.live||state.appts.length){
     h+='<h2>Agenda livre</h2><p>Nada marcado daqui até o começo do mês que vem.</p>';
   }else{
-    h+='<h2>Sem compromissos por aqui</h2><p>Conecte o Google Agenda para trazer os seus, ou crie o primeiro no formulário.</p>';
+    h+='<h2>Sem compromissos por aqui</h2><p>'+(USE_GCAL?"Conecte o Google Agenda para trazer os seus, ou crie o primeiro no formulário.":"Crie o primeiro no formulário.")+'</p>';
   }
   $("#ag-focus").innerHTML=h+'</section>';
 }
 function evRow(e){
-  var sub=[]; if(e.loc) sub.push(esc(e.loc)); if(e.rec) sub.push("Repete"); if(e.src==="local") sub.push("Só no painel");
+  var sub=[]; if(e.loc) sub.push(esc(e.loc)); if(e.rec) sub.push("Repete"); if(USE_GCAL&&e.src==="local") sub.push("Só no painel");
   return '<button class="ev'+(agForm.id===e.id&&agForm.src===e.src?" on":"")+'" data-ev="'+esc(e.id)+'" data-src="'+e.src+'">'+
     '<span class="when">'+(e.allDay?"Dia inteiro":e.t1+" – "+e.t2)+'</span>'+
     '<span class="what"><b>'+esc(e.title)+'</b>'+(sub.length?'<small>'+sub.join(" · ")+'</small>':"")+'</span></button>';
@@ -722,6 +724,7 @@ function renderAgGrid(){
 }
 function renderAgConn(){
   var el=$("#ag-conn"); if(!el) return;
+  if(!USE_GCAL){ el.innerHTML=""; return; }
   var s=cal.status,h='<header class="ph"><h2>Google Agenda</h2></header><div class="conn">';
   if(s==="ok"||s==="stale"){
     h+='<p class="st"><i class="sdot '+(s==="ok"?"ok":"dirty")+'"></i>'+(s==="ok"?"Ligado ao seu Google Agenda":"Sem atualizar no momento")+'</p>'+
@@ -775,7 +778,7 @@ function renderAgForm(){
       '<label class="field"><span>Fim</span><input class="in" type="time" id="af-t2" data-af="t2" value="'+esc(f.t2)+'"></label>')+
     '<label class="field full"><span>Local</span><input class="in" type="text" id="af-loc" data-af="loc" value="'+esc(f.loc)+'"></label>'+
     '<label class="field full"><span>Observações</span><textarea class="in" id="af-note" data-af="note">'+esc(f.note)+'</textarea></label>'+
-    '<p class="hint">'+(toG?(f.id?"A alteração vale também no seu Google Agenda.":"Vai direto para o seu Google Agenda."):"Fica guardado só no painel enquanto o Google Agenda não estiver conectado.")+'</p>'+
+    (!USE_GCAL?"":'<p class="hint">'+(toG?(f.id?"A alteração vale também no seu Google Agenda.":"Vai direto para o seu Google Agenda."):"Fica guardado só no painel enquanto o Google Agenda não estiver conectado.")+'</p>')+
     (f.err?'<p class="ferr">'+esc(f.err)+'</p>':"");
   if(f.confirmDel){
     h+='<div class="confirm"><span>Excluir este compromisso?'+(f.src==="g"?" Ele sai também do Google Agenda.":"")+'</span>'+
