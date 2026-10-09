@@ -87,6 +87,7 @@ main{padding-block:20px 104px;display:flex;flex-direction:column;gap:16px}
   .bizgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 .intro{color:var(--ink-2);font-size:14px;max-width:62ch}
+.intro-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 .ph h2{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
@@ -170,7 +171,8 @@ textarea.in{resize:vertical;min-height:64px}
 /* negócios */
 .biz-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
 .biz-head .dot{margin-top:8px}
-.biz-head h2{flex:1;min-width:0;font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.25;overflow-wrap:anywhere}
+.biz-name{flex:1;min-width:0;width:100%;display:block;resize:none;overflow:hidden;border:0;border-bottom:1px solid transparent;border-radius:0;background:transparent;padding:0 0 2px;font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.25;color:var(--ink)}
+.biz-name:focus{outline:none;border-bottom-color:var(--gold)}
 .biz-body{display:flex;flex-direction:column;gap:14px}
 .sub-h{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:12px}
 .sub-h .label{color:var(--ink-2)}
@@ -270,7 +272,8 @@ var DEFAULT_BIZ = [
 ];
 
 var state = {businesses:JSON.parse(JSON.stringify(DEFAULT_BIZ)), tasks:[], entries:[], weekFocus:"", removed:{}};
-var SOLO=(window.top===window), db=null, tab="hoje", saving=false, dirty=false, rev=0, confirmBiz=null;
+var SOLO=(window.top===window), db=null, tab="hoje", saving=false, dirty=false, rev=0, confirmBiz=null, addBiz=false;
+var PALETTE=["#4a6fa5","#8a5a2b","#3f6d8c","#a8741a","#7a4a7a","#5a6b72","#2f7a6b","#b0513f","#5b5fa8","#7d8a2e","#b0457a","#3d8a9c"];
 var finMonth = todayISO().slice(0,7);
 
 var IC = {
@@ -312,7 +315,7 @@ function color(c){ return /^#[0-9a-f]{3,8}$/i.test(String(c||""))?c:"#888888"; }
 function dot(b){ return '<i class="dot" style="background:'+color(b.color)+'"></i>'; }
 function bizById(id){
   for(var i=0;i<state.businesses.length;i++) if(state.businesses[i].id===id) return state.businesses[i];
-  return {id:id,name:id,color:"#888888"};
+  return {id:id,name:"Negócio removido",color:"#888888"};
 }
 function bizByDay(d){ return state.businesses.filter(function(b){return b.day===d;}); }
 function byDue(a,b){ return (a.due||"9999")<(b.due||"9999")?-1:((a.due||"9999")>(b.due||"9999")?1:0); }
@@ -365,7 +368,7 @@ function applyData(src){
   if(!src) return;
   var d;
   try{ d=JSON.parse(JSON.stringify(src)); }catch(e){ return; }
-  if(Array.isArray(d.businesses)&&d.businesses.length) state.businesses=d.businesses;
+  if(Array.isArray(d.businesses)) state.businesses=d.businesses;
   if(Array.isArray(d.tasks)) state.tasks=d.tasks;
   if(Array.isArray(d.entries)) state.entries=d.entries;
   if(typeof d.weekFocus==="string") state.weekFocus=d.weekFocus;
@@ -483,6 +486,7 @@ function taskList(list, empty, showBiz){
 }
 
 function taskForm(defBiz){
+  if(!state.businesses.length) return panel("Nova tarefa","",'<p class="empty">Cadastre um negócio na aba Negócios para criar tarefas.</p>');
   var opts=state.businesses.map(function(b){
     return '<option value="'+esc(b.id)+'"'+(b.id===defBiz?" selected":"")+'>'+esc(b.name)+'</option>';}).join("");
   return panel("Nova tarefa","",
@@ -565,29 +569,43 @@ function viewHoje(){
     taskList(hoje,"Nada vencendo hoje.",true),
     {right:count(hoje.length),note:"O que dá para tocar sozinha, à noite."});
 
-  var rightCol=taskForm(tb?tb.id:state.businesses[0].id)+panel("Rodízio da semana","cal",rotaHTML());
+  var rightCol=taskForm(tb?tb.id:(state.businesses[0]||{}).id)+panel("Rodízio da semana","cal",rotaHTML());
   return h+'<div class="cols"><div class="stack">'+left+'</div><div class="stack">'+rightCol+'</div></div>';
 }
 
+function dayOpts(sel){
+  return [1,2,3,4,5,6,0,-1].map(function(n){
+    return '<option value="'+n+'"'+(sel===n?" selected":"")+'>'+(n===-1?"Sem noite fixa":DAYS[n])+'</option>';}).join("");
+}
 function viewNegocios(){
-  var h='<p class="intro">Um próximo passo por negócio e pronto. O resto vira tarefa.</p><div class="bizgrid">';
+  var none=!state.businesses.length;
+  var h='<div class="intro-row"><p class="intro">'+(none?"Nenhum negócio por aqui ainda. Cadastre o primeiro.":"Um próximo passo por negócio e pronto. O resto vira tarefa.")+'</p>'+
+    (addBiz||none?"":'<button class="btn" id="nb-open">Novo negócio ou cliente</button>')+'</div>';
+  if(addBiz||none){
+    h+=panel("Novo negócio ou cliente","",
+      '<div class="form">'+
+        '<label class="field full"><span>Nome</span><input class="in" type="text" id="nb-name" maxlength="80" placeholder="Nome do cliente ou do negócio"></label>'+
+        '<label class="field full"><span>Noite fixa</span><select class="in" id="nb-day">'+dayOpts(-1)+'</select></label>'+
+        '<div class="actions">'+(none?"":'<button class="btn ghost" id="nb-cancel">Cancelar</button>')+'<button class="btn" id="nb-add">Adicionar</button></div>'+
+      '</div>');
+  }
+  h+='<div class="bizgrid">';
   state.businesses.forEach(function(b){
     var id=esc(b.id);
     var ts=state.tasks.filter(function(t){return t.biz===b.id;});
     var open=ts.filter(function(t){return !t.done;}).length;
     ts=ts.slice().sort(function(x,y){ return x.done!==y.done ? (x.done?1:-1) : byDue(x,y); });
     h+='<section class="panel">'+
-      '<div class="biz-head">'+dot(b)+'<h2>'+esc(b.name)+'</h2>'+
+      '<div class="biz-head">'+dot(b)+'<textarea class="biz-name" rows="1" id="bt-'+id+'" data-bname="'+id+'" aria-label="Nome do negócio" maxlength="80">'+esc(b.name)+'</textarea>'+
         '<button class="icon-btn" data-askdel="'+id+'" aria-label="Remover negócio" title="Remover negócio">'+IC.x+'</button></div>';
     if(confirmBiz===b.id){
-      h+='<div class="confirm"><span>Tirar este negócio do painel?'+(ts.length?(ts.length===1?' A tarefa dele vai junto.':' As '+ts.length+' tarefas dele vão junto.'):'')+'</span>'+
+      h+='<div class="confirm"><span>Tirar este negócio do painel?'+(ts.length?(ts.length===1?' A tarefa dele vai junto.':' As '+ts.length+' tarefas dele vão junto.'):'')+(state.entries.some(function(e){return e.biz===b.id;})?' Os lançamentos dele continuam no financeiro.':'')+'</span>'+
          '<div><button class="btn ghost" data-canceldel="1">Cancelar</button>'+
          '<button class="btn danger" data-delbiz="'+id+'">Remover</button></div></div>';
     }
     h+='<div class="biz-body">'+
         '<label class="field"><span>Noite fixa</span><select class="in" id="bd-'+id+'" data-day="'+id+'">'+
-          [1,2,3,4,5,6,0,-1].map(function(n){
-            return '<option value="'+n+'"'+(b.day===n?" selected":"")+'>'+(n===-1?"Nenhuma (no expediente)":DAYS[n])+'</option>';}).join("")+
+          dayOpts(b.day)+
         '</select></label>'+
         '<label class="field"><span>Próximo passo</span>'+
           '<textarea class="in" id="bn-'+id+'" data-next="'+id+'" placeholder="Qual é a próxima coisa a fazer aqui?">'+esc(b.next||"")+'</textarea></label>'+
@@ -633,6 +651,11 @@ function viewDinheiro(){
     mt.list.forEach(function(e){ if(e.biz===b.id){ found=true; s+=(e.type==="in"?1:-1)*(Number(e.value)||0); } });
     if(found){ rows.push({b:b,s:s}); max=Math.max(max,Math.abs(s)); }
   });
+  var os=0,orf=false;
+  mt.list.forEach(function(e){
+    if(!state.businesses.some(function(b){return b.id===e.biz;})){ orf=true; os+=(e.type==="in"?1:-1)*(Number(e.value)||0); }
+  });
+  if(orf){ rows.push({b:{name:"Negócios removidos",color:"#888888"},s:os}); max=Math.max(max,Math.abs(os)); }
   left+=panel("Por negócio","", rows.length
     ? '<ul class="bars">'+rows.map(function(r){
         var w=max?Math.max(2,Math.round(Math.abs(r.s)/max*100)):0;
@@ -664,6 +687,7 @@ function viewDinheiro(){
       '<label class="field full"><span>Data</span><input class="in" type="date" id="ne-date" value="'+todayISO()+'"></label>'+
       '<div class="actions"><button class="btn" id="ne-add">Lançar</button></div>'+
     '</div>');
+  if(!state.businesses.length) rightCol=panel("Novo lançamento","",'<p class="empty">Cadastre um negócio na aba Negócios para lançar valores.</p>');
   return '<div class="cols"><div class="stack">'+left+'</div><div class="stack">'+rightCol+'</div></div>';
 }
 
@@ -676,7 +700,7 @@ function render(){
   else if(tab==="semana") v.innerHTML=viewSemana();
   else if(tab==="dinheiro") v.innerHTML=viewDinheiro();
   else v.innerHTML=viewHoje();
-  v.querySelectorAll(".task-title").forEach(fit);
+  v.querySelectorAll(".task-title,.biz-name").forEach(fit);
 }
 function fit(el){ el.style.height="auto"; el.style.height=el.scrollHeight+"px"; }
 function setTab(t){
@@ -695,7 +719,7 @@ document.addEventListener("click",function(e){
   var el=e.target, hit;
   if(!el.closest) return;
 
-  if((hit=el.closest("[data-tab]"))){ confirmBiz=null; setTab(hit.getAttribute("data-tab")); render(); window.scrollTo(0,0); return; }
+  if((hit=el.closest("[data-tab]"))){ confirmBiz=null; addBiz=false; setTab(hit.getAttribute("data-tab")); render(); window.scrollTo(0,0); return; }
   if(el.closest("#savebtn")){ doSave(); return; }
 
   if(el.closest("#nt-add")){
@@ -717,6 +741,21 @@ document.addEventListener("click",function(e){
   if((hit=el.closest("[data-month]"))){
     var p=finMonth.split("-"), d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1+parseInt(hit.getAttribute("data-month"),10),1);
     finMonth=iso(d).slice(0,7); render(); return;
+  }
+  if(el.closest("#nb-open")){ addBiz=true; render(); var nf=$("#nb-name"); if(nf) nf.focus(); return; }
+  if(el.closest("#nb-cancel")){ addBiz=false; render(); return; }
+  if(el.closest("#nb-add")){
+    var ni=$("#nb-name"), nm=ni.value.trim();
+    if(!nm){ invalid(ni); return; }
+    var used=state.businesses.map(function(b){return String(b.color||"").toLowerCase();});
+    var free=PALETTE.filter(function(c){return used.indexOf(c)<0;});
+    var nid="n"+uid();
+    state.businesses.push({id:nid,name:nm,color:free.length?free[0]:PALETTE[state.businesses.length%PALETTE.length],
+      day:parseInt($("#nb-day").value,10),next:""});
+    addBiz=false; save(); render();
+    var card=document.getElementById("bt-"+nid);
+    if(card&&card.closest(".panel").scrollIntoView) card.closest(".panel").scrollIntoView({block:"center"});
+    return;
   }
   if((hit=el.closest("[data-askdel]"))){ confirmBiz=hit.getAttribute("data-askdel"); render(); return; }
   if(el.closest("[data-canceldel]")){ confirmBiz=null; render(); return; }
@@ -744,6 +783,10 @@ document.addEventListener("change",function(e){
     state.tasks.forEach(function(t){ if(t.id===id) t.done=el.checked; });
     save(); render(); return;
   }
+  if((id=el.getAttribute("data-bname"))){
+    if(!el.value.trim()){ state.businesses.forEach(function(b){ if(b.id===id) b.name="Sem nome"; }); save(); render(); }
+    return;
+  }
   if((id=el.getAttribute("data-due"))){
     state.tasks.forEach(function(t){ if(t.id===id) t.due=el.value||""; });
     save(); return;
@@ -766,6 +809,11 @@ document.addEventListener("input",function(e){
     state.tasks.forEach(function(t){ if(t.id===id) t.title=el.value; });
     fit(el); save(); return;
   }
+  if((id=el.getAttribute("data-bname"))){
+    if(el.value.indexOf("\n")>-1) el.value=el.value.replace(/\s*\n\s*/g," ");
+    state.businesses.forEach(function(b){ if(b.id===id) b.name=el.value; });
+    fit(el); save(); return;
+  }
   if((id=el.getAttribute("data-next"))){
     state.businesses.forEach(function(b){ if(b.id===id) b.next=el.value; });
     save(); return;
@@ -775,14 +823,15 @@ document.addEventListener("input",function(e){
 
 document.addEventListener("keydown",function(e){
   if(e.key!=="Enter") return;
-  if(e.target.classList&&e.target.classList.contains("task-title")){ e.preventDefault(); e.target.blur(); return; }
+  if(e.target.classList&&(e.target.classList.contains("task-title")||e.target.classList.contains("biz-name"))){ e.preventDefault(); e.target.blur(); return; }
   var b=null;
   if(e.target.id==="nt-title") b=$("#nt-add");
+  else if(e.target.id==="nb-name") b=$("#nb-add");
   else if(e.target.id==="ne-val"||e.target.id==="ne-desc") b=$("#ne-add");
   if(b){ e.preventDefault(); b.click(); }
 });
 
-window.addEventListener("resize",function(){ document.querySelectorAll(".task-title").forEach(fit); });
+window.addEventListener("resize",function(){ document.querySelectorAll(".task-title,.biz-name").forEach(fit); });
 window.addEventListener("beforeunload",function(e){
   if(dirty){ e.preventDefault(); e.returnValue=""; }
 });
