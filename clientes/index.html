@@ -166,9 +166,11 @@ button:disabled{opacity:.55;cursor:default}
     <div id="aviso"></div>
     <div class="list" id="lista"></div>
     <div class="bkp">
-      <span>Os clientes ficam guardados neste navegador. Baixe uma cópia de vez em quando para não perder nada.</span>
+      <span id="bkp-txt">Os clientes ficam guardados neste navegador. Baixe uma cópia de vez em quando para não perder nada.</span>
       <button class="btn" id="baixar" type="button">Baixar cópia</button>
       <button class="btn" id="restaurar" type="button">Restaurar cópia</button>
+      <button class="btn" id="copiar-link" type="button" hidden>Copiar link de acesso</button>
+      <button class="btn" id="ligar-nuvem" type="button" hidden>Ligar este aparelho à nuvem</button>
       <input id="arquivo" type="file" accept="application/json,.json" hidden>
     </div>
   </section>
@@ -181,6 +183,7 @@ button:disabled{opacity:.55;cursor:default}
 <div id="ficha"></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
+<script src="nexo-nuvem.js"></script>
 <script>
 (function () {
   "use strict";
@@ -498,7 +501,7 @@ button:disabled{opacity:.55;cursor:default}
   pintar();
 
   /* ---------- armazenamento neste navegador ---------- */
-  var CHAVE = "nexo.clientes.v1", memoria = null, guardando = true;
+  var CHAVE = "nexo.clientes.v1", memoria = null, guardando = true, naNuvem = false;
   var EXEMPLOS = [
     { id: "exemplo-fechado", exemplo: true, etapa: "fechado", nome: "Nome do cliente", perfil: "@perfil_do_cliente", whatsapp: "(00) 00000-0000",
       servico: "Site intermediário", fechadoEm: "2026-10-01", valorSite: 1300, hospedagem: 150, pagamento: "Entrada e entrega",
@@ -543,7 +546,7 @@ button:disabled{opacity:.55;cursor:default}
       delete: function () { return trocarTudo(sem()); }
     };
   } }; } };
-  window.addEventListener("storage", function (ev) { if (ev.key === CHAVE) { memoria = null; publicar(); } });
+  window.addEventListener("storage", function (ev) { if (ev.key === CHAVE && !naNuvem) { memoria = null; publicar(); } });
 
   /* ---------- cópia de segurança ---------- */
   $("baixar").addEventListener("click", function () {
@@ -567,7 +570,103 @@ button:disabled{opacity:.55;cursor:default}
     leitor.readAsText(f);
   });
 
-  publicar();
+  /* ---------- nuvem ---------- */
+  /* Com o código de acesso neste aparelho, os clientes ficam em um banco na nuvem, um registro por cliente.
+     Cada alteração grava só o cliente mexido; a lista é conferida de novo a cada 20 segundos e ao voltar para a aba. */
+  function ligarNuvem(N) {
+    var APP = "clientes", LIGADO = "nexo.clientes.nuvem.ok", emCurso = 0, puxando = false, ultimo = "", semRede = false;
+    naNuvem = true;
+    function jaLigado() { try { return localStorage.getItem(LIGADO) === "1"; } catch (e) { return false; } }
+    function corpo(c) { var o = {}, k; for (k in c) if (k !== "id") o[k] = c[k]; return o; }
+    function mostrar() {
+      S.clientes = (memoria || []).map(function (c) { var o = {}, k; for (k in c) o[k] = c[k]; return o; });
+      S.pronto = true;
+      $("status").textContent = semRede ? "Sem conexão com a nuvem" : "Salvo na nuvem";
+      pintar();
+    }
+    function op(fn) {
+      emCurso++;
+      return fn().then(function (v) { emCurso--; return v; }, function (e) { emCurso--; puxar(); throw e; });
+    }
+    db = { collection: function () { return { doc: function (id) {
+      id = id || ("c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7));
+      var sem = function () { return (memoria || []).filter(function (c) { return c.id !== id; }); };
+      return {
+        id: id,
+        set: function (doc) {
+          var novo = { id: id }, k; for (k in doc) novo[k] = doc[k];
+          return op(function () { return N.gravar(APP, id, corpo(novo)); }).then(function () { memoria = sem().concat([novo]); gravar(); mostrar(); });
+        },
+        delete: function () {
+          return op(function () { return N.excluir(APP, id); }).then(function () { memoria = sem(); gravar(); mostrar(); });
+        }
+      };
+    } }; } };
+    /* restaurar uma cópia: a nuvem passa a ter exatamente os clientes da cópia */
+    trocarTudo = function (lista) {
+      var fica = {}; lista.forEach(function (c) { fica[c.id] = 1; });
+      var sair = (memoria || []).filter(function (c) { return !fica[c.id]; });
+      return op(function () {
+        return Promise.all(lista.map(function (c) { return N.gravar(APP, c.id, corpo(c)); })
+          .concat(sair.map(function (c) { return N.excluir(APP, c.id); })));
+      }).then(function () { memoria = lista; gravar(); mostrar(); });
+    };
+    /* primeira vez deste aparelho: o que estava só neste navegador sobe para a nuvem */
+    function primeiraVez(remotos, excluidos) {
+      var locais = [], tem = {};
+      try { var l = JSON.parse(localStorage.getItem(CHAVE) || "null"); if (valido(l)) locais = l; } catch (e) {}
+      try { if (locais.length && !localStorage.getItem(CHAVE + ".antes_da_nuvem")) localStorage.setItem(CHAVE + ".antes_da_nuvem", JSON.stringify(locais)); } catch (e) {}
+      remotos.forEach(function (c) { tem[c.id] = 1; }); excluidos.forEach(function (id) { tem[id] = 1; });
+      var subir = locais.filter(function (c) { return !c.exemplo && !tem[c.id] && /^[A-Za-z0-9_.-]{1,80}$/.test(c.id); });
+      memoria = remotos.concat(subir); semRede = false; mostrar();
+      Promise.all(subir.map(function (c) { return N.gravar(APP, c.id, corpo(c)); })).then(function () {
+        try { localStorage.setItem(LIGADO, "1"); } catch (e) {}
+        gravar();
+        if (subir.length) toast(subir.length === 1 ? "1 cliente deste aparelho foi enviado para a nuvem." : subir.length + " clientes deste aparelho foram enviados para a nuvem.");
+      }, function () { toast("Não foi possível enviar os clientes deste aparelho agora. Eles sobem na próxima abertura."); });
+    }
+    function puxar() {
+      if (puxando || emCurso) return;
+      puxando = true;
+      N.listar(APP).then(function (lista) {
+        puxando = false;
+        if (emCurso) return;            // uma gravação começou no meio: a próxima rodada traz tudo
+        var remotos = lista.map(function (r) { var c = {}, k, d = r.dados || {}; for (k in d) c[k] = d[k]; c.id = r.id; return c; })
+          .filter(function (c) { return CAMPOS[c.etapa]; });
+        if (!jaLigado()) { primeiraVez(remotos, lista.excluidos || []); return; }
+        var marca = JSON.stringify(remotos), voltou = semRede;
+        semRede = false;
+        if (marca === ultimo && S.pronto && !voltou) return;
+        ultimo = marca; memoria = remotos; gravar(); mostrar();
+      }, function (e) {
+        puxando = false;
+        if (e && e.code === "codigo") {
+          S.leitura = true; if (!memoria) memoria = []; mostrar();
+          $("status").textContent = "O código de acesso não confere mais";
+          $("copiar-link").hidden = true; $("ligar-nuvem").hidden = false;
+          return;
+        }
+        semRede = true;
+        if (!memoria) { try { var l = JSON.parse(localStorage.getItem(CHAVE) || "null"); memoria = valido(l) ? l : []; } catch (e2) { memoria = []; } }
+        mostrar();
+      });
+    }
+    $("bkp-txt").textContent = "Os clientes ficam salvos na nuvem: qualquer aparelho que abrir o link de acesso vê a última versão. Baixe uma cópia de vez em quando, por segurança.";
+    $("copiar-link").hidden = false;
+    $("copiar-link").addEventListener("click", function () { N.copiarLink(); });
+    if (jaLigado()) { try { var g = JSON.parse(localStorage.getItem(CHAVE) || "null"); if (valido(g)) { memoria = g; mostrar(); } } catch (e) {} }
+    puxar();
+    setInterval(function () { if (!document.hidden) puxar(); }, 20000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) puxar(); });
+    window.addEventListener("focus", puxar);
+    window.addEventListener("online", puxar);
+  }
+  $("ligar-nuvem").addEventListener("click", function () {
+    if (window.NexoNuvem) window.NexoNuvem.pedir().then(function (ok) { if (ok) location.reload(); });
+  });
+
+  if (window.NexoNuvem && window.NexoNuvem.ativo()) ligarNuvem(window.NexoNuvem);
+  else { if (window.NexoNuvem) $("ligar-nuvem").hidden = false; publicar(); }
 })();
 </script>
 </body>
