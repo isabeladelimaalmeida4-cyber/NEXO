@@ -268,6 +268,7 @@ button:disabled{opacity:.55;cursor:default}
       <button class="btn" id="baixar" type="button">Baixar cópia</button>
       <button class="btn" id="restaurar" type="button">Restaurar cópia</button>
       <button class="btn" id="trazer" type="button">Trazer clientes fechados</button>
+      <button class="btn" id="copiar-link" type="button" hidden>Copiar link de acesso</button>
       <input id="arquivo" type="file" accept="application/json,.json" hidden>
     </div>
   </section>
@@ -280,6 +281,7 @@ button:disabled{opacity:.55;cursor:default}
 <div id="ficha"></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
+<script src="assets/nexo-nuvem.js"></script>
 <script>
 (function () {
   "use strict";
@@ -309,7 +311,7 @@ button:disabled{opacity:.55;cursor:default}
   ];
 
   var S = { clientes: [], filtro: "ativos", busca: "", sel: null, aberto: false, pronto: false, leitura: false,
-            nuvem: false, erro: "", confirmar: null, confA: null, rasc: { data: "", tipo: TIPOS[0], desc: "" } };
+            nuvem: false, link: false, semRede: false, codigoRuim: false, erro: "", confirmar: null, confA: null, rasc: { data: "", tipo: TIPOS[0], desc: "" } };
   var store = null, modoArquivo = "restaurar";
 
   /* ---------- utilidades ---------- */
@@ -415,6 +417,8 @@ button:disabled{opacity:.55;cursor:default}
     toast(c === "cheio" ? "O navegador ficou sem espaço para salvar. Baixe uma cópia e exclua contratos antigos."
       : c === "quota_exceeded" ? "O limite de registros foi atingido. Exclua contratos antigos e tente de novo."
       : c === "invalid_argument" ? "Você não tem permissão para alterar estes dados."
+      : c === "codigo" ? "O código de acesso deste aparelho não confere mais."
+      : c === "rede" ? "Sem conexão com a nuvem. A alteração não foi salva; tente de novo quando a internet voltar."
       : "Não foi possível salvar agora. Tente de novo em instantes.");
   }
 
@@ -530,8 +534,14 @@ button:disabled{opacity:.55;cursor:default}
   }
   function pintarAviso() {
     var a = $("aviso"); a.textContent = "";
-    if (S.erro) { add(a, h("div", { class: "note" }, h("span", { text: S.erro }))); return; }
+    function ligar() { window.NexoNuvem.pedir().then(function (ok) { if (ok) location.reload(); }); }
+    if (S.erro) { add(a, h("div", { class: "note" }, h("span", { text: S.erro }),
+      S.codigoRuim ? h("button", { class: "btn", type: "button", text: "Digitar o código de acesso", onclick: ligar }) : null)); return; }
     if (!S.pronto) return;
+    if (S.semRede) add(a, h("div", { class: "note" }, h("span", { text: "Sem conexão com a nuvem. A lista mostra a última versão vista neste aparelho, e as alterações só salvam quando a internet voltar." })));
+    if (!S.nuvem && window.NexoNuvem) add(a, h("div", { class: "note" },
+      h("span", { text: "Este aparelho ainda não está ligado à nuvem: o que for cadastrado aqui fica só neste navegador." }),
+      h("button", { class: "btn", type: "button", text: "Digitar o código de acesso", onclick: ligar })));
     var ex = S.clientes.filter(function (c) { return c.exemplo; });
     if (ex.length && !S.leitura) add(a, h("div", { class: "note" },
       h("span", { text: deVerdade().length ? "As linhas marcadas como exemplo não entram nos números do topo." : "As linhas abaixo são exemplos para mostrar como o controle funciona. Enquanto só houver exemplos, os números do topo vêm deles." }),
@@ -904,9 +914,11 @@ button:disabled{opacity:.55;cursor:default}
     }
     $("novo").hidden = S.leitura || !S.pronto;
     ["baixar", "restaurar", "trazer"].forEach(function (id) { $(id).hidden = !S.pronto || (S.leitura && id !== "baixar"); });
-    $("bkp-txt").textContent = !S.pronto ? "" : S.nuvem ? "Os contratos ficam salvos na sua conta e aparecem em qualquer aparelho. Baixe uma cópia de vez em quando, por segurança."
+    $("copiar-link").hidden = !(S.pronto && S.link);
+    $("bkp-txt").textContent = !S.pronto ? "" : S.link ? "Os contratos ficam salvos na nuvem: qualquer aparelho que abrir o link de acesso vê a última versão. Baixe uma cópia de vez em quando, por segurança."
+      : S.nuvem ? "Os contratos ficam salvos na sua conta e aparecem em qualquer aparelho. Baixe uma cópia de vez em quando, por segurança."
       : "Os contratos ficam guardados neste navegador. Baixe uma cópia de vez em quando para não perder nada.";
-    $("status").textContent = S.erro ? "Sem acesso aos dados" : !S.pronto ? "Carregando" : S.nuvem ? "Salvo na sua conta" : "Salvo neste navegador";
+    $("status").textContent = S.erro ? "Sem acesso aos dados" : !S.pronto ? "Carregando" : S.link ? (S.semRede ? "Sem conexão com a nuvem" : "Salvo na nuvem") : S.nuvem ? "Salvo na sua conta" : "Salvo neste navegador";
   }
 
   /* ---------- cópia de segurança e importação ---------- */
@@ -1021,9 +1033,73 @@ button:disabled{opacity:.55;cursor:default}
       S.erro = "A ligação com os seus dados caiu. Recarregue a página para continuar."; S.leitura = true; pintar();
     });
   }
+  /* fora do Claude, com o código de acesso: banco na nuvem, um registro por contrato.
+     Cada alteração grava só o contrato mexido; a lista é conferida de novo a cada 20 segundos e ao voltar para a aba. */
+  function ligarLink(N) {
+    var APP = "acompanhamento", CACHE = "nexo.acompanhamento.nuvem", ANTIGA = "nexo.acompanhamento.v1", LIGADO = "nexo.acompanhamento.nuvem.ok";
+    var filas = {}, emCurso = 0, puxando = false, ultimo = "";
+    function corpo(c) { var o = copia(c); delete o.id; return o; }
+    function guardar() { try { localStorage.setItem(CACHE, JSON.stringify(S.clientes)); } catch (e) {} }
+    function jaLigado() { try { return localStorage.getItem(LIGADO) === "1"; } catch (e) { return false; } }
+    function fila(id, fn) {
+      emCurso++;
+      var p = (filas[id] || Promise.resolve()).then(fn, fn);
+      filas[id] = p.catch(function () {});
+      return p.then(function (v) { emCurso--; guardar(); return v; }, function (e) { emCurso--; puxar(); throw e; });
+    }
+    store = {
+      set: function (c) { var o = corpo(c), id = c.id; return fila(id, function () { return N.gravar(APP, id, o); }); },
+      del: function (id) { return fila(id, function () { return N.excluir(APP, id); }); }
+    };
+    function aplicar(remotos) {
+      var marca = JSON.stringify(remotos), mudouRede = S.semRede;
+      S.semRede = false; S.erro = ""; S.codigoRuim = false; S.leitura = false;
+      if (marca === ultimo && S.pronto && !mudouRede) return;
+      ultimo = marca; S.clientes = remotos; S.pronto = true; guardar(); pintar();
+    }
+    /* primeira vez deste aparelho: o que estava só neste navegador sobe para a nuvem */
+    function primeiraVez(remotos, excluidos) {
+      var locais = [], tem = {};
+      try { locais = JSON.parse(localStorage.getItem(ANTIGA) || "[]"); } catch (e) {}
+      remotos.forEach(function (c) { tem[c.id] = 1; }); excluidos.forEach(function (id) { tem[id] = 1; });
+      var subir = (Array.isArray(locais) ? locais : []).filter(function (c) { return c && c.id && c.nome && !c.exemplo; })
+        .map(function (c) { c = normal(copia(c)); c.id = idLimpo(c.id); return c; }).filter(function (c) { return !tem[c.id]; });
+      S.clientes = remotos.concat(subir); S.pronto = true; S.semRede = false; pintar();
+      Promise.all(subir.map(function (c) { return N.gravar(APP, c.id, corpo(c)); })).then(function () {
+        try { localStorage.setItem(LIGADO, "1"); } catch (e) {}
+        guardar();
+        if (subir.length) toast(plural(subir.length, "contrato deste aparelho foi enviado", "contratos deste aparelho foram enviados") + " para a nuvem.");
+      }, function () { toast("Não foi possível enviar os contratos deste aparelho agora. Eles sobem na próxima abertura."); });
+    }
+    function puxar() {
+      if (puxando || emCurso) return;
+      puxando = true;
+      N.listar(APP).then(function (lista) {
+        puxando = false;
+        if (emCurso) return;            // uma gravação começou no meio: a próxima rodada traz tudo
+        var remotos = lista.map(function (r) { var c = copia(r.dados || {}); c.id = r.id; return normal(c); });
+        if (!jaLigado()) primeiraVez(remotos, lista.excluidos || []); else aplicar(remotos);
+      }, function (e) {
+        puxando = false;
+        if (e && e.code === "codigo") { S.erro = "O código de acesso deste aparelho não confere mais."; S.codigoRuim = true; S.leitura = true; S.pronto = true; pintar(); return; }
+        if (!S.pronto) { S.erro = "Sem conexão com a nuvem. Verifique a internet e recarregue a página."; pintar(); return; }
+        if (!S.semRede) { S.semRede = true; pintar(); }
+      });
+    }
+    S.nuvem = true; S.link = true;
+    try { var guardado = JSON.parse(localStorage.getItem(CACHE) || "null"); if (Array.isArray(guardado) && jaLigado()) { S.clientes = guardado.map(normal); S.pronto = true; pintar(); } } catch (e) {}
+    puxar();
+    setInterval(function () { if (!document.hidden) puxar(); }, 20000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) puxar(); });
+    window.addEventListener("focus", puxar);
+    window.addEventListener("online", puxar);
+  }
   function iniciar() {
     var cl = window.claude;
-    if (!(cl && typeof cl.use === "function")) { ligarNavegador(); return; }
+    if (!(cl && typeof cl.use === "function")) {
+      if (window.NexoNuvem && window.NexoNuvem.ativo()) ligarLink(window.NexoNuvem); else ligarNavegador();
+      return;
+    }
     Promise.all([cl.use("db"), cl.use("user")]).then(function (r) {
       if (r[0]) ligarNuvem(r[0], r[1]);
       else { S.erro = "Não foi possível abrir os seus dados agora. Recarregue a página em instantes."; S.leitura = true; pintar(); }
@@ -1038,6 +1114,7 @@ button:disabled{opacity:.55;cursor:default}
   $("busca").addEventListener("input", function () { S.busca = this.value; S.confirmar = null; pintar(); });
   $("novo").addEventListener("click", function () { form(null); });
   $("baixar").addEventListener("click", baixar);
+  $("copiar-link").addEventListener("click", function () { if (window.NexoNuvem) window.NexoNuvem.copiarLink(); });
   $("restaurar").addEventListener("click", function () { modoArquivo = "restaurar"; $("arquivo").click(); });
   $("trazer").addEventListener("click", function () { modoArquivo = "trazer"; toast("Escolha a cópia baixada no Controle de clientes."); $("arquivo").click(); });
   $("arquivo").addEventListener("change", function (ev) {
