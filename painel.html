@@ -66,6 +66,7 @@ svg.ic{width:16px;height:16px;flex:0 0 auto;stroke:currentColor;fill:none;stroke
 .top-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
 .top .date{color:var(--head-ink-2);font-size:13px}
 .save{display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;font-size:12.5px;color:var(--head-ink-2)}
+.save .linkbtn{margin-left:10px}
 .linkbtn{background:none;border:0;padding:0;color:var(--head-accent);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline}
 .sdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;background:var(--head-ink-2)}
 .sdot.ok{background:var(--pos)} .sdot.dirty{background:var(--warn)} .sdot.err{background:var(--neg)}
@@ -215,7 +216,7 @@ textarea.in{resize:vertical;min-height:64px}
     <h1>Meu Painel de Negócios</h1>
     <div class="top-meta">
       <p class="date" id="today"></p>
-      <p class="save"><i class="sdot" id="sdot"></i><span id="status">Carregando…</span><button class="linkbtn" id="retry" hidden>Tentar de novo</button></p>
+      <p class="save"><i class="sdot" id="sdot"></i><span id="status">Carregando…</span><button class="linkbtn" id="retry" hidden>Tentar de novo</button><button class="linkbtn" id="nv-link" hidden>Copiar link de acesso</button><button class="linkbtn" id="nv-entrar" hidden>Ligar este aparelho à nuvem</button></p>
     </div>
   </div>
 </header>
@@ -227,13 +228,16 @@ textarea.in{resize:vertical;min-height:64px}
 </nav>
 <main class="shell" id="view"></main>
 
+<script src="assets/nexo-nuvem.js"></script>
 <script>
 (function(){
 "use strict";
 
 function hasClaude(){return !!(window.claude&&typeof window.claude.use==="function");}
 var FRAMED=(function(){try{return window.top!==window;}catch(e){return true;}})();
-var SOLO=!hasClaude()&&!FRAMED;
+/* fora do Claude, com o código de acesso neste aparelho, os dados ficam na nuvem (assets/nexo-nuvem.js) */
+var NUVEM=(!hasClaude()&&window.NexoNuvem&&window.NexoNuvem.ativo())?window.NexoNuvem:null;
+var SOLO=!hasClaude()&&!FRAMED&&!NUVEM;
 function waitClaude(){
   return new Promise(function(res){
     var n=0;(function chk(){ if(hasClaude()) return res(true); if(++n>50) return res(false); setTimeout(chk,200); })();
@@ -349,6 +353,7 @@ function touch(){
   clearTimeout(saveTimer); saveTimer=setTimeout(flush,900);
 }
 async function flush(){
+  if(NUVEM) return nuvemFlush();
   if(SOLO||saving) return;
   clearTimeout(saveTimer);
   saving=true;
@@ -370,7 +375,8 @@ async function load(){
   agReset(); finReset();
   render();
   initCal();
-  if(SOLO){ setStatus("Os dados ficam salvos só neste navegador.","ok"); return; }
+  if(NUVEM){ $("#nv-link").hidden=false; return nuvemLoad(local); }
+  if(SOLO){ setStatus("Os dados ficam salvos só neste navegador.","ok"); if(window.NexoNuvem) $("#nv-entrar").hidden=false; return; }
   db=await connectDb();
   if(!db){ setStatus(local?"Sem sincronizar. Mostrando o que está neste aparelho.":"Sem conexão com seus dados. Recarregue a página.",local?"dirty":"err",true); return; }
   try{
@@ -383,6 +389,123 @@ async function load(){
   }catch(e){
     setStatus(local?"Não carregou da nuvem. Mostrando o que está neste aparelho.":"Não deu para carregar seus dados. Recarregue a página.",local?"dirty":"err",true);
   }
+}
+
+/* nuvem: um só registro com o painel inteiro. Cada aparelho guarda a última versão que viu (base);
+   quando dois aparelhos mexem ao mesmo tempo, junta item por item: o que este aparelho mudou desde
+   a base vale, o resto vem da nuvem. */
+var NV_KEY="painel_nuvem_v1", nv={versao:null,base:null,ocupado:false,pend:false};
+function nvMetaLoad(){try{var m=JSON.parse(localStorage.getItem(NV_KEY)||"null");return m&&typeof m==="object"&&m.base?m:null;}catch(e){return null;}}
+function nvMetaSave(){try{localStorage.setItem(NV_KEY,JSON.stringify({versao:nv.versao,base:nv.base}));}catch(e){}}
+/* texto de comparação com as chaves em ordem: o banco devolve os objetos com as chaves reordenadas */
+function nvCanon(v){
+  if(Array.isArray(v)) return "["+v.map(nvCanon).join(",")+"]";
+  if(v&&typeof v==="object") return "{"+Object.keys(v).sort().filter(function(k){return v[k]!==undefined;}).map(function(k){return JSON.stringify(k)+":"+nvCanon(v[k]);}).join(",")+"}";
+  return JSON.stringify(v===undefined?null:v);
+}
+function nvSig(p){p=p||{};return nvCanon([p.businesses||[],p.tasks||[],p.entries||[],p.appts||[],p.weekFocus||"",p.removed||{}]);}
+function nvMergeList(b,l,r){
+  var B={},L={},seen={},out=[];
+  b.forEach(function(x){if(x&&x.id!=null) B[x.id]=nvCanon(x);});
+  l.forEach(function(x){if(x&&x.id!=null) L[x.id]=x;});
+  r.forEach(function(x){
+    if(!x||x.id==null) return;
+    seen[x.id]=1;
+    var mine=L[x.id], changed=(mine?nvCanon(mine):undefined)!==B[x.id];
+    if(!changed) out.push(x); else if(mine) out.push(mine);
+  });
+  l.forEach(function(x){
+    if(!x||x.id==null||seen[x.id]) return;
+    if(B[x.id]===undefined||nvCanon(x)!==B[x.id]) out.push(x);
+  });
+  return out;
+}
+function nvMerge(base,local,remote){
+  base=base||{}; local=local||{}; remote=remote||{};
+  var out={},k,B=base.removed||{},L=local.removed||{},R=remote.removed||{},rm={};
+  ["businesses","tasks","entries","appts"].forEach(function(key){
+    out[key]=nvMergeList(Array.isArray(base[key])?base[key]:[],Array.isArray(local[key])?local[key]:[],Array.isArray(remote[key])?remote[key]:[]);
+  });
+  out.weekFocus=((local.weekFocus||"")!==(base.weekFocus||""))?(local.weekFocus||""):(remote.weekFocus||"");
+  for(k in R) if(R[k]) rm[k]=R[k];
+  for(k in L) if(L[k]&&!B[k]) rm[k]=L[k];
+  for(k in B) if(B[k]&&!L[k]) delete rm[k];
+  out.removed=rm;
+  out.businesses=out.businesses.filter(function(x){return !rm[x.id];});
+  return out;
+}
+function nvApply(data){
+  applyData(data); mergeDefaults(); localSave(payload());
+  if(!finForm.id&&!finForm.desc&&!finForm.value) finReset();
+  refreshData();
+}
+function nvFail(e,local){
+  if(e&&e.code==="codigo"){ setStatus("O código de acesso deste aparelho não confere mais.","err"); $("#nv-link").hidden=true; $("#nv-entrar").hidden=false; return; }
+  setStatus(local?"Sem conexão com a nuvem. As mudanças ficam neste aparelho até a conexão voltar.":"Sem conexão com a nuvem.","err",true);
+}
+async function nvFetch(){
+  var list=await NUVEM.listar("painel"),i;
+  for(i=0;i<list.length;i++) if(list[i].id==="main") return list[i];
+  return null;
+}
+async function nuvemLoad(local){
+  setStatus("Carregando da nuvem…","dirty");
+  var meta=nvMetaLoad();
+  if(meta){ nv.base=meta.base; nv.versao=meta.versao; }
+  nv.ocupado=true;
+  try{
+    var r=await nvFetch();
+    if(!meta&&local){ try{ if(!localStorage.getItem(LS_KEY+".antes_da_nuvem")) localStorage.setItem(LS_KEY+".antes_da_nuvem",JSON.stringify(local)); }catch(e){} }
+    if(r){
+      var mine=payload();
+      if(!meta) nvApply(local?nvMerge(null,mine,r.dados):r.dados);          /* primeira vez neste aparelho: junta os dois */
+      else if(nvSig(mine)===nvSig(meta.base)) nvApply(r.dados);             /* nada pendente aqui: vale a nuvem */
+      else nvApply(nvMerge(meta.base,mine,r.dados));                         /* havia mudanças feitas sem conexão */
+      nv.base=r.dados; nv.versao=r.versao;
+    }else{ nv.base=null; nv.versao=0; }
+    nvMetaSave();
+  }catch(e){ nv.ocupado=false; nvFail(e,true); return; }
+  nv.ocupado=false;
+  if(!nv.base||nvSig(payload())!==nvSig(nv.base)){ setStatus("Salvando…","dirty"); nuvemFlush(); }
+  else setStatus("Tudo salvo na nuvem.","ok");
+}
+async function nuvemFlush(){
+  if(nv.ocupado){ nv.pend=true; return; }
+  nv.ocupado=true; clearTimeout(saveTimer);
+  try{
+    for(var i=0;i<5;i++){
+      var my=rev,p=payload();
+      var res=await NUVEM.gravar("painel","main",p,nv.versao==null?0:nv.versao);
+      if(res.conflito){                                   /* outro aparelho salvou antes: junta e tenta de novo */
+        var merged=nvMerge(nv.base,p,res.dados);
+        nv.base=res.dados; nv.versao=res.versao; nvMetaSave();
+        nvApply(merged);
+        continue;
+      }
+      nv.base=p; nv.versao=res.versao; nvMetaSave();
+      if(rev===my){ setStatus("Salvo na nuvem às "+hhmm()+".","ok"); break; }
+    }
+  }catch(e){ nvFail(e,true); }
+  nv.ocupado=false;
+  if(nv.pend){ nv.pend=false; nuvemFlush(); }
+}
+/* traz o que outro aparelho salvou */
+async function nuvemPull(){
+  if(!NUVEM||nv.ocupado||nv.versao==null) return;
+  nv.ocupado=true;
+  var dirty=false;
+  try{
+    var r=await nvFetch();
+    if(r&&r.versao!==nv.versao){
+      var mine=payload();
+      dirty=!!nv.base&&nvSig(mine)!==nvSig(nv.base);
+      nvApply(dirty?nvMerge(nv.base,mine,r.dados):r.dados);
+      nv.base=r.dados; nv.versao=r.versao; nvMetaSave();
+      if(!dirty) setStatus("Atualizado da nuvem às "+hhmm()+".","ok");
+    }
+  }catch(e){}
+  nv.ocupado=false;
+  if(dirty||nv.pend){ nv.pend=false; nuvemFlush(); }
 }
 
 /* calendário: eventos */
@@ -1014,7 +1137,9 @@ function setTab(t){
 document.addEventListener("click",function(e){
   var el=e.target,hit; if(!el.closest) return;
   if((hit=el.closest("[data-tab]"))){ confirmBiz=null; setTab(hit.getAttribute("data-tab")); render(); window.scrollTo(0,0); return; }
-  if(el.closest("#retry")){ setStatus("Salvando…","dirty"); flush(); return; }
+  if(el.closest("#retry")){ setStatus("Salvando…","dirty"); if(NUVEM&&nv.versao==null) nuvemLoad(localLoad()); else flush(); return; }
+  if(el.closest("#nv-link")){ if(NUVEM) NUVEM.copiarLink(); return; }
+  if(el.closest("#nv-entrar")){ if(window.NexoNuvem) window.NexoNuvem.pedir().then(function(ok){ if(ok) location.reload(); }); return; }
 
   if((hit=el.closest("[data-agmonth]"))){ agMonth=shiftMonth(agMonth,+hit.getAttribute("data-agmonth")); agPast=false; calSetMonth(); return; }
   if((hit=el.closest("[data-day]"))){
@@ -1135,6 +1260,12 @@ setInterval(function(){
 document.addEventListener("visibilitychange",function(){
   if(!document.hidden&&cal.live&&cal.mode==="rest"&&Date.now()-cal.at>20000) calRefresh(true);
 });
+if(NUVEM){
+  setInterval(function(){ if(!document.hidden) nuvemPull(); },20000);
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden) nuvemPull(); });
+  window.addEventListener("focus",nuvemPull);
+  window.addEventListener("online",function(){ if(nv.versao==null) nuvemLoad(localLoad()); else nuvemFlush(); });
+}
 
 try{ var saved=localStorage.getItem("painel_tab"); if(saved==="dinheiro") setTab("dinheiro"); }catch(e){}
 load();
