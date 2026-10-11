@@ -10,6 +10,15 @@
 <meta property="og:description" content="Sites sob medida, com automação, planilhas, agenda e sistemas para organizar a rotina por trás deles.">
 <meta property="og:image" content="assets/projetos/orbita.jpg">
 <link rel="icon" href="assets/marca/nexo-simbolo.svg" type="image/svg+xml">
+<script>
+(function(){
+  var h=document.documentElement;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  h.classList.add('intro-ativa');
+  // segurança: se algo falhar, a abertura some sozinha
+  setTimeout(function(){h.classList.remove('intro-ativa');h.classList.add('intro-libera');},9000);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
@@ -240,14 +249,58 @@ p{margin:0}
   .celular{width:31%;right:-1%;border-radius:22px;padding:5px}
   .celular video{border-radius:17px}
 }
+/* ---------- abertura animada: o N gira com luz, depois entram o nome e a frase ---------- */
+.intro{position:fixed;inset:0;z-index:200;display:none;place-items:center;overflow:hidden;background:radial-gradient(70% 60% at 50% 50%,#2B1014 0%,var(--vinho-profundo) 72%)}
+html.intro-ativa .intro{display:grid}
+html.intro-ativa body{overflow:hidden}
+.intro.saindo{animation:intro-sai .9s cubic-bezier(.7,0,.2,1) forwards}
+@keyframes intro-sai{to{opacity:0;visibility:hidden}}
+.intro-marca{--n:clamp(58px,10vw,116px);--nome:clamp(196px,28vw,320px);--gap:clamp(20px,3.4vw,36px);display:flex;align-items:center;gap:var(--gap);transition:transform .9s cubic-bezier(.7,0,.2,1),filter .9s ease}
+.intro.saindo .intro-marca{transform:scale(1.05);filter:blur(3px)}
+.intro-n{position:relative;flex:none;width:var(--n);perspective:800px;transform:translateX(calc((var(--gap) + var(--nome)) / 2));animation:n-move .95s cubic-bezier(.65,0,.2,1) 2.35s forwards}
+@keyframes n-move{to{transform:translateX(0)}}
+.intro-n img{position:relative;z-index:2;width:100%;height:auto;animation:n-gira 2.1s cubic-bezier(.12,.75,.25,1) .15s both;filter:drop-shadow(0 0 14px rgba(216,185,133,.35))}
+@keyframes n-gira{0%{transform:rotateY(-1080deg) scale(.55);opacity:0}12%{opacity:1}100%{transform:rotateY(0) scale(1);opacity:1}}
+.intro-n::before{content:'';position:absolute;z-index:1;inset:-130%;border-radius:50%;background:radial-gradient(circle,rgba(226,196,146,.55) 0%,rgba(198,161,106,.24) 26%,rgba(198,161,106,.07) 48%,transparent 68%);animation:luz-acende 1.4s ease-out both,luz-pulsa 2.8s ease-in-out 1.4s infinite alternate}
+@keyframes luz-acende{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes luz-pulsa{from{opacity:1;transform:scale(1)}to{opacity:.7;transform:scale(1.12)}}
+.intro-n::after{content:'';position:absolute;z-index:0;inset:-190%;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 7%,rgba(226,196,146,.12) 9%,transparent 12% 29%,rgba(226,196,146,.09) 32%,transparent 35% 54%,rgba(226,196,146,.12) 57%,transparent 60% 79%,rgba(226,196,146,.09) 82%,transparent 85%);-webkit-mask:radial-gradient(circle,#000 0 26%,transparent 60%);mask:radial-gradient(circle,#000 0 26%,transparent 60%);animation:raios-entram 1.6s ease-out .3s both,raios-giram 16s linear infinite}
+@keyframes raios-entram{from{opacity:0}to{opacity:1}}
+@keyframes raios-giram{to{rotate:360deg}}
+.intro-texto{width:var(--nome);display:flex;flex-direction:column;align-items:center;gap:calc(var(--nome) * .07)}
+.intro-texto .nome{width:100%;height:auto;opacity:0;clip-path:inset(0 100% 0 0);animation:nome-entra 1s cubic-bezier(.2,.7,.2,1) 2.6s forwards}
+@keyframes nome-entra{to{opacity:1;clip-path:inset(0 0 0 0)}}
+.intro-texto .frase-img{width:102%;max-width:none;height:auto;opacity:0;transform:translateY(8px);animation:frase-entra .8s ease-out 3.2s forwards}
+@keyframes frase-entra{to{opacity:1;transform:none}}
+.intro-pular{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));translate:-50% 0;padding:10px 18px;border:0;background:none;font:500 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(213,201,199,.6);cursor:pointer;opacity:0;animation:frase-entra .6s ease-out .8s forwards}
+.intro-pular:hover{color:var(--champagne)}
+
+/* brilho que fica no canto do topo depois da abertura */
+.brilho-canto{position:absolute;z-index:0;top:-34%;right:-18%;width:min(78vw,980px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(216,185,133,.20) 0%,rgba(198,161,106,.09) 30%,transparent 64%);animation:respira 7s ease-in-out infinite alternate}
+@keyframes respira{from{opacity:.65;transform:scale(.92)}to{opacity:1;transform:scale(1.06)}}
+.abertura .wrap{position:relative;z-index:1;transition:opacity 1.1s ease .15s,transform 1.3s var(--ease) .15s}
+html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translateY(22px)}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
+  .brilho-canto{animation:none}
   .js .revela{opacity:1;transform:none;transition:none}
   *{transition-duration:.01ms!important}
 }
 </style>
 </head>
 <body>
+
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-marca">
+    <div class="intro-n"><img src="assets/marca/nexo-simbolo.svg" alt="" width="270" height="310"></div>
+    <div class="intro-texto">
+      <img class="nome" src="assets/marca/nexo-nome.svg" alt="" width="438" height="108">
+      <img class="frase-img" src="assets/marca/nexo-frase.svg" alt="" width="447" height="56">
+    </div>
+  </div>
+  <button class="intro-pular" type="button" tabindex="-1">Pular</button>
+</div>
 
 <header class="topo" id="topo">
   <div class="wrap">
@@ -269,6 +322,7 @@ p{margin:0}
 
 <!-- ABERTURA -->
 <section class="abertura" id="inicio">
+  <div class="brilho-canto" aria-hidden="true"></div>
   <div class="wrap">
     <div>
       <p class="rotulo">Criação de sites</p>
@@ -555,6 +609,21 @@ p{margin:0}
 
 <script>
 document.documentElement.classList.add('js');
+
+(function(){
+  const h=document.documentElement, intro=document.getElementById('intro');
+  if(!h.classList.contains('intro-ativa')||!intro){intro&&intro.remove();return;}
+  let saiu=false;
+  const sair=()=>{
+    if(saiu)return; saiu=true;
+    h.classList.add('intro-libera'); intro.classList.add('saindo');
+    setTimeout(()=>{h.classList.remove('intro-ativa');intro.remove();},900);
+    ['wheel','touchmove','keydown'].forEach(ev=>removeEventListener(ev,sair));
+  };
+  setTimeout(sair,5200);
+  intro.addEventListener('click',sair);
+  ['wheel','touchmove','keydown'].forEach(ev=>addEventListener(ev,sair,{passive:true}));
+})();
 
 // topo muda ao rolar
 const topo=document.getElementById('topo');
