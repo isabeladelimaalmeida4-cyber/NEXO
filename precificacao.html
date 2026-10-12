@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F4EEE8">
+<link rel="icon" href="assets/marca/nexo-simbolo.svg" type="image/svg+xml">
+<title>Precificação NEXO</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: uma tela só. À esquerda, três passos de toque (pedido, site, extras); à direita, o contrato de 12 meses
+   nas três formas de pagamento, preso no topo e pronto para copiar. */
+:root{
+  --bg:#F4EEE8; --field:#FBF8F5;
+  --ink:#1F090B; --text:#3A181D; --muted:#76595E;
+  --line:#DDD1CB; --line-2:#C9B8B0;
+  --gold:#C6A16A; --gold-text:#75561F; --on-gold:#1F090B;
+  --focus:rgba(198,161,106,.55); --danger:#9B2C2C; --sel:#EFE4D6;
+  --panel-bg:#1F090B; --panel-ink:#F4EEE8; --panel-text:#D5C9C7; --panel-muted:#A39394;
+  --panel-line:rgba(198,161,106,.40); --panel-rule:rgba(213,201,199,.22);
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+  --sans:"Work Sans",-apple-system,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1F090B; --field:#2B1014;
+    --ink:#F4EEE8; --text:#D5C9C7; --muted:#A39394;
+    --line:rgba(198,161,106,.18); --line-2:rgba(198,161,106,.38);
+    --gold:#C6A16A; --gold-text:#C6A16A; --on-gold:#1F090B;
+    --focus:rgba(198,161,106,.55); --danger:#E59A90; --sel:#3A181D;
+    --panel-bg:#3A181D; --panel-ink:#F4EEE8; --panel-text:#D5C9C7; --panel-muted:#B3A4A4;
+    --panel-line:rgba(198,161,106,.50); --panel-rule:rgba(213,201,199,.22);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1F090B; --field:#2B1014;
+  --ink:#F4EEE8; --text:#D5C9C7; --muted:#A39394;
+  --line:rgba(198,161,106,.18); --line-2:rgba(198,161,106,.38);
+  --gold:#C6A16A; --gold-text:#C6A16A; --on-gold:#1F090B;
+  --focus:rgba(198,161,106,.55); --danger:#E59A90; --sel:#3A181D;
+  --panel-bg:#3A181D; --panel-ink:#F4EEE8; --panel-text:#D5C9C7; --panel-muted:#B3A4A4;
+  --panel-line:rgba(198,161,106,.50); --panel-rule:rgba(213,201,199,.22);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-inline:16px;padding-block:0 64px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin-inline:auto}
+h1,h2,p{margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.label{font-weight:600;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-text)}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;
+  padding-block:22px 16px;border-bottom:1px solid var(--line-2)}
+.marca{display:flex;align-items:center;gap:14px}
+.marca svg{width:24px;height:30px;flex:none}
+.marca b{font-family:var(--serif);font-weight:700;font-size:22px;letter-spacing:.24em;color:var(--ink);line-height:1}
+.marca span{padding-left:14px;border-left:1px solid var(--line-2)}
+.status{font-size:12px;color:var(--muted)}
+.status.erro{color:var(--danger)}
+.st{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:4px 12px}
+.st .x{color:var(--gold-text);font-weight:600}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 420px;grid-template-areas:"p r" "d r";gap:34px 44px;padding-top:28px;align-items:start}
+.grid > .passos{grid-area:p} .grid > .depois{grid-area:d} .grid > .res{grid-area:r;align-self:start}
+.passos{display:grid;gap:34px;min-width:0}
+.passo{display:grid;gap:12px;min-width:0}
+.passo-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--line-2)}
+.passo-h small{font-size:12px;color:var(--muted)}
+
+input[type="text"],input[type="number"]{width:100%;background:var(--field);border:1px solid var(--line-2);border-radius:8px;padding:10px 12px;color:var(--ink);min-width:0}
+input:focus{outline:2px solid var(--focus);outline-offset:0;border-color:var(--gold)}
+input::placeholder{color:var(--muted);opacity:.8}
+input.cliente{font-family:var(--serif);font-weight:600;font-size:20px;padding:10px 14px}
+
+/* perguntas: sim ou não com um toque */
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.q p{color:var(--ink);font-size:15.5px;line-height:1.35}
+.q p small{display:block;color:var(--muted);font-size:12.5px}
+.sn{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--line-2);border-radius:999px;padding:3px;background:var(--field)}
+.sn button{border:0;background:none;border-radius:999px;padding:7px 16px;min-width:58px;font-size:13px;font-weight:500;color:var(--muted)}
+.sn button[aria-pressed="true"]{background:var(--gold);color:var(--on-gold);font-weight:600}
+
+/* cartões de site */
+.sites{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.site{display:grid;gap:4px;align-content:start;text-align:left;background:var(--field);border:1px solid var(--line-2);border-radius:12px;padding:14px 14px 13px;position:relative}
+.site b{font-family:var(--serif);font-weight:600;font-size:16px;line-height:1.25;color:var(--ink);padding-right:16px}
+.site .p{font-size:14px;color:var(--ink);font-weight:500}
+.site small{font-size:12px;color:var(--muted)}
+.site::after{content:"";position:absolute;top:14px;right:13px;width:9px;height:9px;border-radius:50%;border:1px solid var(--line-2)}
+.site[aria-pressed="true"]{border-color:var(--gold);background:var(--sel);box-shadow:inset 0 0 0 1px var(--gold)}
+.site[aria-pressed="true"]::after{background:var(--gold);border-color:var(--gold)}
+.dica{font-size:12.5px;color:var(--muted)}
+
+.extra-v{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.rs{position:relative;width:120px}
+.rs::before{content:"R$";position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12.5px;color:var(--muted);pointer-events:none}
+.rs input{padding-left:34px;text-align:right}
+
+/* contrato */
+.res{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 12px);background:var(--panel-bg);color:var(--panel-text);
+  border:1px solid var(--panel-line);border-radius:14px;padding:20px 22px 18px;display:grid;gap:14px}
+.res .label{color:var(--gold)}
+.res h2{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--panel-ink);line-height:1.25}
+.res h2 small{display:block;font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--panel-muted)}
+.linhas{display:grid;gap:5px;font-size:13.5px}
+.linha{display:flex;justify-content:space-between;gap:12px}
+.linha span:last-child{color:var(--panel-ink);white-space:nowrap}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:12px;border-top:1px solid var(--panel-rule)}
+.total b{font-family:var(--serif);font-weight:700;font-size:clamp(30px,4vw,38px);line-height:1;color:var(--panel-ink)}
+.formas{display:grid;border-top:1px solid var(--panel-rule)}
+.forma{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--panel-rule)}
+.forma:last-child{border-bottom:0;padding-bottom:0}
+.forma .n{font-size:14px;color:var(--panel-ink);font-weight:500}
+.forma .n small{display:block;font-size:12px;color:var(--panel-muted);font-weight:400}
+.forma .v{text-align:right;font-family:var(--serif);font-weight:700;font-size:20px;color:var(--panel-ink);white-space:nowrap}
+.forma .v small{display:block;font-family:var(--sans);font-weight:400;font-size:12px;color:var(--panel-muted)}
+.chips{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chips span{font-size:11.5px;color:var(--panel-muted);margin-right:2px}
+.chip{border:1px solid var(--panel-rule);background:none;color:var(--panel-text);border-radius:999px;padding:3px 11px;font-size:12.5px}
+.chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1F090B;font-weight:600}
+.aviso{font-size:12.5px;line-height:1.45;color:var(--panel-text);border:1px dashed var(--panel-line);border-radius:10px;padding:9px 12px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;background:var(--gold);color:#1F090B;font-weight:600;padding:10px 20px}
+.btn:hover{filter:brightness(1.06)}
+.btn.fio{background:none;border:1px solid var(--panel-line);color:var(--panel-ink);font-weight:500}
+.copia{width:100%;min-height:150px;background:var(--panel-bg);color:var(--panel-ink);border:1px solid var(--panel-line);border-radius:8px;padding:10px;font-size:12.5px}
+
+/* salvos e tabela */
+.salvos{display:grid}
+.salvo{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.salvo button.abrir{background:none;border:0;text-align:left;padding:0;min-width:0}
+.salvo b{display:block;font-family:var(--serif);font-weight:600;font-size:15.5px;color:var(--ink);overflow-wrap:anywhere}
+.salvo small{display:block;font-size:12px;color:var(--muted)}
+.salvo .v{font-size:14px;color:var(--ink);font-weight:500;white-space:nowrap}
+.x{background:none;border:0;color:var(--muted);font-size:12px;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.x.sim{color:var(--danger);font-weight:600}
+.vazio{font-size:13.5px;color:var(--muted)}
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary .label::after{content:" +";letter-spacing:0}
+details[open] summary .label::after{content:" −"}
+.tabela{display:grid;gap:0;margin-top:10px}
+.tl{display:grid;grid-template-columns:minmax(0,1fr) 120px 120px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink)}
+.tl.h{font-size:11.5px;color:var(--muted);border-bottom-color:var(--line-2)}
+.tl .rs{width:auto}
+
+@media (max-width:920px){ .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"p" "r" "d";gap:30px} .res{position:static} }
+@media (max-width:640px){
+  .marca span{display:none}
+  .sites{grid-template-columns:minmax(0,1fr)}
+  .q{gap:6px 12px}
+  .sn button{min-width:50px;padding:7px 12px}
+  .tl{grid-template-columns:minmax(0,1fr) 92px 92px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="marca">
+      <svg viewBox="16 10 88 100" aria-hidden="true">
+        <path d="M30 24 90 96" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M30 96V24M90 96V24" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="30" cy="96" r="9" fill="var(--gold)"/><circle cx="90" cy="24" r="9" fill="var(--gold)"/>
+      </svg>
+      <b>NEXO</b>
+      <span class="label">Precificação · uso interno</span>
+    </div>
+    <div class="st">
+      <div class="status" id="status" role="status">Carregando…</div>
+      <button type="button" class="x" id="nv-link" hidden>Copiar link de acesso</button>
+      <button type="button" class="x" id="nv-entrar" hidden>Ligar este aparelho à nuvem</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="passos">
+      <section class="passo">
+        <div class="passo-h"><span class="label">1 · O pedido</span><small>toque sim ou não</small></div>
+        <input type="text" class="cliente" id="cliente" maxlength="80" placeholder="Nome do cliente ou do projeto" autocomplete="off">
+        <div id="perguntas"></div>
+      </section>
+
+      <section class="passo">
+        <div class="passo-h"><span class="label">2 · O site</span><small id="auto">escolhido pelas respostas</small></div>
+        <div class="sites" id="sites"></div>
+        <p class="dica">As respostas escolhem o site sozinhas. Se quiser outro, toque no cartão.</p>
+      </section>
+
+      <section class="passo">
+        <div class="passo-h"><span class="label">3 · Extras</span></div>
+        <div id="extras"></div>
+      </section>
+
+    </div>
+
+    <aside class="res" id="res" aria-live="polite"></aside>
+
+    <div class="passos depois">
+      <section class="passo">
+        <div class="passo-h"><span class="label">Orçamentos salvos</span><small id="n-salvos"></small></div>
+        <div class="salvos" id="salvos"><p class="vazio">Carregando…</p></div>
+      </section>
+
+      <details class="passo" id="det-tabela">
+        <summary class="passo-h"><span class="label">Tabela de valores</span><small>dos PDFs de 10/10</small></summary>
+        <div class="tabela" id="tabela"></div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script src="assets/nexo-nuvem.js"></script>
+<script>
+(() => {
+'use strict';
+const PADRAO = {
+  sites: [
+    { nome: 'Site simples', site: 850, hosp: 150, prazo: '3 a 4 dias' },
+    { nome: 'Site intermediário', site: 1300, hosp: 225, prazo: '1 a 2 semanas' },
+    { nome: 'Site complexo com animação', site: 2200, hosp: 300, prazo: '1 a 2 semanas' }
+  ],
+  dominio: 60
+};
+const PERG = [
+  { id: 'midia', texto: 'Vai ter vídeo ou animações?', dica: 'Leva ao site intermediário.' },
+  { id: 'imagens', texto: 'Vai ter bastante imagem?', dica: 'Galeria, catálogo ou várias fotos. Leva ao intermediário.' },
+  { id: 'tresd', texto: 'Produto em 3D ou animação guiada pela rolagem?', dica: 'Leva ao site complexo com animação.' },
+  { id: 'sob', texto: 'Precisa de sistema interno, agente ou automação?', dica: 'Entra como “a combinar”, fora do total.' }
+];
+const DESCONTOS = [0, 5, 10, 15], ENTRADAS = [30, 40, 50];
+
+const novo = () => ({ id: null, cliente: '', perg: { midia: false, imagens: false, tresd: false, sob: false }, nivel: 0, manual: false,
+  dominio: false, suporte: false, suporteValor: 0, desconto: 15, entrada: 50 });
+let f = novo(), tabela = clone(PADRAO), salvos = {}, db = null, modo = null, carregado = false, apagar = null;
+const $ = id => document.getElementById(id);
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+/* ---------- contas ---------- */
+const cent = n => Math.round(n * 100) / 100;
+const reais = n => 'R$ ' + (Number.isInteger(cent(n)) ? cent(n).toLocaleString('pt-BR') : cent(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+const reais2 = n => 'R$ ' + cent(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function nivelAuto(p) { return p.tresd ? 2 : (p.midia || p.imagens) ? 1 : 0; }
+function contas(x) {
+  const s = tabela.sites[x.nivel];
+  const hosp12 = s.hosp * 12, dom = x.dominio ? tabela.dominio : 0, sup12 = x.suporte ? (+x.suporteValor || 0) * 12 : 0;
+  const total = s.site + hosp12 + dom + sup12;
+  const vista = cent(total * (1 - x.desconto / 100));
+  const entrada = cent(total * x.entrada / 100);
+  return { s, hosp12, dom, sup12, total, vista, entrada, entrega: cent(total - entrada), parcela: cent(total / 12) };
+}
+
+/* ---------- desenho ---------- */
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const k in props) {
+    const v = props[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(c)); }
+  return e;
+}
+const sn = (valor, mudar, rot) => el('div', { class: 'sn', role: 'group', 'aria-label': rot },
+  el('button', { type: 'button', 'aria-pressed': String(!valor), onclick: () => mudar(false) }, 'Não'),
+  el('button', { type: 'button', 'aria-pressed': String(!!valor), onclick: () => mudar(true) }, 'Sim'));
+
+function render() {
+  $('perguntas').replaceChildren(...PERG.map(q => el('div', { class: 'q' },
+    el('p', null, q.texto, el('small', null, q.dica)),
+    sn(f.perg[q.id], v => { f.perg[q.id] = v; if (q.id !== 'sob') { f.manual = false; f.nivel = nivelAuto(f.perg); } render(); }, q.texto))));
+
+  $('auto').textContent = f.manual ? 'escolhido por você' : 'escolhido pelas respostas';
+  $('sites').replaceChildren(...tabela.sites.map((s, i) => el('button', { type: 'button', class: 'site', 'aria-pressed': String(f.nivel === i),
+    onclick: () => { f.nivel = i; f.manual = i !== nivelAuto(f.perg); render(); } },
+    el('b', null, s.nome), el('span', { class: 'p num' }, reais(s.site) + ' + ' + reais(s.hosp) + '/mês'), el('small', null, s.prazo))));
+
+  const supInput = el('input', { type: 'number', id: 'sup-valor', min: '0', step: '5', inputmode: 'decimal', placeholder: '0',
+    value: f.suporteValor ? String(f.suporteValor) : '', oninput: e => { f.suporteValor = Math.max(0, +e.target.value || 0); renderRes(); } });
+  $('extras').replaceChildren(
+    el('div', { class: 'q' }, el('p', null, 'O cliente precisa de domínio?', el('small', null, 'Só para quem ainda não tem endereço. ' + reais(tabela.dominio) + ' por ano.')),
+      sn(f.dominio, v => { f.dominio = v; render(); }, 'Domínio')),
+    el('div', { class: 'q' }, el('p', null, 'Quer suporte 24 horas?', el('small', null, 'O de horário comercial já está incluído, sem acréscimo.')),
+      sn(f.suporte, v => { f.suporte = v; render(); }, 'Suporte 24 horas')),
+    ...(f.suporte ? [el('div', { class: 'q' }, el('p', null, 'Acréscimo do suporte 24 horas, por mês', el('small', null, 'Deixe em branco para mandar como “a combinar”.')),
+      el('label', { class: 'rs' }, supInput))] : []));
+  renderRes();
+}
+
+function renderRes() {
+  const c = contas(f), linhas = [
+    ['Site, pago uma vez', reais(c.s.site)],
+    ['Hospedagem, 12 × ' + reais(c.s.hosp), reais(c.hosp12)]
+  ];
+  if (f.dominio) linhas.push(['Domínio, 1 ano', reais(c.dom)]);
+  if (f.suporte && c.sup12) linhas.push(['Suporte 24 h, 12 × ' + reais(f.suporteValor), reais(c.sup12)]);
+  const chips = (lista, atual, suf, mudar, rot) => el('div', { class: 'chips', role: 'group', 'aria-label': rot }, el('span', null, rot),
+    lista.map(v => el('button', { type: 'button', class: 'chip', 'aria-pressed': String(atual === v), onclick: () => { mudar(v); renderRes(); } }, v + suf)));
+  const avisos = [];
+  if (f.perg.sob) avisos.push('Sistema interno, agente ou automação: valor e forma de pagamento a combinar, fora deste total.');
+  if (f.suporte && !c.sup12) avisos.push('Suporte 24 horas: acréscimo a combinar, fora deste total.');
+
+  $('res').replaceChildren(
+    el('div', null, el('span', { class: 'label' }, 'Contrato de 12 meses'),
+      el('h2', null, (f.cliente || 'Novo orçamento'), el('small', null, c.s.nome + ' · ' + c.s.prazo))),
+    el('div', { class: 'linhas num' }, linhas.map(([a, b]) => el('div', { class: 'linha' }, el('span', null, a), el('span', null, b)))),
+    el('div', { class: 'total' }, el('span', null, 'Total'), el('b', { class: 'num' }, reais(c.total))),
+    el('div', { class: 'formas' },
+      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'À vista', el('small', null, 'no fechamento, com ' + f.desconto + '% de desconto')),
+        el('div', { class: 'v num' }, reais2(c.vista)), chips(DESCONTOS, f.desconto, '%', v => f.desconto = v, 'Desconto')),
+      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'Entrada e entrega', el('small', null, f.entrada + '% ao fechar, o resto na entrega')),
+        el('div', { class: 'v num' }, reais2(c.entrada), el('small', null, '+ ' + reais2(c.entrega) + ' na entrega')), chips(ENTRADAS, f.entrada, '%', v => f.entrada = v, 'Entrada')),
+      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'Parcelado', el('small', null, '12 parcelas iguais, uma por mês')),
+        el('div', { class: 'v num' }, '12 × ' + reais2(c.parcela)))),
+    ...avisos.map(a => el('p', { class: 'aviso' }, a)),
+    el('div', { class: 'acoes' },
+      el('button', { type: 'button', class: 'btn', id: 'b-copiar', onclick: copiar }, 'Copiar proposta'),
+      el('button', { type: 'button', class: 'btn fio', id: 'b-salvar', onclick: salvar }, f.id ? 'Atualizar salvo' : 'Salvar'),
+      el('button', { type: 'button', class: 'btn fio', id: 'b-novo', onclick: () => { f = novo(); $('cliente').value = ''; render(); } }, 'Novo')),
+    el('div', { id: 'copia-box' }));
+}
+
+function texto() {
+  const c = contas(f), t = [];
+  t.push('Proposta NEXO' + (f.cliente ? ' · ' + f.cliente : ''), '');
+  t.push(c.s.nome + ': ' + reais(c.s.site) + ', pago uma vez (prazo de ' + c.s.prazo + ')');
+  t.push('Hospedagem: ' + reais(c.s.hosp) + ' por mês (12 meses = ' + reais(c.hosp12) + ')');
+  if (f.dominio) t.push('Domínio: ' + reais(c.dom) + ' por ano');
+  if (f.suporte) t.push(c.sup12 ? 'Suporte 24 horas: + ' + reais(f.suporteValor) + ' por mês' : 'Suporte 24 horas: acréscimo a combinar');
+  t.push('', 'Total do contrato de 12 meses: ' + reais(c.total), '', 'Formas de pagamento:');
+  t.push('• À vista: ' + reais2(c.vista) + (f.desconto ? ' (' + f.desconto + '% de desconto)' : ''));
+  t.push('• Entrada e entrega: ' + reais2(c.entrada) + ' no fechamento + ' + reais2(c.entrega) + ' na entrega do site');
+  t.push('• Parcelado: 12 × ' + reais2(c.parcela));
+  if (f.perg.sob) t.push('', 'Sistema interno, agente ou automação: valor e forma de pagamento a combinar.');
+  t.push('', 'Pagamento por Pix. Suporte em horário comercial incluído e uma alteração no site a cada quatro meses.');
+  return t.join('\n');
+}
+function copiar() {
+  const txt = texto(), b = $('b-copiar'), box = $('copia-box');
+  const mostrar = () => { const a = el('textarea', { class: 'copia', readonly: true, 'aria-label': 'Texto da proposta' }); a.value = txt; box.replaceChildren(a); a.focus(); a.select(); b.textContent = 'Selecione e copie abaixo'; };
+  try {
+    navigator.clipboard.writeText(txt).then(() => { b.textContent = 'Proposta copiada'; setTimeout(() => { b.textContent = 'Copiar proposta'; }, 1800); }, mostrar);
+  } catch (e) { mostrar(); }
+}
+
+/* ---------- salvos ---------- */
+function renderSalvos() {
+  const box = $('salvos'), ids = Object.keys(salvos).sort((a, b) => salvos[b].criadoEm - salvos[a].criadoEm);
+  $('n-salvos').textContent = ids.length ? ids.length + (ids.length === 1 ? ' orçamento' : ' orçamentos') : '';
+  if (!carregado) return;
+  if (!ids.length) { box.replaceChildren(el('p', { class: 'vazio' }, 'Nenhum orçamento salvo. Depois de montar um, toque em Salvar para guardar aqui.')); return; }
+  box.replaceChildren(...ids.map(id => {
+    const s = salvos[id], c = contas(s), d = new Date(s.criadoEm);
+    return el('div', { class: 'salvo' },
+      el('button', { type: 'button', class: 'abrir', onclick: () => { f = { ...novo(), ...clone(s), id }; $('cliente').value = f.cliente; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+        el('b', null, s.cliente || 'Sem nome'),
+        el('small', null, tabela.sites[s.nivel].nome + ' · ' + d.toLocaleDateString('pt-BR'))),
+      el('span', { class: 'v num' }, reais(c.total)),
+      apagar === id
+        ? el('span', null, el('button', { type: 'button', class: 'x sim', onclick: () => excluir(id) }, 'Excluir'), ' ', el('button', { type: 'button', class: 'x', onclick: () => { apagar = null; renderSalvos(); } }, 'Manter'))
+        : el('button', { type: 'button', class: 'x', 'aria-label': 'Excluir ' + (s.cliente || 'orçamento'), onclick: () => { apagar = id; renderSalvos(); } }, 'Excluir'));
+  }));
+}
+function dadosSalvar() {
+  const { id, ...resto } = f;
+  return clone({ ...resto, criadoEm: (id && salvos[id] && salvos[id].criadoEm) || Date.now() });
+}
+async function salvar() {
+  const id = f.id || 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const d = dadosSalvar();
+  f.id = id; salvos[id] = d; renderSalvos(); renderRes();
+  $('status').textContent = 'Salvando…';
+  try {
+    if (modo === 'db' || modo === 'nuvem') await db.doc('orcamentos/' + id).set(d); else gravaLocal();
+    statusOk(); $('b-salvar').textContent = 'Salvo';
+  } catch (e) { erro(e); }
+}
+async function excluir(id) {
+  apagar = null; delete salvos[id]; if (f.id === id) f.id = null;
+  renderSalvos(); renderRes();
+  try { if (modo === 'db' || modo === 'nuvem') await db.doc('orcamentos/' + id).delete(); else gravaLocal(); statusOk(); } catch (e) { erro(e); }
+}
+const LS = 'nexo-precificacao-v2';
+function gravaLocal() { try { localStorage.setItem(LS, JSON.stringify({ salvos, tabela })); } catch (e) {} }
+function statusOk() { const s = $('status'); s.className = 'status'; s.textContent = modo === 'nuvem' ? 'Salvo na nuvem' : modo === 'db' ? 'Tudo salvo' : 'Salvo só neste navegador'; }
+function erro(e) {
+  const s = $('status'); s.className = 'status erro';
+  s.textContent = e && e.code === 'invalid_argument' ? 'Sem permissão para salvar aqui'
+    : e && e.code === 'codigo' ? 'O código de acesso não confere mais'
+    : modo === 'nuvem' ? 'Sem conexão com a nuvem. Não salvou' : 'Não salvou. Tente de novo';
+}
+
+/* ---------- tabela editável ---------- */
+let tTimer = null;
+function renderTabela() {
+  const campo = (val, set, idc) => el('label', { class: 'rs' }, el('input', { type: 'number', id: idc, min: '0', step: '5', inputmode: 'numeric', value: String(val), 'aria-label': idc,
+    oninput: e => { const v = +e.target.value; if (e.target.value === '' || !(v >= 0)) return; set(v); render(); renderSalvos(); clearTimeout(tTimer); tTimer = setTimeout(gravaTabela, 600); } }));
+  $('tabela').replaceChildren(
+    el('div', { class: 'tl h' }, el('span', null, 'Site'), el('span', null, 'Valor do site'), el('span', null, 'Hospedagem/mês')),
+    ...tabela.sites.map((s, i) => el('div', { class: 'tl' }, el('span', null, s.nome),
+      campo(s.site, v => { tabela.sites[i].site = v; }, 't-site-' + i), campo(s.hosp, v => { tabela.sites[i].hosp = v; }, 't-hosp-' + i))),
+    el('div', { class: 'tl' }, el('span', null, 'Domínio, por ano'), campo(tabela.dominio, v => { tabela.dominio = v; }, 't-dominio'), el('span')));
+}
+async function gravaTabela() {
+  try { if (modo === 'db' || modo === 'nuvem') await db.doc('config/tabela').set(clone(tabela)); else gravaLocal(); statusOk(); }
+  catch (e) { erro(e); } finally { tTimer = null; }
+}
+function lerTabela(d) {
+  const t = clone(PADRAO);
+  if (d && Array.isArray(d.sites)) d.sites.slice(0, 3).forEach((s, i) => {
+    if (s && typeof s.site === 'number') t.sites[i].site = s.site;
+    if (s && typeof s.hosp === 'number') t.sites[i].hosp = s.hosp;
+  });
+  if (d && typeof d.dominio === 'number') t.dominio = d.dominio;
+  return t;
+}
+function lerSalvo(d) {
+  d = d || {}; const b = novo();
+  return { cliente: String(d.cliente || ''), perg: { ...b.perg, ...(d.perg || {}) }, nivel: [0, 1, 2].includes(d.nivel) ? d.nivel : 0, manual: !!d.manual,
+    dominio: !!d.dominio, suporte: !!d.suporte, suporteValor: +d.suporteValor || 0,
+    desconto: DESCONTOS.includes(d.desconto) ? d.desconto : 15, entrada: ENTRADAS.includes(d.entrada) ? d.entrada : 50, criadoEm: +d.criadoEm || 0 };
+}
+
+/* ---------- início ---------- */
+$('cliente').addEventListener('input', e => { f.cliente = e.target.value.trim(); renderRes(); });
+render(); renderTabela();
+
+function iniciarLocal() {
+  if (carregado) return;
+  modo = 'local';
+  try { const d = JSON.parse(localStorage.getItem(LS) || 'null'); if (d) { tabela = lerTabela(d.tabela); for (const id in d.salvos || {}) salvos[id] = lerSalvo(d.salvos[id]); } } catch (e) {}
+  carregado = true; render(); renderTabela(); renderSalvos(); statusOk();
+}
+function iniciarDb(d) {
+  db = d; modo = 'db';
+  d.collection('orcamentos').onSnapshot(snap => {
+    const n = {}; snap.docs.forEach(doc => { n[doc.id] = lerSalvo(doc.data()); });
+    salvos = n; carregado = true; renderSalvos(); statusOk();
+  }, () => { if (!carregado) iniciarLocal(); else erro(); });
+  d.doc('config/tabela').onSnapshot(snap => {
+    if (tTimer) return;
+    tabela = lerTabela(snap.exists ? snap.data() : null);
+    if (!$('tabela').contains(document.activeElement)) renderTabela();
+    render(); renderSalvos();
+  }, () => {});
+}
+/* fora do Claude, com o código de acesso neste aparelho: banco na nuvem (assets/nexo-nuvem.js).
+   Um registro por orçamento (orc.<id>) e um para a tabela de valores (config.tabela).
+   A tela confere a nuvem a cada 20 segundos e ao voltar para a aba. */
+function iniciarNuvem(N) {
+  const APP = 'precificacao', LIGADO = 'nexo-precificacao.nuvem.ok';
+  let ultimo = '', puxando = false, emCurso = 0;
+  const idDe = path => path === 'config/tabela' ? 'config.tabela' : 'orc.' + path.split('/')[1];
+  const depois = p => { emCurso++; return p.then(v => { emCurso--; setTimeout(puxar, 300); return v; }, e => { emCurso--; setTimeout(puxar, 300); throw e; }); };
+  db = { doc: path => ({ set: d => depois(N.gravar(APP, idDe(path), d)), delete: () => depois(N.excluir(APP, idDe(path))) }) };
+  modo = 'nuvem';
+  $('nv-link').hidden = false;
+  $('nv-link').addEventListener('click', () => N.copiarLink());
+  function jaLigado() { try { return localStorage.getItem(LIGADO) === '1'; } catch (e) { return false; } }
+  /* primeira vez deste aparelho: orçamentos e tabela que estavam só neste navegador sobem para a nuvem */
+  function primeiraVez(lista) {
+    let local = null; try { local = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) {}
+    const tem = new Set(lista.map(r => r.id).concat(lista.excluidos || [])), envios = [];
+    if (local) {
+      for (const id in local.salvos || {}) if (/^[A-Za-z0-9_-]{1,60}$/.test(id) && !tem.has('orc.' + id)) envios.push(N.gravar(APP, 'orc.' + id, clone(local.salvos[id])));
+      if (local.tabela && !tem.has('config.tabela')) envios.push(N.gravar(APP, 'config.tabela', clone(lerTabela(local.tabela))));
+    }
+    return Promise.all(envios).then(() => { try { localStorage.setItem(LIGADO, '1'); } catch (e) {} return envios.length; });
+  }
+  function aplicar(lista) {
+    const marca = JSON.stringify(lista.map(r => [r.id, r.versao]));
+    if (marca === ultimo && carregado) return;
+    ultimo = marca;
+    const n = {}; let t = null;
+    lista.forEach(r => { if (r.id === 'config.tabela') t = r.dados; else if (r.id.slice(0, 4) === 'orc.') n[r.id.slice(4)] = lerSalvo(r.dados); });
+    salvos = n; carregado = true;
+    if (!tTimer) {
+      const nova = lerTabela(t);
+      if (JSON.stringify(nova) !== JSON.stringify(tabela)) { tabela = nova; if (!$('tabela').contains(document.activeElement)) renderTabela(); render(); }
+    }
+    renderSalvos(); statusOk();
+  }
+  function puxar() {
+    if (puxando || emCurso) return;
+    puxando = true;
+    N.listar(APP).then(lista => {
+      if (jaLigado()) { puxando = false; if (!emCurso) aplicar(lista); return; }
+      return primeiraVez(lista).then(qtd => { puxando = false; ultimo = ''; if (qtd) puxar(); else aplicar(lista); });
+    }).catch(e => {
+      puxando = false; erro(e.code === 'codigo' ? e : { code: 'rede' });
+      if (e.code === 'codigo') { $('nv-link').hidden = true; $('nv-entrar').hidden = false; }
+      if (!carregado) $('salvos').replaceChildren(el('p', { class: 'vazio' }, e.code === 'codigo' ? 'O código de acesso deste aparelho não confere mais.' : 'Sem conexão com a nuvem. Os orçamentos aparecem quando a internet voltar.'));
+    });
+  }
+  puxar();
+  setInterval(() => { if (!document.hidden) puxar(); }, 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) puxar(); });
+  window.addEventListener('focus', puxar);
+  window.addEventListener('online', puxar);
+}
+$('nv-entrar').addEventListener('click', () => { if (window.NexoNuvem) window.NexoNuvem.pedir().then(ok => { if (ok) location.reload(); }); });
+
+const naClaude = window.claude && typeof window.claude.use === 'function';
+if (!naClaude && window.NexoNuvem && window.NexoNuvem.ativo()) iniciarNuvem(window.NexoNuvem);
+else {
+  if (!naClaude && window.NexoNuvem) $('nv-entrar').hidden = false;
+  const uso = naClaude ? window.claude.use('db') : Promise.resolve(null);
+  Promise.resolve(uso).then(d => (d ? iniciarDb(d) : iniciarLocal()), iniciarLocal);
+}
+})();
+</script>
+
+</body></html>
