@@ -100,6 +100,10 @@ input.cliente{font-family:var(--serif);font-weight:600;font-size:20px;padding:10
 .site[aria-pressed="true"]{border-color:var(--gold);background:var(--sel);box-shadow:inset 0 0 0 1px var(--gold)}
 .site[aria-pressed="true"]::after{background:var(--gold);border-color:var(--gold)}
 .dica{font-size:12.5px;color:var(--muted)}
+.grupo{display:grid;gap:10px;margin-bottom:18px}
+.grupo h3{font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.site .ap{font-size:11px;color:var(--muted);font-weight:400;display:block}
+.tl.g{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border-bottom-color:var(--line-2);padding-top:14px}
 
 .extra-v{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .rs{position:relative;width:120px}
@@ -187,15 +191,15 @@ details[open] summary .label::after{content:" −"}
   <div class="grid">
     <div class="passos">
       <section class="passo">
-        <div class="passo-h"><span class="label">1 · O pedido</span><small>toque sim ou não</small></div>
+        <div class="passo-h"><span class="label">1 · O pedido</span><small>toque sim ou não para escolher o site</small></div>
         <input type="text" class="cliente" id="cliente" maxlength="80" placeholder="Nome do cliente ou do projeto" autocomplete="off">
         <div id="perguntas"></div>
       </section>
 
       <section class="passo">
-        <div class="passo-h"><span class="label">2 · O site</span><small id="auto">escolhido pelas respostas</small></div>
-        <div class="sites" id="sites"></div>
-        <p class="dica">As respostas escolhem o site sozinhas. Se quiser outro, toque no cartão.</p>
+        <div class="passo-h"><span class="label">2 · Os serviços</span><small id="auto">o site é escolhido pelas respostas</small></div>
+        <div id="servicos"></div>
+        <p class="dica">Toque nos cartões para somar ou tirar serviços. Site é um só por orçamento; os outros podem ser combinados.</p>
       </section>
 
       <section class="passo">
@@ -214,7 +218,7 @@ details[open] summary .label::after{content:" −"}
       </section>
 
       <details class="passo" id="det-tabela">
-        <summary class="passo-h"><span class="label">Tabela de valores</span><small>dos PDFs de 10/10</small></summary>
+        <summary class="passo-h"><span class="label">Tabela de valores</span><small>valores de 16/10</small></summary>
         <div class="tabela" id="tabela"></div>
       </details>
     </div>
@@ -225,41 +229,69 @@ details[open] summary .label::after{content:" −"}
 <script>
 (() => {
 'use strict';
+const GRUPOS = [
+  { id: 'sites', nome: 'Sites', unico: true },
+  { id: 'sistemas', nome: 'Sistemas internos' },
+  { id: 'automacoes', nome: 'Automações' },
+  { id: 'agentes', nome: 'Agentes com IA' }
+];
 const PADRAO = {
-  sites: [
-    { nome: 'Site simples', site: 850, hosp: 150, prazo: '3 a 4 dias' },
-    { nome: 'Site intermediário', site: 1300, hosp: 225, prazo: '1 a 2 semanas' },
-    { nome: 'Site complexo com animação', site: 2200, hosp: 300, prazo: '1 a 2 semanas' }
+  itens: [
+    { id: 'links', grupo: 'sites', nome: 'Página de links', imp: 290, mes: 49, prazo: '1 a 2 dias' },
+    { id: 'simples', grupo: 'sites', nome: 'Site simples', imp: 850, mes: 150, prazo: '3 a 4 dias' },
+    { id: 'intermediario', grupo: 'sites', nome: 'Site intermediário', imp: 1300, mes: 225, prazo: '1 a 2 semanas' },
+    { id: 'institucional', grupo: 'sites', nome: 'Site institucional', imp: 2700, mes: 250, prazo: '1 a 2 semanas' },
+    { id: 'anim3d', grupo: 'sites', nome: 'Site com animação 3D', imp: 3200, mes: 300, prazo: '2 a 3 semanas' },
+    { id: 'ecommerce', grupo: 'sites', nome: 'E-commerce inicial', imp: 3500, mes: 350, prazo: '2 a 3 semanas' },
+    { id: 'portal', grupo: 'sites', nome: 'Portal ou e-commerce avançado', imp: 9000, mes: 600, prazo: 'a combinar', aPartir: true },
+    { id: 'sis-simples', grupo: 'sistemas', nome: 'Sistema simples', imp: 3500, mes: 350, prazo: '2 a 3 semanas' },
+    { id: 'sis-medio', grupo: 'sistemas', nome: 'Sistema médio', imp: 13500, mes: 900, prazo: '4 a 6 semanas' },
+    { id: 'sis-completo', grupo: 'sistemas', nome: 'Sistema completo', imp: 42000, mes: 2500, prazo: 'em fases', aPartir: true },
+    { id: 'auto-dados', grupo: 'automacoes', nome: 'Automação de dados', imp: 900, mes: 150, prazo: '3 a 5 dias' },
+    { id: 'auto-preench', grupo: 'automacoes', nome: 'Automação de preenchimento', imp: 1400, mes: 200, prazo: '1 semana' },
+    { id: 'auto-criacao', grupo: 'automacoes', nome: 'Automação de criação', imp: 1700, mes: 200, prazo: '1 a 2 semanas' },
+    { id: 'agente', grupo: 'agentes', nome: 'Agente de atendimento', imp: 2900, mes: 400, prazo: '1 a 2 semanas', ia: 150 },
+    { id: 'agente-completo', grupo: 'agentes', nome: 'Agente completo', imp: 16000, mes: 1200, prazo: '4 a 8 semanas', aPartir: true, ia: 500 }
   ],
   dominio: 60
 };
+const PACOTE = 10; /* % na implantação quando o site vem com automação ou agente */
+const SITE_AUTO = ['simples', 'intermediario', 'anim3d'];
+const NIVEL_ANTIGO = ['simples', 'intermediario', 'anim3d'];
 const PERG = [
   { id: 'midia', texto: 'Vai ter vídeo ou animações?', dica: 'Leva ao site intermediário.' },
   { id: 'imagens', texto: 'Vai ter bastante imagem?', dica: 'Galeria, catálogo ou várias fotos. Leva ao intermediário.' },
-  { id: 'tresd', texto: 'Produto em 3D ou animação guiada pela rolagem?', dica: 'Leva ao site complexo com animação.' },
-  { id: 'sob', texto: 'Precisa de sistema interno, agente ou automação?', dica: 'Entra como “a combinar”, fora do total.' }
+  { id: 'tresd', texto: 'Produto em 3D ou animação guiada pela rolagem?', dica: 'Leva ao site com animação 3D.' }
 ];
-const DESCONTOS = [0, 5, 10, 15], ENTRADAS = [30, 40, 50];
+const DESCONTOS = [0, 5, 10], ENTRADAS = [30, 40, 50];
 
-const novo = () => ({ id: null, cliente: '', perg: { midia: false, imagens: false, tresd: false, sob: false }, nivel: 0, manual: false,
-  dominio: false, suporte: false, suporteValor: 0, desconto: 15, entrada: 50 });
+const novo = () => ({ id: null, cliente: '', perg: { midia: false, imagens: false, tresd: false }, sel: ['simples'], manual: false,
+  dominio: false, suporte: false, suporteValor: 0, desconto: 10, entrada: 50 });
 let f = novo(), tabela = clone(PADRAO), salvos = {}, db = null, modo = null, carregado = false, apagar = null;
 const $ = id => document.getElementById(id);
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
+const item = id => tabela.itens.find(i => i.id === id);
 
 /* ---------- contas ---------- */
 const cent = n => Math.round(n * 100) / 100;
 const reais = n => 'R$ ' + (Number.isInteger(cent(n)) ? cent(n).toLocaleString('pt-BR') : cent(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 const reais2 = n => 'R$ ' + cent(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-function nivelAuto(p) { return p.tresd ? 2 : (p.midia || p.imagens) ? 1 : 0; }
+function siteAuto(p) { return p.tresd ? 'anim3d' : (p.midia || p.imagens) ? 'intermediario' : 'simples'; }
 function contas(x) {
-  const s = tabela.sites[x.nivel];
-  const hosp12 = s.hosp * 12, dom = x.dominio ? tabela.dominio : 0, sup12 = x.suporte ? (+x.suporteValor || 0) * 12 : 0;
-  const total = s.site + hosp12 + dom + sup12;
+  const itens = x.sel.map(item).filter(Boolean);
+  const imp = itens.reduce((s, i) => s + i.imp, 0), mes = itens.reduce((s, i) => s + i.mes, 0);
+  const temSite = itens.some(i => i.grupo === 'sites'), temExtra = itens.some(i => i.grupo === 'automacoes' || i.grupo === 'agentes');
+  const pacote = temSite && temExtra ? cent(imp * PACOTE / 100) : 0;
+  const impLiq = imp - pacote;
+  const mes12 = mes * 12, dom = x.dominio ? tabela.dominio : 0, sup12 = x.suporte ? (+x.suporteValor || 0) * 12 : 0;
+  const total = cent(impLiq + mes12 + dom + sup12);
   const vista = cent(total * (1 - x.desconto / 100));
-  const entrada = cent(total * x.entrada / 100);
-  return { s, hosp12, dom, sup12, total, vista, entrada, entrega: cent(total - entrada), parcela: cent(total / 12) };
+  const entrada = cent(impLiq * x.entrada / 100 + dom);
+  const mensal = mes + (x.suporte ? (+x.suporteValor || 0) : 0);
+  return { itens, imp, pacote, impLiq, mes, mes12, dom, sup12, total, vista, entrada, entrega: cent(impLiq - (entrada - dom)), mensal,
+    parcela: cent(total / 12), aPartir: itens.some(i => i.aPartir), ia: itens.reduce((s, i) => s + (i.ia || 0), 0) };
 }
+const nomes = c => c.itens.length ? c.itens.map(i => i.nome).join(' + ') : 'Nenhum serviço escolhido';
 
 /* ---------- desenho ---------- */
 function el(tag, props, ...kids) {
@@ -278,15 +310,32 @@ const sn = (valor, mudar, rot) => el('div', { class: 'sn', role: 'group', 'aria-
   el('button', { type: 'button', 'aria-pressed': String(!valor), onclick: () => mudar(false) }, 'Não'),
   el('button', { type: 'button', 'aria-pressed': String(!!valor), onclick: () => mudar(true) }, 'Sim'));
 
+function alternar(id) {
+  const it = item(id); if (!it) return;
+  const tem = f.sel.includes(id);
+  if (it.grupo === 'sites') {
+    f.sel = f.sel.filter(s => item(s) && item(s).grupo !== 'sites');
+    if (!tem) f.sel.unshift(id);
+    f.manual = tem || id !== siteAuto(f.perg);
+  } else f.sel = tem ? f.sel.filter(s => s !== id) : f.sel.concat(id);
+  render();
+}
 function render() {
   $('perguntas').replaceChildren(...PERG.map(q => el('div', { class: 'q' },
     el('p', null, q.texto, el('small', null, q.dica)),
-    sn(f.perg[q.id], v => { f.perg[q.id] = v; if (q.id !== 'sob') { f.manual = false; f.nivel = nivelAuto(f.perg); } render(); }, q.texto))));
+    sn(f.perg[q.id], v => {
+      f.perg[q.id] = v; f.manual = false;
+      f.sel = [siteAuto(f.perg)].concat(f.sel.filter(s => item(s) && item(s).grupo !== 'sites'));
+      render();
+    }, q.texto))));
 
-  $('auto').textContent = f.manual ? 'escolhido por você' : 'escolhido pelas respostas';
-  $('sites').replaceChildren(...tabela.sites.map((s, i) => el('button', { type: 'button', class: 'site', 'aria-pressed': String(f.nivel === i),
-    onclick: () => { f.nivel = i; f.manual = i !== nivelAuto(f.perg); render(); } },
-    el('b', null, s.nome), el('span', { class: 'p num' }, reais(s.site) + ' + ' + reais(s.hosp) + '/mês'), el('small', null, s.prazo))));
+  $('auto').textContent = f.manual ? 'escolhidos por você' : 'o site é escolhido pelas respostas';
+  $('servicos').replaceChildren(...GRUPOS.map(g => el('div', { class: 'grupo' }, el('h3', null, g.nome),
+    el('div', { class: 'sites' }, tabela.itens.filter(i => i.grupo === g.id).map(i => el('button', { type: 'button', class: 'site', 'aria-pressed': String(f.sel.includes(i.id)),
+      onclick: () => alternar(i.id) },
+      el('b', null, i.nome),
+      el('span', { class: 'p num' }, i.aPartir ? el('span', { class: 'ap' }, 'a partir de') : null, reais(i.imp) + ' + ' + reais(i.mes) + '/mês'),
+      el('small', null, i.prazo)))))));
 
   const supInput = el('input', { type: 'number', id: 'sup-valor', min: '0', step: '5', inputmode: 'decimal', placeholder: '0',
     value: f.suporteValor ? String(f.suporteValor) : '', oninput: e => { f.suporteValor = Math.max(0, +e.target.value || 0); renderRes(); } });
@@ -301,28 +350,30 @@ function render() {
 }
 
 function renderRes() {
-  const c = contas(f), linhas = [
-    ['Site, pago uma vez', reais(c.s.site)],
-    ['Hospedagem, 12 × ' + reais(c.s.hosp), reais(c.hosp12)]
-  ];
+  const c = contas(f), linhas = c.itens.map(i => [i.nome + (i.aPartir ? ' (a partir de)' : ''), reais(i.imp)]);
+  if (c.pacote) linhas.push(['Desconto de pacote, ' + PACOTE + '% na implantação', '− ' + reais(c.pacote)]);
+  if (c.mes) linhas.push(['Mensalidade, 12 × ' + reais(c.mes), reais(c.mes12)]);
   if (f.dominio) linhas.push(['Domínio, 1 ano', reais(c.dom)]);
   if (f.suporte && c.sup12) linhas.push(['Suporte 24 h, 12 × ' + reais(f.suporteValor), reais(c.sup12)]);
   const chips = (lista, atual, suf, mudar, rot) => el('div', { class: 'chips', role: 'group', 'aria-label': rot }, el('span', null, rot),
     lista.map(v => el('button', { type: 'button', class: 'chip', 'aria-pressed': String(atual === v), onclick: () => { mudar(v); renderRes(); } }, v + suf)));
   const avisos = [];
-  if (f.perg.sob) avisos.push('Sistema interno, agente ou automação: valor e forma de pagamento a combinar, fora deste total.');
+  if (!c.itens.length) avisos.push('Escolha pelo menos um serviço para montar o orçamento.');
+  if (c.aPartir) avisos.push('Há serviço com valor “a partir de”: confirme o escopo antes de enviar.');
+  if (c.ia) avisos.push('Uso de IA incluso até ' + reais(c.ia) + ' por mês. O excedente é cobrado pelo volume.');
   if (f.suporte && !c.sup12) avisos.push('Suporte 24 horas: acréscimo a combinar, fora deste total.');
 
   $('res').replaceChildren(
     el('div', null, el('span', { class: 'label' }, 'Contrato de 12 meses'),
-      el('h2', null, (f.cliente || 'Novo orçamento'), el('small', null, c.s.nome + ' · ' + c.s.prazo))),
+      el('h2', null, (f.cliente || 'Novo orçamento'), el('small', null, nomes(c)))),
     el('div', { class: 'linhas num' }, linhas.map(([a, b]) => el('div', { class: 'linha' }, el('span', null, a), el('span', null, b)))),
     el('div', { class: 'total' }, el('span', null, 'Total'), el('b', { class: 'num' }, reais(c.total))),
     el('div', { class: 'formas' },
-      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'À vista', el('small', null, 'no fechamento, com ' + f.desconto + '% de desconto')),
+      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'À vista', el('small', null, 'contrato inteiro no fechamento, com ' + f.desconto + '% de desconto')),
         el('div', { class: 'v num' }, reais2(c.vista)), chips(DESCONTOS, f.desconto, '%', v => f.desconto = v, 'Desconto')),
-      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'Entrada e entrega', el('small', null, f.entrada + '% ao fechar, o resto na entrega')),
-        el('div', { class: 'v num' }, reais2(c.entrada), el('small', null, '+ ' + reais2(c.entrega) + ' na entrega')), chips(ENTRADAS, f.entrada, '%', v => f.entrada = v, 'Entrada')),
+      el('div', { class: 'forma' }, el('div', { class: 'n' }, 'Em duas partes', el('small', null, f.entrada + '% da implantação ao fechar, o resto na entrega')),
+        el('div', { class: 'v num' }, reais2(c.entrada), el('small', null, '+ ' + reais2(c.entrega) + ' na entrega' + (c.mensal ? ' + 12 × ' + reais2(c.mensal) : ''))),
+        chips(ENTRADAS, f.entrada, '%', v => f.entrada = v, 'Entrada')),
       el('div', { class: 'forma' }, el('div', { class: 'n' }, 'Parcelado', el('small', null, '12 parcelas iguais, uma por mês')),
         el('div', { class: 'v num' }, '12 × ' + reais2(c.parcela)))),
     ...avisos.map(a => el('p', { class: 'aviso' }, a)),
@@ -336,16 +387,17 @@ function renderRes() {
 function texto() {
   const c = contas(f), t = [];
   t.push('Proposta NEXO' + (f.cliente ? ' · ' + f.cliente : ''), '');
-  t.push(c.s.nome + ': ' + reais(c.s.site) + ', pago uma vez (prazo de ' + c.s.prazo + ')');
-  t.push('Hospedagem: ' + reais(c.s.hosp) + ' por mês (12 meses = ' + reais(c.hosp12) + ')');
+  c.itens.forEach(i => t.push(i.nome + ': ' + (i.aPartir ? 'a partir de ' : '') + reais(i.imp) + ' de implantação + ' + reais(i.mes) + ' por mês (prazo: ' + i.prazo + ')'));
+  if (c.pacote) t.push('Desconto de pacote: − ' + reais(c.pacote) + ' (' + PACOTE + '% na implantação)');
   if (f.dominio) t.push('Domínio: ' + reais(c.dom) + ' por ano');
   if (f.suporte) t.push(c.sup12 ? 'Suporte 24 horas: + ' + reais(f.suporteValor) + ' por mês' : 'Suporte 24 horas: acréscimo a combinar');
   t.push('', 'Total do contrato de 12 meses: ' + reais(c.total), '', 'Formas de pagamento:');
   t.push('• À vista: ' + reais2(c.vista) + (f.desconto ? ' (' + f.desconto + '% de desconto)' : ''));
-  t.push('• Entrada e entrega: ' + reais2(c.entrada) + ' no fechamento + ' + reais2(c.entrega) + ' na entrega do site');
+  t.push('• Em duas partes: ' + reais2(c.entrada) + ' no fechamento + ' + reais2(c.entrega) + ' na entrega' + (c.mensal ? ', depois 12 × ' + reais2(c.mensal) + ' por mês' : ''));
   t.push('• Parcelado: 12 × ' + reais2(c.parcela));
-  if (f.perg.sob) t.push('', 'Sistema interno, agente ou automação: valor e forma de pagamento a combinar.');
-  t.push('', 'Pagamento por Pix. Suporte em horário comercial incluído e uma alteração no site a cada quatro meses.');
+  if (c.ia) t.push('', 'Uso de IA incluso até ' + reais(c.ia) + ' por mês; o excedente é cobrado pelo volume.');
+  if (c.aPartir) t.push('', 'Os valores “a partir de” são confirmados depois de definirmos o escopo.');
+  t.push('', 'Pagamento por Pix ou boleto bancário. Suporte em horário comercial incluído e uma alteração a cada quatro meses.');
   return t.join('\n');
 }
 function copiar() {
@@ -367,7 +419,7 @@ function renderSalvos() {
     return el('div', { class: 'salvo' },
       el('button', { type: 'button', class: 'abrir', onclick: () => { f = { ...novo(), ...clone(s), id }; $('cliente').value = f.cliente; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
         el('b', null, s.cliente || 'Sem nome'),
-        el('small', null, tabela.sites[s.nivel].nome + ' · ' + d.toLocaleDateString('pt-BR'))),
+        el('small', null, nomes(c) + ' · ' + d.toLocaleDateString('pt-BR'))),
       el('span', { class: 'v num' }, reais(c.total)),
       apagar === id
         ? el('span', null, el('button', { type: 'button', class: 'x sim', onclick: () => excluir(id) }, 'Excluir'), ' ', el('button', { type: 'button', class: 'x', onclick: () => { apagar = null; renderSalvos(); } }, 'Manter'))
@@ -394,7 +446,7 @@ async function excluir(id) {
   try { if (modo === 'db' || modo === 'nuvem') await db.doc('orcamentos/' + id).delete(); else gravaLocal(); statusOk(); } catch (e) { erro(e); }
 }
 const LS = 'nexo-precificacao-v2';
-function gravaLocal() { try { localStorage.setItem(LS, JSON.stringify({ salvos, tabela })); } catch (e) {} }
+function gravaLocal() { try { localStorage.setItem(LS, JSON.stringify({ salvos, tabela: paraGravar() })); } catch (e) {} }
 function statusOk() { const s = $('status'); s.className = 'status'; s.textContent = modo === 'nuvem' ? 'Salvo na nuvem' : modo === 'db' ? 'Tudo salvo' : 'Salvo só neste navegador'; }
 function erro(e) {
   const s = $('status'); s.className = 'status erro';
@@ -409,29 +461,39 @@ function renderTabela() {
   const campo = (val, set, idc) => el('label', { class: 'rs' }, el('input', { type: 'number', id: idc, min: '0', step: '5', inputmode: 'numeric', value: String(val), 'aria-label': idc,
     oninput: e => { const v = +e.target.value; if (e.target.value === '' || !(v >= 0)) return; set(v); render(); renderSalvos(); clearTimeout(tTimer); tTimer = setTimeout(gravaTabela, 600); } }));
   $('tabela').replaceChildren(
-    el('div', { class: 'tl h' }, el('span', null, 'Site'), el('span', null, 'Valor do site'), el('span', null, 'Hospedagem/mês')),
-    ...tabela.sites.map((s, i) => el('div', { class: 'tl' }, el('span', null, s.nome),
-      campo(s.site, v => { tabela.sites[i].site = v; }, 't-site-' + i), campo(s.hosp, v => { tabela.sites[i].hosp = v; }, 't-hosp-' + i))),
+    el('div', { class: 'tl h' }, el('span', null, 'Serviço'), el('span', null, 'Implantação'), el('span', null, 'Mensal')),
+    ...GRUPOS.flatMap(g => [el('div', { class: 'tl g' }, el('span', null, g.nome), el('span'), el('span')),
+      ...tabela.itens.filter(i => i.grupo === g.id).map(i => el('div', { class: 'tl' }, el('span', null, i.nome + (i.aPartir ? ' (a partir de)' : '')),
+        campo(i.imp, v => { i.imp = v; }, 't-imp-' + i.id), campo(i.mes, v => { i.mes = v; }, 't-mes-' + i.id)))]),
     el('div', { class: 'tl' }, el('span', null, 'Domínio, por ano'), campo(tabela.dominio, v => { tabela.dominio = v; }, 't-dominio'), el('span')));
 }
 async function gravaTabela() {
-  try { if (modo === 'db' || modo === 'nuvem') await db.doc('config/tabela').set(clone(tabela)); else gravaLocal(); statusOk(); }
+  try { if (modo === 'db' || modo === 'nuvem') await db.doc('config/tabela').set(paraGravar()); else gravaLocal(); statusOk(); }
   catch (e) { erro(e); } finally { tTimer = null; }
+}
+/* A tabela é gravada como versão 2 (valores por serviço). A gravada antes de 16/10 (só os 3 sites) é ignorada,
+   para que os valores novos entrem no lugar dela. */
+function paraGravar(t) {
+  t = t || tabela; const itens = {};
+  t.itens.forEach(i => { itens[i.id] = { imp: i.imp, mes: i.mes }; });
+  return { versao: 2, itens, dominio: t.dominio };
 }
 function lerTabela(d) {
   const t = clone(PADRAO);
-  if (d && Array.isArray(d.sites)) d.sites.slice(0, 3).forEach((s, i) => {
-    if (s && typeof s.site === 'number') t.sites[i].site = s.site;
-    if (s && typeof s.hosp === 'number') t.sites[i].hosp = s.hosp;
+  if (d && d.versao === 2 && d.itens) t.itens.forEach(i => {
+    const v = d.itens[i.id];
+    if (v && typeof v.imp === 'number') i.imp = v.imp;
+    if (v && typeof v.mes === 'number') i.mes = v.mes;
   });
-  if (d && typeof d.dominio === 'number') t.dominio = d.dominio;
+  if (d && d.versao === 2 && typeof d.dominio === 'number') t.dominio = d.dominio;
   return t;
 }
 function lerSalvo(d) {
-  d = d || {}; const b = novo();
-  return { cliente: String(d.cliente || ''), perg: { ...b.perg, ...(d.perg || {}) }, nivel: [0, 1, 2].includes(d.nivel) ? d.nivel : 0, manual: !!d.manual,
-    dominio: !!d.dominio, suporte: !!d.suporte, suporteValor: +d.suporteValor || 0,
-    desconto: DESCONTOS.includes(d.desconto) ? d.desconto : 15, entrada: ENTRADAS.includes(d.entrada) ? d.entrada : 50, criadoEm: +d.criadoEm || 0 };
+  d = d || {}; const b = novo(), ids = PADRAO.itens.map(i => i.id);
+  let sel = Array.isArray(d.sel) ? d.sel.filter(s => ids.includes(s)) : [NIVEL_ANTIGO[[0, 1, 2].includes(d.nivel) ? d.nivel : 0]];
+  return { cliente: String(d.cliente || ''), perg: { midia: !!(d.perg && d.perg.midia), imagens: !!(d.perg && d.perg.imagens), tresd: !!(d.perg && d.perg.tresd) },
+    sel, manual: !!d.manual, dominio: !!d.dominio, suporte: !!d.suporte, suporteValor: +d.suporteValor || 0,
+    desconto: DESCONTOS.includes(d.desconto) ? d.desconto : 10, entrada: ENTRADAS.includes(d.entrada) ? d.entrada : 50, criadoEm: +d.criadoEm || 0 };
 }
 
 /* ---------- início ---------- */
@@ -476,7 +538,7 @@ function iniciarNuvem(N) {
     const tem = new Set(lista.map(r => r.id).concat(lista.excluidos || [])), envios = [];
     if (local) {
       for (const id in local.salvos || {}) if (/^[A-Za-z0-9_-]{1,60}$/.test(id) && !tem.has('orc.' + id)) envios.push(N.gravar(APP, 'orc.' + id, clone(local.salvos[id])));
-      if (local.tabela && !tem.has('config.tabela')) envios.push(N.gravar(APP, 'config.tabela', clone(lerTabela(local.tabela))));
+      if (local.tabela && !tem.has('config.tabela')) envios.push(N.gravar(APP, 'config.tabela', paraGravar(lerTabela(local.tabela))));
     }
     return Promise.all(envios).then(() => { try { localStorage.setItem(LIGADO, '1'); } catch (e) {} return envios.length; });
   }
