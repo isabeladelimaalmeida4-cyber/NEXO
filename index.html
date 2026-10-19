@@ -16,7 +16,7 @@
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   h.classList.add('intro-ativa');
   // segurança: se algo falhar, a abertura some sozinha
-  setTimeout(function(){h.classList.remove('intro-ativa');h.classList.add('intro-libera');},9000);
+  setTimeout(function(){h.classList.remove('intro-ativa');h.classList.add('intro-libera');},6000);
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -203,6 +203,96 @@ p{margin:0}
 .rodape nav a:hover{color:var(--champagne)}
 .rodape .fim{grid-column:1 / -1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:28px;border-top:1px solid var(--linha);font-size:12.5px;color:rgba(213,201,199,.55)}
 
+
+/* faixa dos quatro serviços logo abaixo do topo */
+.faixa{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);background:var(--vinho)}
+.faixa .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.faixa a{display:flex;align-items:center;gap:14px;padding:26px 22px;transition:background-color .3s ease}
+.faixa a+a{border-left:1px solid var(--linha)}
+.faixa a:hover{background:var(--bloco)}
+.faixa .icone{width:44px;height:44px;flex:none}
+.faixa .icone svg{width:21px;height:21px}
+.faixa b{display:block;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--marfim)}
+.faixa small{display:block;font-size:13.5px;color:rgba(213,201,199,.75);line-height:1.4}
+
+/* grade de tipos (sites, sistemas, agentes) */
+.tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;margin-top:64px}
+.tipos .formato{padding:28px 26px 24px}
+.tipos .formato h3{font-size:22px}
+.tipos-3{grid-template-columns:repeat(3,1fr)}
+.tipos-2{grid-template-columns:repeat(2,1fr)}
+
+/* figuras de exemplo (imagem ou vídeo em moldura) */
+.moldura img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;background:#f4f5f7}
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:64px}
+.galeria .exemplo:first-child{grid-column:1 / -1}
+.galeria figcaption,.linha-auto figcaption{padding:16px 2px 0}
+.nota-ex{margin-top:22px;font-size:13px;color:rgba(213,201,199,.6)}
+
+/* o que um sistema pode ter */
+.recursos{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:70px;border:1px solid var(--linha);border-radius:22px;overflow:hidden;background:var(--bloco)}
+.recurso{display:flex;gap:16px;padding:26px 26px}
+.recurso:nth-child(n+4){border-top:1px solid var(--linha)}
+.recurso:not(:nth-child(3n+1)){border-left:1px solid var(--linha)}
+.recurso svg{width:24px;height:24px;flex:none;color:var(--champagne);margin-top:2px}
+.recurso b{display:block;color:var(--marfim);font-weight:600;font-size:16px}
+.recurso span{display:block;margin-top:4px;font-size:14.5px;color:var(--cinza);line-height:1.55}
+.sub-titulo{margin-top:80px;font-family:var(--serif);font-size:clamp(24px,2.6vw,30px);font-weight:600}
+
+/* automações: linhas alternadas de imagem e texto */
+.linha-auto{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(30px,5vw,70px);align-items:center;margin-top:80px}
+.linha-auto.inverte{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+.linha-auto.inverte .texto{order:-1}
+.linha-auto .texto h3{font-size:clamp(26px,3vw,34px);margin-top:12px}
+.linha-auto .texto>p:not(.rotulo){margin-top:14px;font-size:16.5px;color:var(--cinza);line-height:1.7}
+.marcas{margin:22px 0 0;padding:0;list-style:none}
+.marcas li{position:relative;padding-left:22px;font-size:15.5px;line-height:1.5;color:var(--marfim)}
+.marcas li+li{margin-top:10px}
+.marcas li::before{content:'';position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:50%;background:var(--champagne)}
+.prazo-linha{display:inline-flex;gap:10px;margin-top:24px;padding:8px 16px;border:1px solid var(--linha-forte);border-radius:999px;font-size:13.5px;color:var(--cinza)}
+.prazo-linha b{color:var(--marfim);font-weight:600}
+.cta-servico{margin-top:70px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;padding:30px 34px;border-radius:22px;background:var(--bloco);border:1px solid var(--linha)}
+.cta-servico p{font-family:var(--serif);font-size:clamp(20px,2.2vw,26px);color:var(--marfim);margin:0;max-width:640px}
+
+/* agentes */
+.agente-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(30px,5vw,64px);align-items:center;margin-top:64px}
+.agente-grid .formato+.formato{margin-top:18px}
+
+/* planilhas e agenda (bloco compacto) */
+.compacto{padding:clamp(60px,8vw,90px) 0}
+.compacto .servico{flex-direction:row;align-items:center;gap:32px;flex-wrap:wrap}
+.compacto .servico .texto{flex:1 1 380px}
+.compacto .servico .exemplo-frase{flex:1 1 300px;margin:0}
+
+/* contrato e pagamento */
+.combinado.quatro{grid-template-columns:1fr 1fr}
+
+/* ---------- perguntas antes do WhatsApp ---------- */
+.funil{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,4,6,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.funil.aberto{display:flex}
+.funil-caixa{position:relative;width:min(560px,100%);max-height:calc(100vh - 40px);overflow:auto;padding:34px 34px 30px;border-radius:28px;background:var(--vinho);border:1px solid var(--linha-forte);box-shadow:0 40px 90px -30px rgba(0,0,0,.9)}
+.funil-fechar{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid var(--linha);background:transparent;color:var(--cinza);font-size:20px;line-height:1;cursor:pointer}
+.funil-fechar:hover{color:var(--marfim);border-color:var(--linha-forte)}
+.funil-pontos{display:flex;align-items:center;gap:0;margin:2px 50px 26px 0}
+.funil-pontos i{width:9px;height:9px;border-radius:50%;border:1px solid var(--champagne);flex:none}
+.funil-pontos i.feito{background:var(--champagne)}
+.funil-pontos span{flex:1;height:1px;background:var(--linha-forte)}
+.funil h3{font-size:clamp(24px,3vw,30px);margin-top:10px}
+.funil .dica{margin-top:8px;font-size:14px;color:rgba(213,201,199,.75)}
+.opcoes{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.opcao{width:100%;text-align:left;padding:15px 18px;border-radius:14px;border:1px solid var(--linha);background:var(--bloco);color:var(--marfim);font:500 16px/1.4 var(--sans);cursor:pointer;transition:border-color .2s ease,background-color .2s ease}
+.opcao:hover,.opcao:focus-visible{border-color:var(--champagne)}
+.opcao.marcada{border-color:var(--champagne);background:#563040}
+.funil-nome{width:100%;margin-top:22px;padding:15px 18px;border-radius:14px;border:1px solid var(--linha-forte);background:var(--vinho-profundo);color:var(--marfim);font:400 17px var(--sans)}
+.funil-nome:focus{outline:none;border-color:var(--champagne)}
+.funil-rodape{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;font-size:14px}
+.funil-rodape button.link{background:none;border:0;color:var(--cinza);font:500 14px var(--sans);cursor:pointer;padding:6px 0}
+.funil-rodape button.link:hover{color:var(--champagne)}
+.funil-rodape a{color:rgba(213,201,199,.7);border-bottom:1px solid var(--linha)}
+.funil .btn{margin-top:18px;width:100%}
+.funil-resumo{margin-top:16px;font-size:13px;color:rgba(213,201,199,.7)}
+html.funil-aberto body{overflow:hidden}
+
 /* revelação ao rolar (só com JS ativo) */
 .js .revela{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .js .revela.visivel{opacity:1;transform:none}
@@ -223,6 +313,16 @@ p{margin:0}
   .etapas{grid-template-columns:1fr 1fr;row-gap:44px}
   .etapas::before{display:none}
   .problema .wrap{grid-template-columns:1fr;align-items:start}
+  .faixa .wrap{grid-template-columns:1fr 1fr;padding:0}
+  .faixa a:nth-child(3){border-left:none}
+  .faixa a:nth-child(n+3){border-top:1px solid var(--linha)}
+  .tipos-3,.tipos-2,.galeria,.agente-grid,.linha-auto,.combinado.quatro{grid-template-columns:1fr}
+  .linha-auto.inverte{grid-template-columns:1fr}
+  .linha-auto.inverte .texto{order:0}
+  .recursos{grid-template-columns:1fr 1fr}
+  .recurso:nth-child(n){border-left:none;border-top:1px solid var(--linha)}
+  .recurso:nth-child(-n+2){border-top:none}
+  .recurso:nth-child(even){border-left:1px solid var(--linha)}
   .rodape .wrap{grid-template-columns:1fr;gap:30px}
 }
 @media (max-width:820px){
@@ -243,6 +343,15 @@ p{margin:0}
   .reune{grid-template-columns:1fr}
   .reune li:nth-child(n){padding:20px 0;border-left:none}
   .etapas{grid-template-columns:1fr;row-gap:36px}
+  .faixa .wrap{grid-template-columns:1fr}
+  .faixa a+a,.faixa a:nth-child(3){border-left:none;border-top:1px solid var(--linha)}
+  .faixa a{padding:18px var(--gut)}
+  .recursos{grid-template-columns:1fr}
+  .recurso:nth-child(n){border-left:none;border-top:1px solid var(--linha)}
+  .recurso:first-child{border-top:none}
+  .funil{padding:0;align-items:flex-end}
+  .funil-caixa{width:100%;max-height:92vh;border-radius:26px 26px 0 0;padding:28px 22px 26px}
+  .cta-servico{padding:26px 22px}
   .etapas::before{display:block;top:8px;bottom:8px;left:7px;right:auto;width:1px;height:auto}
   .etapa{padding:0 0 0 40px}
   .etapa::before{top:3px}
@@ -253,32 +362,32 @@ p{margin:0}
 .intro{position:fixed;inset:0;z-index:200;display:none;place-items:center;overflow:hidden;background:radial-gradient(70% 60% at 50% 50%,#2B1014 0%,var(--vinho-profundo) 72%)}
 html.intro-ativa .intro{display:grid}
 html.intro-ativa body{overflow:hidden}
-.intro.saindo{animation:intro-sai .9s cubic-bezier(.7,0,.2,1) forwards}
+.intro.saindo{animation:intro-sai .6s cubic-bezier(.7,0,.2,1) forwards}
 @keyframes intro-sai{to{opacity:0;visibility:hidden}}
-.intro-marca{--n:clamp(58px,10vw,116px);--nome:clamp(196px,28vw,320px);--gap:clamp(20px,3.4vw,36px);display:flex;align-items:center;gap:var(--gap);transition:transform .9s cubic-bezier(.7,0,.2,1),filter .9s ease}
+.intro-marca{--n:clamp(58px,10vw,116px);--nome:clamp(196px,28vw,320px);--gap:clamp(20px,3.4vw,36px);display:flex;align-items:center;gap:var(--gap);transition:transform .6s cubic-bezier(.7,0,.2,1),filter .6s ease}
 .intro.saindo .intro-marca{transform:scale(1.05);filter:blur(3px)}
-.intro-n{position:relative;flex:none;width:var(--n);perspective:800px;transform:translateX(calc((var(--gap) + var(--nome)) / 2));animation:n-move .95s cubic-bezier(.65,0,.2,1) 2.35s forwards}
+.intro-n{position:relative;flex:none;width:var(--n);perspective:800px;transform:translateX(calc((var(--gap) + var(--nome)) / 2));animation:n-move .6s cubic-bezier(.65,0,.2,1) 1.35s forwards}
 @keyframes n-move{to{transform:translateX(0)}}
-.intro-n img{position:relative;z-index:2;width:100%;height:auto;animation:n-gira 2.1s cubic-bezier(.12,.75,.25,1) .15s both;filter:drop-shadow(0 0 14px rgba(216,185,133,.35))}
-@keyframes n-gira{0%{transform:rotateY(-1080deg) scale(.55);opacity:0}12%{opacity:1}100%{transform:rotateY(0) scale(1);opacity:1}}
-.intro-n::before{content:'';position:absolute;z-index:1;inset:-130%;border-radius:50%;background:radial-gradient(circle,rgba(226,196,146,.55) 0%,rgba(198,161,106,.24) 26%,rgba(198,161,106,.07) 48%,transparent 68%);animation:luz-acende 1.4s ease-out both,luz-pulsa 2.8s ease-in-out 1.4s infinite alternate}
+.intro-n img{position:relative;z-index:2;width:100%;height:auto;animation:n-gira 1.25s cubic-bezier(.12,.75,.25,1) .1s both;filter:drop-shadow(0 0 14px rgba(216,185,133,.35))}
+@keyframes n-gira{0%{transform:rotateY(-720deg) scale(.55);opacity:0}12%{opacity:1}100%{transform:rotateY(0) scale(1);opacity:1}}
+.intro-n::before{content:'';position:absolute;z-index:1;inset:-130%;border-radius:50%;background:radial-gradient(circle,rgba(226,196,146,.55) 0%,rgba(198,161,106,.24) 26%,rgba(198,161,106,.07) 48%,transparent 68%);animation:luz-acende .9s ease-out both,luz-pulsa 1.6s ease-in-out .9s infinite alternate}
 @keyframes luz-acende{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
 @keyframes luz-pulsa{from{opacity:1;transform:scale(1)}to{opacity:.7;transform:scale(1.12)}}
-.intro-n::after{content:'';position:absolute;z-index:0;inset:-190%;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 7%,rgba(226,196,146,.12) 9%,transparent 12% 29%,rgba(226,196,146,.09) 32%,transparent 35% 54%,rgba(226,196,146,.12) 57%,transparent 60% 79%,rgba(226,196,146,.09) 82%,transparent 85%);-webkit-mask:radial-gradient(circle,#000 0 26%,transparent 60%);mask:radial-gradient(circle,#000 0 26%,transparent 60%);animation:raios-entram 1.6s ease-out .3s both,raios-giram 16s linear infinite}
+.intro-n::after{content:'';position:absolute;z-index:0;inset:-190%;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 7%,rgba(226,196,146,.12) 9%,transparent 12% 29%,rgba(226,196,146,.09) 32%,transparent 35% 54%,rgba(226,196,146,.12) 57%,transparent 60% 79%,rgba(226,196,146,.09) 82%,transparent 85%);-webkit-mask:radial-gradient(circle,#000 0 26%,transparent 60%);mask:radial-gradient(circle,#000 0 26%,transparent 60%);animation:raios-entram 1s ease-out .2s both,raios-giram 12s linear infinite}
 @keyframes raios-entram{from{opacity:0}to{opacity:1}}
 @keyframes raios-giram{to{rotate:360deg}}
 .intro-texto{width:var(--nome);display:flex;flex-direction:column;align-items:center;gap:calc(var(--nome) * .07)}
-.intro-texto .nome{width:100%;height:auto;opacity:0;clip-path:inset(0 100% 0 0);animation:nome-entra 1s cubic-bezier(.2,.7,.2,1) 2.6s forwards}
+.intro-texto .nome{width:100%;height:auto;opacity:0;clip-path:inset(0 100% 0 0);animation:nome-entra .55s cubic-bezier(.2,.7,.2,1) 1.7s forwards}
 @keyframes nome-entra{to{opacity:1;clip-path:inset(0 0 0 0)}}
-.intro-texto .frase-img{width:102%;max-width:none;height:auto;opacity:0;transform:translateY(8px);animation:frase-entra .8s ease-out 3.2s forwards}
+.intro-texto .frase-img{width:102%;max-width:none;height:auto;opacity:0;transform:translateY(8px);animation:frase-entra .45s ease-out 2s forwards}
 @keyframes frase-entra{to{opacity:1;transform:none}}
-.intro-pular{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));translate:-50% 0;padding:10px 18px;border:0;background:none;font:500 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(213,201,199,.6);cursor:pointer;opacity:0;animation:frase-entra .6s ease-out .8s forwards}
+.intro-pular{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));translate:-50% 0;padding:10px 18px;border:0;background:none;font:500 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(213,201,199,.6);cursor:pointer;opacity:0;animation:frase-entra .4s ease-out .5s forwards}
 .intro-pular:hover{color:var(--champagne)}
 
 /* brilho que fica no canto do topo depois da abertura */
 .brilho-canto{position:absolute;z-index:0;top:-34%;right:-18%;width:min(78vw,980px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(216,185,133,.20) 0%,rgba(198,161,106,.09) 30%,transparent 64%);animation:respira 7s ease-in-out infinite alternate}
 @keyframes respira{from{opacity:.65;transform:scale(.92)}to{opacity:1;transform:scale(1.06)}}
-.abertura .wrap{position:relative;z-index:1;transition:opacity 1.1s ease .15s,transform 1.3s var(--ease) .15s}
+.abertura .wrap{position:relative;z-index:1;transition:opacity .8s ease .1s,transform 1s var(--ease) .1s}
 html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translateY(22px)}
 
 @media (prefers-reduced-motion:reduce){
@@ -310,10 +419,12 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
     </button>
     <nav class="menu" id="menu" aria-label="Principal">
       <a href="#sites">Sites</a>
-      <a href="#servicos">Serviços</a>
+      <a href="#sistemas">Sistemas</a>
+      <a href="#automacao">Automação</a>
+      <a href="#agentes">Agentes com IA</a>
       <a href="#processo">Como funciona</a>
       <a href="#contato">Contato</a>
-      <a class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Quero meu site</a>
+      <a data-funil class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Quero meu site</a>
     </nav>
   </div>
 </header>
@@ -327,15 +438,15 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
     <div>
       <p class="rotulo">Criação de sites</p>
       <h1>Seu negócio merece um site <em>à altura.</em></h1>
-      <p class="lead">Sites sob medida, desenhados primeiro para o celular. E, quando fizer sentido, automação, planilhas, agenda e sistemas para organizar a rotina por trás deles.</p>
+      <p class="lead">Sites sob medida, desenhados primeiro para o celular. E, por trás deles, sistemas internos, automações e atendimento com IA, para o seu negócio funcionar tão bem por dentro quanto aparece por fora.</p>
       <div class="acoes">
-        <a class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">
+        <a data-funil class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">
           Quero meu site
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <a class="btn btn-linha" href="#exemplos">Ver exemplos</a>
       </div>
-      <p class="nota-acao">Conversa pelo WhatsApp, sem compromisso.</p>
+      <p class="nota-acao">Seis perguntas rápidas e você cai direto no nosso WhatsApp, sem compromisso.</p>
     </div>
 
     <div class="telas" aria-hidden="true">
@@ -357,6 +468,16 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
     </div>
   </div>
 </section>
+
+<!-- OS QUATRO SERVIÇOS -->
+<nav class="faixa" aria-label="O que fazemos">
+  <div class="wrap">
+    <a href="#sites"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 9h18M6.5 6.8h.01M9 6.8h.01"/></svg></span><span><b>Sites</b><small>Do link da bio à loja virtual</small></span></a>
+    <a href="#sistemas"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/><path d="M12.5 13h5M12.5 16h3.5"/></svg></span><span><b>Sistemas internos</b><small>A operação num lugar só</small></span></a>
+    <a href="#automacao"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12a8 8 0 0 1 14.3-4.9"/><path d="M18.5 3.5v3.6h-3.6M5.5 20.5v-3.6h3.6"/></svg></span><span><b>Automações</b><small>Tarefas que se fazem sozinhas</small></span></a>
+    <a href="#agentes"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5l1.2-3.6A8 8 0 1 1 8.4 19z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span><span><b>Agentes com IA</b><small>Atendimento a qualquer hora</small></span></a>
+  </div>
+</nav>
 
 <!-- O PROBLEMA -->
 <section class="problema">
@@ -400,24 +521,48 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
 
     <p class="frase revela">O link da bio passa a ser <em>o seu endereço.</em></p>
 
-    <div class="formatos">
+    <div class="formatos tipos">
       <article class="formato revela">
         <span class="num">01</span>
+        <h3>Página de links</h3>
+        <p>Uma página com seus contatos, serviços e links principais, para usar na bio do Instagram.</p>
+        <div class="prazo"><span>Prazo médio de criação</span><b>1 a 2 dias</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">02</span>
         <h3>Site simples</h3>
         <p>Para quem está começando ou quer uma presença clara e direta. Poucas imagens, pouco movimento e tudo o que o cliente precisa saber.</p>
         <div class="prazo"><span>Prazo médio de criação</span><b>3 a 4 dias</b></div>
       </article>
       <article class="formato revela">
-        <span class="num">02</span>
+        <span class="num">03</span>
         <h3>Site intermediário</h3>
         <p>Mais imagens, vídeos curtos e algumas animações para dar vida à página, sem perder a leveza.</p>
         <div class="prazo"><span>Prazo médio de criação</span><b>1 a 2 semanas</b></div>
       </article>
       <article class="formato revela">
-        <span class="num">03</span>
+        <span class="num">04</span>
+        <h3>Site institucional</h3>
+        <p>Para empresas que precisam de várias páginas: quem somos, serviços, equipe, conteúdos e contato.</p>
+        <div class="prazo"><span>Prazo médio de criação</span><b>1 a 2 semanas</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">05</span>
         <h3>Site com animação e 3D</h3>
         <p>Para produtos e marcas que querem impressionar: vídeos, movimento e efeito 3D que acompanha a rolagem da página.</p>
-        <div class="prazo"><span>Prazo médio de criação</span><b>1 a 2 semanas</b></div>
+        <div class="prazo"><span>Prazo médio de criação</span><b>2 a 3 semanas</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">06</span>
+        <h3>E-commerce inicial</h3>
+        <p>Uma loja virtual para começar a vender pela internet, com catálogo, carrinho e pagamento.</p>
+        <div class="prazo"><span>Prazo médio de criação</span><b>2 a 3 semanas</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">07</span>
+        <h3>Portal ou e-commerce avançado</h3>
+        <p>Lojas maiores, área do cliente e ligação com outros sistemas. O prazo sai do escopo.</p>
+        <div class="prazo"><span>Prazo médio de criação</span><b>a combinar</b></div>
       </article>
     </div>
     <p class="observacao">Os formatos são um ponto de partida. Todo site é desenhado para o negócio de quem contrata.</p>
@@ -465,51 +610,203 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
   </div>
 </section>
 
-<!-- SERVIÇOS DE APOIO -->
-<section class="secao" id="servicos">
+<!-- SISTEMAS INTERNOS -->
+<section class="secao" id="sistemas">
   <div class="wrap">
     <div class="cabeca revela">
-      <p class="rotulo">Serviços de apoio</p>
-      <h2>E a rotina <em>por trás do site.</em></h2>
-      <p class="lead">O site é a parte do negócio que o cliente vê. Automação, organização e sistemas cuidam da parte que só a equipe vê.</p>
+      <p class="rotulo">Sistemas internos</p>
+      <h2>Os controles espalhados em planilhas, <em>num lugar só.</em></h2>
+      <p class="lead">Quando a planilha já não resolve: cadastros, agenda, estoque, financeiro e rotinas da equipe reunidos em um sistema feito para o seu negócio, com acesso pelo computador e pelo celular.</p>
     </div>
-    <div class="apoio">
-      <article class="servico revela">
-        <span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12a8 8 0 0 1 14.3-4.9"/><path d="M18.5 3.5v3.6h-3.6M5.5 20.5v-3.6h3.6"/></svg></span>
-        <h3>Automação</h3>
-        <p>Tarefas repetitivas passam a acontecer sozinhas: avisos, envios, preenchimentos e ligações entre as ferramentas que você já usa.</p>
-        <p class="exemplo-frase">“Seus lembretes passam a ser enviados sozinhos. Você não precisa mais fazer isso à mão.”</p>
-        <a class="link-seta" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20automatizar%20tarefas%20da%20minha%20rotina." target="_blank" rel="noopener">Automatizar minha rotina <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="servico revela">
-        <span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M12 14h2M8 17h2"/></svg></span>
-        <h3>Planilhas e agenda</h3>
-        <p>Planilhas limpas e fáceis de manter. Agenda estruturada para que nenhum compromisso se perca.</p>
-        <p class="exemplo-frase">“A planilha que só uma pessoa entendia fica simples para toda a equipe.”</p>
-        <a class="link-seta" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20organizar%20minhas%20planilhas%20e%20agenda." target="_blank" rel="noopener">Organizar planilhas e agenda <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="servico servico-largo revela">
-        <div class="texto">
-          <span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/><path d="M12.5 13h5M12.5 16h3.5"/></svg></span>
-          <h3>Criação de sistemas</h3>
-          <p>Quando a planilha já não resolve: cadastros, controles e rotinas internas reunidos em um sistema feito para o seu negócio.</p>
-          <p class="exemplo-frase">“Os controles que hoje estão espalhados em várias planilhas ficam num lugar só.”</p>
-          <a class="link-seta" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20sistema%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Criar meu sistema <span aria-hidden="true">→</span></a>
+    <div class="galeria">
+      <figure class="exemplo revela">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/sis-agenda.webp" alt="Tela de exemplo: agenda do dia de uma clínica de estética, com atendimentos confirmados, lembretes enviados e a ficha da cliente" width="1600" height="1000" loading="lazy" decoding="async">
         </div>
-        <figure class="exemplo">
-          <div class="moldura">
-            <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
-            <video muted loop playsinline preload="none" poster="assets/projetos/parcelas.jpg" aria-label="Vídeo curto de um painel de controle de parcelas, filtrando as vencidas e as pagas">
-              <source src="assets/projetos/parcelas.webm" type="video/webm">
-              <source src="assets/projetos/parcelas.mp4" type="video/mp4">
-            </video>
-          </div>
-          <figcaption class="legenda">Exemplo: painel interno de controle de parcelas, com dados fictícios.</figcaption>
-        </figure>
+        <figcaption>
+          <p class="rotulo">Exemplo · sistema simples</p>
+          <h3>Agenda e clientes de uma clínica</h3>
+          <p>Agenda do dia, ficha de cada cliente, pacotes de sessões e lembretes que saem sozinhos na véspera.</p>
+        </figcaption>
+      </figure>
+      <figure class="exemplo revela">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/sis-loja.webp" alt="Tela de exemplo: visão geral de uma loja com vendas da semana, itens para repor e o que cada vendedora pode acessar" width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+        <figcaption>
+          <p class="rotulo">Exemplo · sistema médio</p>
+          <h3>Vendas, estoque e equipe de uma loja</h3>
+          <p>Pedidos da loja e do site no mesmo lugar, aviso de estoque baixo e acessos diferentes para cada pessoa.</p>
+        </figcaption>
+      </figure>
+      <figure class="exemplo revela">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <video muted loop playsinline preload="none" poster="assets/projetos/parcelas.jpg" aria-label="Vídeo curto de um painel de controle de parcelas, filtrando as vencidas e as pagas">
+            <source src="assets/projetos/parcelas.webm" type="video/webm">
+            <source src="assets/projetos/parcelas.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption>
+          <p class="rotulo">Exemplo · financeiro</p>
+          <h3>Controle de parcelas e recebimentos</h3>
+          <p>O que entrou, o que vence hoje e quem está em atraso, com filtros de um clique.</p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="nota-ex">Telas ilustrativas, com empresas e dados fictícios.</p>
+
+    <h3 class="sub-titulo revela">O que o seu sistema pode ter</h3>
+    <div class="recursos revela">
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="7.5" r="3.5"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.5-3.35M15.5 4.2a3.5 3.5 0 0 1 0 6.6"/></svg><div><b>Cadastros</b><span>Clientes, produtos, serviços e fornecedores, com histórico de cada um.</span></div></div>
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><div><b>Agenda e lembretes</b><span>Horários, encaixes e avisos automáticos para o cliente não esquecer.</span></div></div>
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5-9 4.5z"/><path d="M3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg><div><b>Estoque e pedidos</b><span>Entradas, saídas e aviso quando algo precisa ser reposto.</span></div></div>
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg><div><b>Financeiro</b><span>Recebimentos, parcelas, atrasos e o caixa do mês.</span></div></div>
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><div><b>Login e níveis de acesso</b><span>Cada pessoa da equipe vê só o que precisa ver.</span></div></div>
+      <div class="recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><div><b>Relatórios</b><span>Os números do negócio sem montar planilha no fim do mês.</span></div></div>
+    </div>
+
+    <div class="tipos tipos-3">
+      <article class="formato revela">
+        <span class="num">01</span>
+        <h3>Sistema simples</h3>
+        <p>Um processo principal organizado, como agenda e clientes ou pedidos e entregas.</p>
+        <div class="prazo"><span>Prazo médio</span><b>2 a 3 semanas</b></div>
       </article>
+      <article class="formato revela">
+        <span class="num">02</span>
+        <h3>Sistema médio</h3>
+        <p>Vários setores conversando: vendas, estoque, financeiro, equipe com acessos diferentes e relatórios.</p>
+        <div class="prazo"><span>Prazo médio</span><b>4 a 6 semanas</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">03</span>
+        <h3>Sistema completo</h3>
+        <p>A operação inteira em um sistema próprio, construído por etapas e ligado aos programas que você já usa.</p>
+        <div class="prazo"><span>Prazo</span><b>em fases</b></div>
+      </article>
+    </div>
+
+    <div class="cta-servico revela">
+      <p>Tem uma planilha que só você entende? Ela pode virar um sistema.</p>
+      <a class="link-seta" data-funil="sistema" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20sistema%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Criar meu sistema <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
+
+<!-- AUTOMAÇÕES -->
+<section class="secao secao-alt" id="automacao">
+  <div class="wrap">
+    <div class="cabeca revela">
+      <p class="rotulo">Automações</p>
+      <h2>Tarefas repetitivas <em>acontecendo sozinhas.</em></h2>
+      <p class="lead">Avisos, envios, preenchimentos e ligações entre as ferramentas que você já usa. Seus lembretes passam a ser enviados sozinhos, e você não precisa mais fazer isso à mão.</p>
+    </div>
+    <div class="linha-auto">
+      <figure class="exemplo revela" style="margin:0">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/auto-dados.webp" alt="Exemplo de automação: o pedido feito no site vai sozinho para a planilha de contatos, gera um aviso no WhatsApp e entra no relatório da semana" width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+      </figure>
+      <div class="texto revela">
+        <p class="rotulo">01 · Automação de dados</p>
+        <h3>Os dados vão sozinhos para onde precisam.</h3>
+        <p>O pedido feito no site cai na planilha, a equipe recebe o aviso e o relatório chega pronto, sem ninguém copiar e colar.</p>
+        <ul class="marcas"><li>Formulário do site direto na planilha</li><li>Avisos no WhatsApp quando algo acontece</li><li>Relatório semanal por e-mail</li></ul>
+        <span class="prazo-linha">Prazo médio <b>3 a 5 dias</b></span>
+      </div>
+    </div>
+    <div class="linha-auto inverte">
+      <figure class="exemplo revela" style="margin:0">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/auto-preench.webp" alt="Exemplo de automação: um robô preenche, campo a campo, um portal de emissão com os dados de um pedido" width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+      </figure>
+      <div class="texto revela">
+        <p class="rotulo">02 · Automação de preenchimento</p>
+        <h3>Um robô digita por você.</h3>
+        <p>Portais, sistemas e formulários preenchidos com os dados que você já tem, campo a campo, enquanto a equipe cuida do que importa.</p>
+        <ul class="marcas"><li>Pedidos e notas lançados em portais</li><li>Cadastros repetidos em vários sistemas</li><li>Comprovante salvo ao final</li></ul>
+        <span class="prazo-linha">Prazo médio <b>1 semana</b></span>
+      </div>
+    </div>
+    <div class="linha-auto">
+      <figure class="exemplo revela" style="margin:0">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/auto-criacao.webp" alt="Exemplo de automação: um contrato é gerado a partir de um modelo, salvo em PDF e enviado ao cliente pelo WhatsApp" width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+      </figure>
+      <div class="texto revela">
+        <p class="rotulo">03 · Automação de criação</p>
+        <h3>Documentos e mensagens prontos para enviar.</h3>
+        <p>Contratos, propostas, recibos e lembretes criados a partir dos seus modelos, com os dados certos, e enviados ao cliente.</p>
+        <ul class="marcas"><li>Contratos e propostas em PDF</li><li>Recibos e comprovantes</li><li>Mensagens e lembretes pelo WhatsApp</li></ul>
+        <span class="prazo-linha">Prazo médio <b>1 a 2 semanas</b></span>
+      </div>
+    </div>
+    <p class="nota-ex">Telas ilustrativas, com empresas e dados fictícios.</p>
+    <div class="cta-servico revela">
+      <p>Qual tarefa toma mais tempo da sua semana? Comece por ela.</p>
+      <a class="link-seta" data-funil="automacao" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20automatizar%20tarefas%20da%20minha%20rotina." target="_blank" rel="noopener">Automatizar minha rotina <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTES COM IA -->
+<section class="secao" id="agentes">
+  <div class="wrap">
+    <div class="cabeca revela">
+      <p class="rotulo">Agentes com IA</p>
+      <h2>Atendimento que responde <em>a qualquer hora.</em></h2>
+      <p class="lead">Um agente que conversa com os seus clientes pelo WhatsApp: tira dúvidas, informa preços e horários e marca atendimentos. Sempre sincronizado com o sistema interno e com as informações da sua empresa.</p>
+    </div>
+    <div class="agente-grid">
+      <figure class="exemplo revela" style="margin:0">
+        <div class="moldura">
+          <div class="barra" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/exemplos/agente.webp" alt="Exemplo de agente de atendimento: uma cliente pede horário pelo WhatsApp à noite, o agente oferece os horários livres, agenda e registra tudo no sistema" width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+        <figcaption class="legenda" style="padding:12px 2px 0;font-size:13px;color:rgba(213,201,199,.6)">Conversa ilustrativa, com empresa e dados fictícios.</figcaption>
+      </figure>
+      <div>
+      <article class="formato revela">
+        <span class="num">01</span>
+        <h3>Agente de atendimento</h3>
+        <p>Responde as dúvidas mais comuns, informa preços e horários e agenda pelo WhatsApp oficial da sua empresa.</p>
+        <div class="prazo"><span>Prazo médio</span><b>1 a 2 semanas</b></div>
+      </article>
+      <article class="formato revela">
+        <span class="num">02</span>
+        <h3>Agente completo</h3>
+        <p>Faz o que você pedir, ligado ao sistema interno: consulta pedidos, cadastra clientes, gera documentos e avisa a equipe.</p>
+        <div class="prazo"><span>Prazo médio</span><b>4 a 8 semanas</b></div>
+      </article>
+        <a class="link-seta" data-funil="agente" style="margin-top:24px" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20agente%20de%20atendimento." target="_blank" rel="noopener">Quero um agente <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANILHAS E AGENDA -->
+<section class="compacto secao-alt" id="planilhas">
+  <div class="wrap">
+    <article class="servico revela">
+      <div class="texto">
+        <span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M12 14h2M8 17h2"/></svg></span>
+        <h3>Planilhas e agenda</h3>
+        <p>Planilhas limpas e fáceis de manter. Agenda estruturada para que nenhum compromisso se perca.</p>
+        <a class="link-seta" data-funil="planilhas" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20organizar%20minhas%20planilhas%20e%20agenda." target="_blank" rel="noopener">Organizar planilhas e agenda <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="exemplo-frase">“A planilha que só uma pessoa entendia fica simples para toda a equipe.”</p>
+    </article>
+  </div>
+</section>
+
 
 <!-- PARA QUEM -->
 <section class="secao secao-alt" id="para-quem">
@@ -549,9 +846,9 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
       <li class="etapa revela"><span class="num">01</span><h3>Conversa</h3><p>Entendemos como você trabalha e o que o site precisa mostrar.</p></li>
       <li class="etapa revela"><span class="num">02</span><h3>Proposta</h3><p>Você recebe uma proposta sob medida, com o site em primeiro lugar.</p></li>
       <li class="etapa revela"><span class="num">03</span><h3>Criação</h3><p>Montamos a primeira versão e ajustamos com você até a aprovação.</p></li>
-      <li class="etapa revela"><span class="num">04</span><h3>Site no ar</h3><p>Publicamos, e o link da bio passa a ser o seu endereço.</p></li>
+      <li class="etapa revela"><span class="num">04</span><h3>Site no ar</h3><p>Publicamos, e o link da bio passa a ser o seu endereço. Sistemas, automações e agentes entram em uso com a sua equipe.</p></li>
     </ol>
-    <div class="combinado">
+    <div class="combinado quatro">
       <div class="revela">
         <h3>O que entregamos</h3>
         <p>Um site que apresenta bem o seu trabalho, funciona no celular e facilita o contato.</p>
@@ -560,8 +857,18 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
         <h3>O que está incluso</h3>
         <ul>
           <li>Ajustes até a versão final ser aprovada</li>
-          <li>Site publicado e mantido no ar durante o contrato</li>
-          <li>Uma alteração no site a cada quatro meses</li>
+          <li>Projeto publicado e funcionando durante os 12 meses do contrato</li>
+          <li>Uma alteração a cada quatro meses</li>
+          <li>Suporte 24 horas, se você quiser, com acréscimo</li>
+        </ul>
+      </div>
+      <div class="revela">
+        <h3>Como pagar</h3>
+        <p>Um contrato de 12 meses: a implantação, paga uma vez, e a mensalidade que mantém tudo funcionando.</p>
+        <ul>
+          <li>À vista, com desconto</li>
+          <li>Em duas partes: no fechamento e na entrega</li>
+          <li>Em 12 parcelas, por Pix ou boleto</li>
         </ul>
       </div>
       <div class="revela">
@@ -576,11 +883,11 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
 <section class="final" id="contato">
   <div class="wrap revela">
     <img class="simbolo" src="assets/marca/nexo-simbolo.svg" alt="" width="270" height="310">
-    <h2>Vamos conversar sobre <em>o seu site?</em></h2>
-    <p class="lead">Conte como você trabalha e o que o site precisa mostrar. A conversa é pelo WhatsApp e sem compromisso.</p>
+    <h2>Vamos conversar sobre <em>o seu projeto?</em></h2>
+    <p class="lead">Responda seis perguntas rápidas e fale com a gente no WhatsApp já sabendo por onde começar. Sem compromisso.</p>
     <div class="acoes">
-      <a class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">
-        Quero meu site
+      <a data-funil="geral" class="btn btn-principal" href="https://wa.me/5566999735872?text=Ol%C3%A1%2C%20vim%20pelo%20site%20do%20NEXO%20e%20quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">
+        Quero meu projeto
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -589,20 +896,30 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
 
 </main>
 
+<div class="funil" id="funil" role="dialog" aria-modal="true" aria-labelledby="funil-titulo" hidden>
+  <div class="funil-caixa">
+    <button class="funil-fechar" type="button" aria-label="Fechar">×</button>
+    <div class="funil-pontos" aria-hidden="true"></div>
+    <div id="funil-corpo"></div>
+  </div>
+</div>
+
 <footer class="rodape">
   <div class="wrap">
     <img class="logo-principal" src="assets/marca/nexo-principal.svg" alt="NEXO · Operações que transformam" width="455" height="422">
-    <p>Sites sob medida para profissionais, pequenas equipes e negócios em crescimento. Com automação, planilhas, agenda e sistemas para a rotina por trás deles.</p>
+    <p>Sites sob medida para profissionais, pequenas equipes e negócios em crescimento. Com sistemas internos, automações e agentes com IA para a rotina por trás deles.</p>
     <nav aria-label="Rodapé">
       <a href="#sites">Sites</a>
       <a href="#exemplos">Exemplos</a>
-      <a href="#servicos">Serviços</a>
+      <a href="#sistemas">Sistemas</a>
+      <a href="#automacao">Automação</a>
+      <a href="#agentes">Agentes com IA</a>
       <a href="#processo">Como funciona</a>
       <a href="https://wa.me/5566999735872" target="_blank" rel="noopener">WhatsApp</a>
     </nav>
     <div class="fim">
       <span>© 2026 NEXO · Criação de sites</span>
-      <span>Os exemplos usam marcas e dados fictícios.</span>
+      <span>Os exemplos usam marcas, empresas e dados fictícios.</span>
     </div>
   </div>
 </footer>
@@ -617,12 +934,118 @@ document.documentElement.classList.add('js');
   const sair=()=>{
     if(saiu)return; saiu=true;
     h.classList.add('intro-libera'); intro.classList.add('saindo');
-    setTimeout(()=>{h.classList.remove('intro-ativa');intro.remove();},900);
+    setTimeout(()=>{h.classList.remove('intro-ativa');intro.remove();},600);
     ['wheel','touchmove','keydown'].forEach(ev=>removeEventListener(ev,sair));
   };
-  setTimeout(sair,5200);
+  setTimeout(sair,2900);
   intro.addEventListener('click',sair);
   ['wheel','touchmove','keydown'].forEach(ev=>addEventListener(ev,sair,{passive:true}));
+})();
+
+
+// Perguntas antes do WhatsApp (funil de 6 cliques): a conversa já chega separada por categoria
+(function(){
+  const NUM='5566999735872';
+  const P=[
+    {id:'perfil',t:'Como você trabalha hoje?',o:[
+      ['Sozinho(a)','Solo','trabalho por conta própria'],
+      ['Com uma equipe pequena, de 2 a 10 pessoas','Equipe','tenho uma equipe pequena'],
+      ['Com uma equipe maior','Crescimento','tenho uma equipe maior']]},
+    {id:'servico',t:'O que mais te ajudaria agora?',o:[
+      ['Ser encontrado e passar mais confiança na internet','Site','Quero aparecer melhor na internet e passar mais confiança'],
+      ['Parar de fazer tarefas repetitivas à mão','Automação','Quero parar de fazer tarefas repetitivas à mão'],
+      ['Organizar clientes, agenda ou financeiro num lugar só','Sistema','Quero organizar clientes, agenda ou financeiro num lugar só'],
+      ['Responder clientes mais rápido no WhatsApp','Agente','Quero responder meus clientes mais rápido no WhatsApp'],
+      ['Ainda não sei, quero uma orientação','Orientação','Ainda não sei o que preciso e queria uma orientação']]},
+    {id:'site',t:'Você já tem site?',o:[
+      ['Não tenho','Sem site','ainda não tenho site'],
+      ['Tenho, mas está desatualizado','Site desatualizado','meu site está desatualizado'],
+      ['Tenho e funciona bem','Site ok','já tenho um site que funciona bem']]},
+    {id:'ramo',t:'Qual é o seu ramo?',o:[
+      ['Saúde e bem-estar','Saúde','na área de saúde e bem-estar'],
+      ['Beleza e estética','Beleza','na área de beleza e estética'],
+      ['Serviços profissionais (advocacia, contabilidade, consultoria)','Serviços','com serviços profissionais'],
+      ['Comércio ou loja','Comércio','no comércio'],
+      ['Outro','Outro','']]},
+    {id:'prazo',t:'Para quando você precisa?',o:[
+      ['Ainda este mês','Quente','para este mês'],
+      ['Nos próximos 3 meses','Morno','para os próximos 3 meses'],
+      ['Estou só pesquisando','Frio','por enquanto estou só pesquisando']]},
+    {id:'invest',t:'Quanto pensa em investir para começar?',dica:'Opcional. Se preferir, pule esta.',pular:true,o:[
+      ['Até R$ 1.000','Até R$ 1.000','até R$ 1.000'],
+      ['De R$ 1.000 a R$ 3.000','R$ 1.000 a 3.000','de R$ 1.000 a R$ 3.000'],
+      ['Acima de R$ 3.000','Acima de R$ 3.000','acima de R$ 3.000'],
+      ['Prefiro conversar antes','Conversar antes','']]}
+  ];
+  const PRE={site:1,sistema:2,automacao:1,agente:3,planilhas:2};
+  const box=document.getElementById('funil'), corpo=document.getElementById('funil-corpo'), pontos=box.querySelector('.funil-pontos');
+  const params=new URLSearchParams(location.search);
+  const origem=params.get('origem')||params.get('utm_source')||'';
+  let r={}, passo=0, voltarFoco=null;
+
+  function desenharPontos(){
+    pontos.innerHTML='';
+    for(let i=0;i<=P.length;i++){
+      if(i) pontos.appendChild(document.createElement('span'));
+      const b=document.createElement('i'); if(i<passo) b.className='feito'; pontos.appendChild(b);
+    }
+  }
+  function linkDireto(){return 'https://wa.me/'+NUM+'?text='+encodeURIComponent('Olá, vim pelo site do NEXO e quero conversar sobre um projeto.');}
+  function mostrar(){
+    desenharPontos();
+    if(passo<P.length){
+      const q=P[passo];
+      corpo.innerHTML='<p class="rotulo">Pergunta '+(passo+1)+' de '+P.length+'</p><h3 id="funil-titulo"></h3>'+(q.dica?'<p class="dica"></p>':'')+'<div class="opcoes"></div><div class="funil-rodape"><span></span><a href="'+linkDireto()+'" target="_blank" rel="noopener">Prefiro falar direto</a></div>';
+      corpo.querySelector('h3').textContent=q.t;
+      if(q.dica) corpo.querySelector('.dica').textContent=q.dica;
+      const ops=corpo.querySelector('.opcoes');
+      q.o.forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='opcao'+(r[q.id]===i?' marcada':'');b.textContent=o[0];
+        b.addEventListener('click',()=>{r[q.id]=i;passo++;mostrar();});ops.appendChild(b);});
+      const rod=corpo.querySelector('.funil-rodape span');
+      if(passo>0){const v=document.createElement('button');v.type='button';v.className='link';v.textContent='← Voltar';v.addEventListener('click',()=>{passo--;mostrar();});rod.appendChild(v);}
+      if(q.pular){const s=document.createElement('button');s.type='button';s.className='link';s.style.marginLeft='18px';s.textContent='Pular';s.addEventListener('click',()=>{delete r[q.id];passo++;mostrar();});rod.appendChild(s);}
+      const alvo=ops.querySelector('.marcada')||ops.firstChild; alvo&&alvo.focus({preventScroll:true});
+    }else{
+      corpo.innerHTML='<p class="rotulo">Última etapa</p><h3 id="funil-titulo">Como podemos te chamar?</h3><p class="dica">Você vai para o WhatsApp com a mensagem pronta. É só enviar.</p><input class="funil-nome" type="text" autocomplete="given-name" placeholder="Seu nome" maxlength="60"><button class="btn btn-principal" type="button">Abrir o WhatsApp</button><div class="funil-rodape"><span><button type="button" class="link">← Voltar</button></span></div>';
+      const nome=corpo.querySelector('.funil-nome');
+      corpo.querySelector('.link').addEventListener('click',()=>{passo--;mostrar();});
+      const enviar=()=>{window.open('https://wa.me/'+NUM+'?text='+encodeURIComponent(mensagem(nome.value.trim())),'_blank','noopener');fechar();};
+      corpo.querySelector('.btn').addEventListener('click',enviar);
+      nome.addEventListener('keydown',e=>{if(e.key==='Enter')enviar();});
+      nome.focus({preventScroll:true});
+    }
+  }
+  const op=id=>{const q=P.find(x=>x.id===id);return r[id]===undefined?null:q.o[r[id]];};
+  function etiqueta(){
+    const partes=['perfil','servico','ramo','prazo'].map(id=>op(id)&&op(id)[1]).filter(Boolean);
+    if(origem) partes.push('Origem: '+origem);
+    return partes.join(' · ');
+  }
+  function mensagem(nome){
+    const pf=op('perfil'),sv=op('servico'),st=op('site'),rm=op('ramo'),pz=op('prazo'),iv=op('invest');
+    let m='Oi! '+(nome?'Sou '+nome+', ':'')+(pf?pf[2]:'')+(rm&&rm[2]?' '+rm[2]:'')+(st?' e '+st[2]:'')+'.';
+    m=m.replace('Oi! t','Oi! T');
+    if(sv) m+=' '+sv[2]+(pz?', '+pz[2]:'')+'.';
+    if(iv&&iv[2]) m+=' Penso em investir '+iv[2]+' para começar.';
+    m+='\n\n('+etiqueta()+')';
+    return m;
+  }
+  function abrir(pre,gatilho){
+    r={}; passo=0; voltarFoco=gatilho||null;
+    if(pre&&PRE[pre]!==undefined) r.servico=PRE[pre];
+    box.hidden=false; box.classList.add('aberto'); document.documentElement.classList.add('funil-aberto');
+    mostrar();
+  }
+  function fechar(){
+    box.classList.remove('aberto'); box.hidden=true; document.documentElement.classList.remove('funil-aberto');
+    voltarFoco&&voltarFoco.focus&&voltarFoco.focus({preventScroll:true});
+  }
+  document.querySelectorAll('[data-funil]').forEach(a=>a.addEventListener('click',e=>{
+    e.preventDefault(); abrir(a.dataset.funil||'site',a);
+  }));
+  box.querySelector('.funil-fechar').addEventListener('click',fechar);
+  box.addEventListener('click',e=>{if(e.target===box)fechar();});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('aberto'))fechar();});
 })();
 
 // topo muda ao rolar
