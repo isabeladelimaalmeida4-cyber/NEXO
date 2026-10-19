@@ -310,6 +310,36 @@ html.funil-aberto body{overflow:hidden}
 .vit figcaption i{font-style:normal;color:var(--champagne);font-size:18px}
 .vit:first-child figcaption b{font-size:22px}
 
+/* imagem em tela cheia */
+.vit,.moldura img{cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:180;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(12,3,5,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:64px 72px 24px}
+.lb.aberto{display:flex;animation:lb-entra .25s ease-out}
+@keyframes lb-entra{from{opacity:0}to{opacity:1}}
+.lb figure{margin:0;display:flex;flex-direction:column;align-items:center;max-width:100%;max-height:100%;min-height:0}
+.lb img{display:block;max-width:min(1600px,100%);max-height:calc(100vh - 170px);width:auto;height:auto;border-radius:12px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);background:#f4f5f7;animation:lb-img .3s var(--ease)}
+@keyframes lb-img{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+.lb figcaption{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:6px 16px;margin-top:18px;text-align:center}
+.lb figcaption small{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--champagne)}
+.lb figcaption b{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--marfim)}
+.lb figcaption .cont{font-size:13px;color:rgba(213,201,199,.6)}
+.lb-dica{display:none;width:100%;font-size:12.5px;color:rgba(213,201,199,.55)}
+.lb figcaption a{font-size:14px;font-weight:600;color:var(--champagne);border-bottom:1px solid var(--linha-forte)}
+.lb button{position:absolute;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;border:1px solid var(--linha-forte);background:rgba(31,9,11,.7);color:var(--marfim);font-size:24px;line-height:1;cursor:pointer;transition:border-color .2s ease,color .2s ease}
+.lb button:hover{border-color:var(--champagne);color:var(--champagne)}
+.lb .lb-fechar{top:14px;right:14px}
+.lb .lb-ant{left:14px;top:50%;translate:0 -50%}
+.lb .lb-prox{right:14px;top:50%;translate:0 -50%}
+html.lb-aberto body{overflow:hidden}
+@media (max-width:700px){
+  .lb{padding:64px 0 20px}
+  .lb img{border-radius:0;max-height:calc(100vh - 190px)}
+  .lb .lb-ant,.lb .lb-prox{top:auto;bottom:18px;translate:none;width:44px;height:44px}
+  .lb figcaption{padding:0 70px}
+}
+@media (max-width:700px) and (orientation:portrait){
+  .lb-dica{display:block}
+}
+
 /* revelação ao rolar (só com JS ativo) */
 .js .revela{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .js .revela.visivel{opacity:1;transform:none}
@@ -509,14 +539,14 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
   <div class="wrap">
     <div class="vitrine-topo">
       <div><p class="rotulo">O que criamos</p><h2 id="vitrine-titulo">Veja na tela como <em>funciona.</em></h2></div>
-      <p>Sistemas, automações e atendimento com IA, em telas de exemplo com empresas fictícias. Toque em cada tela para ver mais.</p>
+      <p>Sistemas, automações e atendimento com IA, em telas de exemplo com empresas fictícias. Toque em uma tela para abrir em tela cheia.</p>
     </div>
     <div class="vitrine-grade">
-      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-agenda.webp" alt="Tela de exemplo de sistema: agenda do dia de uma clínica de estética" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Agenda e clientes de uma clínica</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
-      <a class="vit" href="#agentes"><figure style="margin:0;height:100%"><img src="assets/exemplos/agente.webp" alt="Tela de exemplo: agente com IA marcando um horário pelo WhatsApp" width="1600" height="1000" decoding="async"><figcaption><span><small>Agente com IA</small><b>Atendimento no WhatsApp</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
-      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-dados.webp" alt="Tela de exemplo: automação que leva o pedido do site para a planilha" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Pedido do site direto na planilha</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
-      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-loja.webp" alt="Tela de exemplo de sistema: vendas e estoque de uma loja" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Vendas e estoque de uma loja</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
-      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-criacao.webp" alt="Tela de exemplo: contrato gerado e enviado automaticamente" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Contrato pronto e enviado</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-agenda.webp" alt="Tela de exemplo de sistema: agenda do dia de uma clínica de estética" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Agenda e clientes de uma clínica</b></span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></i></figcaption></figure></a>
+      <a class="vit" href="#agentes"><figure style="margin:0;height:100%"><img src="assets/exemplos/agente.webp" alt="Tela de exemplo: agente com IA marcando um horário pelo WhatsApp" width="1600" height="1000" decoding="async"><figcaption><span><small>Agente com IA</small><b>Atendimento no WhatsApp</b></span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></i></figcaption></figure></a>
+      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-dados.webp" alt="Tela de exemplo: automação que leva o pedido do site para a planilha" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Pedido do site direto na planilha</b></span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></i></figcaption></figure></a>
+      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-loja.webp" alt="Tela de exemplo de sistema: vendas e estoque de uma loja" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Vendas e estoque de uma loja</b></span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></i></figcaption></figure></a>
+      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-criacao.webp" alt="Tela de exemplo: contrato gerado e enviado automaticamente" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Contrato pronto e enviado</b></span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></i></figcaption></figure></a>
     </div>
   </div>
 </section>
@@ -938,6 +968,13 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
 
 </main>
 
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Imagem em tela cheia" hidden>
+  <button class="lb-fechar" type="button" aria-label="Fechar">×</button>
+  <button class="lb-ant" type="button" aria-label="Imagem anterior">‹</button>
+  <button class="lb-prox" type="button" aria-label="Próxima imagem">›</button>
+  <figure><img alt=""><figcaption><small></small><b></b><span class="cont"></span><a href="#">Ver no site</a><span class="lb-dica">Gire o celular ou use dois dedos para ver maior</span></figcaption></figure>
+</div>
+
 <div class="funil" id="funil" role="dialog" aria-modal="true" aria-labelledby="funil-titulo" hidden>
   <div class="funil-caixa">
     <button class="funil-fechar" type="button" aria-label="Fechar">×</button>
@@ -1088,6 +1125,51 @@ document.documentElement.classList.add('js');
   box.querySelector('.funil-fechar').addEventListener('click',fechar);
   box.addEventListener('click',e=>{if(e.target===box)fechar();});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('aberto'))fechar();});
+})();
+
+
+// Imagens de exemplo abrem em tela cheia (com anterior/próxima, teclado e deslizar)
+(function(){
+  const lb=document.getElementById('lb'), img=lb.querySelector('img'), cap=lb.querySelector('figcaption');
+  const itens=[], porSrc={};
+  function registrar(el, src, alt, rot, nome, secao){
+    if(!(src in porSrc)){porSrc[src]=itens.length;itens.push({src,alt,rot,nome,secao});}
+    else{const it=itens[porSrc[src]];it.rot=it.rot||rot;it.nome=it.nome||nome;it.secao=it.secao||secao;}
+    const abrirAqui=e=>{e.preventDefault();abrir(porSrc[src],el);};
+    el.addEventListener('click',abrirAqui);
+    if(el.tagName==='IMG'){el.tabIndex=0;el.setAttribute('role','button');el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')abrirAqui(e);});}
+  }
+  document.querySelectorAll('.vit').forEach(a=>{const i=a.querySelector('img');
+    registrar(a,i.getAttribute('src'),i.alt,a.querySelector('small').textContent,a.querySelector('b').textContent,a.getAttribute('href'));});
+  document.querySelectorAll('.moldura img').forEach(i=>{
+    const fig=i.closest('figure'), sec=i.closest('section');
+    const h=fig&&fig.querySelector('figcaption h3'), r=fig&&fig.querySelector('figcaption .rotulo');
+    const linha=i.closest('.linha-auto'), lh=linha&&linha.querySelector('.texto h3'), lr=linha&&linha.querySelector('.texto .rotulo');
+    registrar(i,i.getAttribute('src'),i.alt,(r||lr)?(r||lr).textContent:'',(h||lh)?(h||lh).textContent:'',sec&&sec.id?'#'+sec.id:'');
+  });
+  let atual=0, voltarFoco=null;
+  function mostrar(){
+    const it=itens[atual];
+    img.src=it.src; img.alt=it.alt;
+    img.style.animation='none'; void img.offsetWidth; img.style.animation='';
+    cap.querySelector('small').textContent=it.rot||'';
+    cap.querySelector('b').textContent=it.nome||'';
+    cap.querySelector('.cont').textContent=(atual+1)+' de '+itens.length;
+    const a=cap.querySelector('a'); a.hidden=!it.secao; a.href=it.secao||'#';
+  }
+  function abrir(i,el){atual=i;voltarFoco=el;lb.hidden=false;lb.classList.add('aberto');document.documentElement.classList.add('lb-aberto');mostrar();lb.querySelector('.lb-fechar').focus({preventScroll:true});}
+  function fechar(){lb.classList.remove('aberto');lb.hidden=true;document.documentElement.classList.remove('lb-aberto');voltarFoco&&voltarFoco.focus&&voltarFoco.focus({preventScroll:true});}
+  const ir=d=>{atual=(atual+d+itens.length)%itens.length;mostrar();};
+  lb.querySelector('.lb-fechar').addEventListener('click',fechar);
+  lb.querySelector('.lb-ant').addEventListener('click',()=>ir(-1));
+  lb.querySelector('.lb-prox').addEventListener('click',()=>ir(1));
+  lb.addEventListener('click',e=>{if(e.target===lb||e.target.tagName==='FIGURE')fechar();});
+  cap.querySelector('a').addEventListener('click',()=>fechar());
+  addEventListener('keydown',e=>{if(!lb.classList.contains('aberto'))return;
+    if(e.key==='Escape')fechar(); else if(e.key==='ArrowRight')ir(1); else if(e.key==='ArrowLeft')ir(-1);});
+  let x0=null;
+  lb.addEventListener('touchstart',e=>{x0=e.touches.length===1?e.touches[0].clientX:null;},{passive:true});
+  lb.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)ir(dx<0?1:-1);x0=null;});
 })();
 
 // topo muda ao rolar
