@@ -293,6 +293,23 @@ p{margin:0}
 .funil-resumo{margin-top:16px;font-size:13px;color:rgba(213,201,199,.7)}
 html.funil-aberto body{overflow:hidden}
 
+/* vitrine logo no começo: as telas de exemplo como gancho visual */
+.vitrine{padding:clamp(56px,7vw,90px) 0 clamp(64px,8vw,100px);background:var(--vinho-profundo)}
+.vitrine-topo{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:34px}
+.vitrine-topo h2{font-size:clamp(28px,3.6vw,42px);margin-top:14px}
+.vitrine-topo p{max-width:380px;font-size:15px;color:rgba(213,201,199,.75)}
+.vitrine-grade{display:grid;grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:auto auto;gap:18px}
+.vit{position:relative;display:block;border-radius:16px;overflow:hidden;background:#120405;border:1px solid rgba(244,238,232,.10);box-shadow:0 30px 60px -36px rgba(0,0,0,.9);transition:border-color .4s ease,transform .6s var(--ease)}
+.vit:hover{border-color:var(--linha-forte);transform:translateY(-3px)}
+.vit:first-child{grid-row:1 / 3}
+.vit img{display:block;width:100%;height:100%;aspect-ratio:16/10;object-fit:cover;object-position:left top;background:#f4f5f7}
+.vit:first-child img{aspect-ratio:auto;min-height:100%}
+.vit figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(transparent,rgba(20,5,8,.92) 62%);display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.vit figcaption b{display:block;font-family:var(--serif);font-size:18px;font-weight:600;color:var(--marfim);line-height:1.2}
+.vit figcaption small{display:block;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--champagne);margin-bottom:4px}
+.vit figcaption i{font-style:normal;color:var(--champagne);font-size:18px}
+.vit:first-child figcaption b{font-size:22px}
+
 /* revelação ao rolar (só com JS ativo) */
 .js .revela{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .js .revela.visivel{opacity:1;transform:none}
@@ -315,6 +332,9 @@ html.funil-aberto body{overflow:hidden}
   .problema .wrap{grid-template-columns:1fr;align-items:start}
   .faixa .wrap{grid-template-columns:1fr 1fr;padding:0}
   .faixa a:nth-child(3){border-left:none}
+  .vitrine-grade{grid-template-columns:1fr 1fr}
+  .vit:first-child{grid-row:auto;grid-column:1 / -1}
+  .vit:first-child img{aspect-ratio:16/10}
   .faixa a:nth-child(n+3){border-top:1px solid var(--linha)}
   .tipos-3,.tipos-2,.galeria,.agente-grid,.linha-auto,.combinado.quatro{grid-template-columns:1fr}
   .linha-auto.inverte{grid-template-columns:1fr}
@@ -325,7 +345,7 @@ html.funil-aberto body{overflow:hidden}
   .recurso:nth-child(even){border-left:1px solid var(--linha)}
   .rodape .wrap{grid-template-columns:1fr;gap:30px}
 }
-@media (max-width:820px){
+@media (max-width:1120px){
   .menu{position:fixed;inset:76px 0 auto;flex-direction:column;align-items:stretch;gap:0;padding:8px var(--gut) 26px;background:var(--vinho-profundo);border-bottom:1px solid var(--linha);box-shadow:0 30px 60px -20px rgba(0,0,0,.8);transform:translateY(-12px);opacity:0;visibility:hidden;transition:opacity .3s ease,transform .3s ease,visibility .3s}
   .menu.aberto{opacity:1;transform:none;visibility:visible}
   .menu a:not(.btn){padding:16px 0;font-size:17px;color:var(--marfim);border-bottom:1px solid var(--linha)}
@@ -344,6 +364,11 @@ html.funil-aberto body{overflow:hidden}
   .reune li:nth-child(n){padding:20px 0;border-left:none}
   .etapas{grid-template-columns:1fr;row-gap:36px}
   .faixa .wrap{grid-template-columns:1fr}
+  .vitrine-topo{flex-direction:column;align-items:flex-start}
+  .vitrine-grade{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;margin:0 calc(var(--gut) * -1);padding:0 var(--gut) 8px;scrollbar-width:none}
+  .vitrine-grade::-webkit-scrollbar{display:none}
+  .vit{flex:0 0 84%;scroll-snap-align:start}
+  .vit:first-child img{aspect-ratio:16/10}
   .faixa a+a,.faixa a:nth-child(3){border-left:none;border-top:1px solid var(--linha)}
   .faixa a{padding:18px var(--gut)}
   .recursos{grid-template-columns:1fr}
@@ -478,6 +503,23 @@ html.intro-ativa:not(.intro-libera) .abertura .wrap{opacity:0;transform:translat
     <a href="#agentes"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5l1.2-3.6A8 8 0 1 1 8.4 19z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span><span><b>Agentes com IA</b><small>Atendimento a qualquer hora</small></span></a>
   </div>
 </nav>
+
+<!-- VITRINE: exemplos logo no começo -->
+<section class="vitrine" id="vitrine" aria-labelledby="vitrine-titulo">
+  <div class="wrap">
+    <div class="vitrine-topo">
+      <div><p class="rotulo">O que criamos</p><h2 id="vitrine-titulo">Veja na tela como <em>funciona.</em></h2></div>
+      <p>Sistemas, automações e atendimento com IA, em telas de exemplo com empresas fictícias. Toque em cada tela para ver mais.</p>
+    </div>
+    <div class="vitrine-grade">
+      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-agenda.webp" alt="Tela de exemplo de sistema: agenda do dia de uma clínica de estética" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Agenda e clientes de uma clínica</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+      <a class="vit" href="#agentes"><figure style="margin:0;height:100%"><img src="assets/exemplos/agente.webp" alt="Tela de exemplo: agente com IA marcando um horário pelo WhatsApp" width="1600" height="1000" decoding="async"><figcaption><span><small>Agente com IA</small><b>Atendimento no WhatsApp</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-dados.webp" alt="Tela de exemplo: automação que leva o pedido do site para a planilha" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Pedido do site direto na planilha</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+      <a class="vit" href="#sistemas"><figure style="margin:0;height:100%"><img src="assets/exemplos/sis-loja.webp" alt="Tela de exemplo de sistema: vendas e estoque de uma loja" width="1600" height="1000" decoding="async"><figcaption><span><small>Sistema interno</small><b>Vendas e estoque de uma loja</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+      <a class="vit" href="#automacao"><figure style="margin:0;height:100%"><img src="assets/exemplos/auto-criacao.webp" alt="Tela de exemplo: contrato gerado e enviado automaticamente" width="1600" height="1000" decoding="async"><figcaption><span><small>Automação</small><b>Contrato pronto e enviado</b></span><i aria-hidden="true">→</i></figcaption></figure></a>
+    </div>
+  </div>
+</section>
 
 <!-- O PROBLEMA -->
 <section class="problema">
