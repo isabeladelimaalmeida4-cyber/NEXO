@@ -633,8 +633,8 @@
   ];
 
   /* Trechos desacelerados para a narração caber em ritmo natural: [início, fim, fator] em tempo de
-     animação. O mesmo mapa está no gerador da narração (video/narracao/narrar.py). */
-  const TRECHOS = [[5.6, 8.32, 1.6], [10.98, 14.64, 1.25]];
+     animação. O mesmo mapa está no gerador da trilha (video/audio/gerar_trilha.py). */
+  const TRECHOS = [[5.6, 9.4, 1.55], [10.98, 14.64, 1.4]];
   const DURACAO = DUR + TRECHOS.reduce((s, [a, b, f]) => s + (b - a) * (f - 1), 0);
   function tempoCena(T) {
     let atraso = 0;
@@ -711,7 +711,7 @@
       alert('Abra esta página por um servidor (ex.: GitHub Pages ou "npx serve") para gravar o vídeo.');
       return;
     }
-    // a narração entra na gravação pelo Web Audio (o som continua saindo nos alto-falantes)
+    // a trilha (voz + efeitos) entra na gravação pelo Web Audio (o som continua saindo nos alto-falantes)
     if (!audioCtx) {
       audioCtx = new AudioContext();
       const origem = audioCtx.createMediaElementSource(narracao);
