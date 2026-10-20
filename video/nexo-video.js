@@ -632,7 +632,24 @@
     } },
   ];
 
-  function render(t) {
+  /* Trechos desacelerados para a narração caber em ritmo natural: [início, fim, fator] em tempo de
+     animação. O mesmo mapa está no gerador da narração (video/narracao/narrar.py). */
+  const TRECHOS = [[5.6, 8.32, 1.6], [10.98, 14.64, 1.25]];
+  const DURACAO = DUR + TRECHOS.reduce((s, [a, b, f]) => s + (b - a) * (f - 1), 0);
+  function tempoCena(T) {
+    let atraso = 0;
+    for (const [a, b, f] of TRECHOS) {
+      const va = a + atraso, vb = va + (b - a) * f;
+      if (T < va) break;
+      if (T < vb) return a + (T - va) / f;
+      atraso += (b - a) * (f - 1);
+    }
+    return T - atraso;
+  }
+
+  // T = tempo do vídeo (o mesmo da narração)
+  function render(T) {
+    const t = tempoCena(T);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1; ctx.filter = 'none';
     fundo(ctx, t);
@@ -650,30 +667,41 @@
     tocar: document.getElementById('tocar'), reiniciar: document.getElementById('reiniciar'),
     linha: document.getElementById('linha'), tempo: document.getElementById('tempo'), baixar: document.getElementById('baixar'),
   };
-  let tocando = true, atual = 0, inicio = 0, gravador = null;
+  const narracao = document.getElementById('narracao');
+  let tocando = false, atual = 0, inicio = 0, gravador = null, audioCtx = null, saidaAudio = null;
+  ui.linha.max = DURACAO;
+
+  const somAcompanha = () => {
+    if (!tocando) { narracao.pause(); return; }
+    if (atual >= narracao.duration) return;
+    if (narracao.paused || Math.abs(narracao.currentTime - atual) > .12) narracao.currentTime = atual;
+    if (narracao.paused) narracao.play().catch(() => {});
+  };
   const fmt = s => s.toFixed(1).replace('.', ',');
 
   function quadro(agora) {
     if (tocando) {
       atual = (agora - inicio) / 1000;
-      if (atual >= DUR) {
-        if (gravador) { render(DUR - .001); gravador.stop(); gravador = null; }
-        atual %= DUR; inicio = agora - atual * 1000;
+      if (atual >= DURACAO) {
+        if (gravador) { render(DURACAO - .001); gravador.stop(); gravador = null; }
+        atual %= DURACAO; inicio = agora - atual * 1000;
       }
+      somAcompanha();
     }
     render(atual);
     ui.linha.value = atual;
-    ui.tempo.textContent = `${fmt(atual)} / ${fmt(DUR)}s`;
+    ui.tempo.textContent = `${fmt(atual)} / ${fmt(DURACAO)}s`;
     requestAnimationFrame(quadro);
   }
-  const irPara = s => { atual = s; inicio = performance.now() - s * 1000; };
-
-  ui.tocar.onclick = () => {
-    tocando = !tocando;
-    if (tocando) irPara(atual);
-    ui.tocar.textContent = tocando ? '❚❚' : '▶';
-    ui.tocar.setAttribute('aria-label', tocando ? 'Pausar' : 'Tocar');
+  const irPara = s => { atual = s; inicio = performance.now() - s * 1000; narracao.currentTime = Math.min(s, narracao.duration || s); somAcompanha(); };
+  const estado = v => {
+    tocando = v;
+    ui.tocar.textContent = v ? '❚❚' : '▶';
+    ui.tocar.setAttribute('aria-label', v ? 'Pausar' : 'Tocar');
+    if (v) irPara(atual >= DURACAO ? 0 : atual); else narracao.pause();
   };
+
+  ui.tocar.onclick = () => estado(!tocando);
   ui.reiniciar.onclick = () => irPara(0);
   ui.linha.oninput = () => { irPara(+ui.linha.value); };
 
@@ -683,7 +711,16 @@
       alert('Abra esta página por um servidor (ex.: GitHub Pages ou "npx serve") para gravar o vídeo.');
       return;
     }
-    const tipos = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+    // a narração entra na gravação pelo Web Audio (o som continua saindo nos alto-falantes)
+    if (!audioCtx) {
+      audioCtx = new AudioContext();
+      const origem = audioCtx.createMediaElementSource(narracao);
+      saidaAudio = audioCtx.createMediaStreamDestination();
+      origem.connect(audioCtx.destination); origem.connect(saidaAudio);
+    }
+    audioCtx.resume();
+    saidaAudio.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+    const tipos = ['video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     const tipo = tipos.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
     if (!tipo) { alert('Este navegador não grava vídeo do canvas.'); return; }
     const partes = [];
@@ -697,8 +734,8 @@
       ui.baixar.disabled = false; ui.baixar.textContent = 'Baixar vídeo';
     };
     ui.baixar.disabled = true; ui.baixar.textContent = 'Gravando…';
-    tocando = true; ui.tocar.textContent = '❚❚';
-    irPara(0);
+    atual = 0;
+    estado(true);
     rec.start();
     gravador = rec;
   };
@@ -711,10 +748,11 @@
 
   // ?quadro=12.5 desenha um quadro parado; ?exportar deixa window.nexoRender para captura quadro a quadro
   window.nexoRender = render;
+  window.nexoDuracao = DURACAO;
   window.nexoPronto = pronto;
   pronto.then(() => {
     if (params.has('exportar')) { document.body.classList.add('exportando'); render(0); return; }
-    if (params.has('quadro')) { tocando = false; atual = +params.get('quadro'); ui.tocar.textContent = '▶'; }
+    if (params.has('quadro')) atual = +params.get('quadro');
     inicio = performance.now() - atual * 1000;
     requestAnimationFrame(quadro);
   });
