@@ -9,7 +9,7 @@ Efeitos e fundo: sintetizados aqui mesmo (ruído filtrado, senoides), sem amostr
   ffmpeg -i trilha.wav -c:a aac -b:a 160k ../trilha.m4a
 
 Todos os tempos abaixo estão em tempo de animação (o mesmo de nexo-video.js); TRECHOS precisa
-ser igual ao do JS, que desacelera algumas cenas para a fala caber.
+ser igual ao do JS, que estica alguns trechos para cada fala caber.
 """
 import sys
 import numpy as np
@@ -17,17 +17,22 @@ import scipy.signal as ss
 import soundfile as sf
 
 SR = 48000
-TRECHOS = [(5.6, 9.4, 1.55), (10.98, 14.64, 1.4)]
+# (início, fim) em tempo de animação e quanto o trecho dura no vídeo
+TRECHOS = [
+    (2.6, 3.5, 1.55), (6.45, 6.55, .85), (7.0, 8.02, 2.6), (8.82, 8.84, 1.25), (10.45, 10.5, .65),
+    (11.45, 11.95, 3.4), (12.6, 12.9, 1.1), (13.72, 14.3, 1.9), (15.9, 16.3, .8), (16.75, 17.0, .7),
+    (18.0, 18.4, .9), (24.6, 25.0, 1.6),
+]
 
 
 def video(t):
     atraso = 0
-    for a, b, f in TRECHOS:
+    for a, b, d in TRECHOS:
         if t < a:
             break
         if t < b:
-            return t + atraso + (t - a) * (f - 1)
-        atraso += (b - a) * (f - 1)
+            return a + atraso + (t - a) * d / (b - a)
+        atraso += d - (b - a)
     return t + atraso
 
 
@@ -37,20 +42,20 @@ rng = np.random.default_rng(7)
 # ---------- narração: (início, fim máximo, texto); começa quando a legenda aparece ----------
 FALAS = [
     (0.05, 1.30, "Deixa eu adivinhar..."),
-    (2.62, 3.80, "Seu negócio é melhor..."),
-    (3.85, 5.65, "do que o seu site mostra hoje."),
-    (5.66, 6.95, "Seu site está desatualizado."),
-    (7.00, 8.36, "E a planilha ainda é atualizada à mão."),
-    (8.42, 9.40, "Quero meu site!"),
-    (9.40, 11.00, "Boas-vindas ao Nexo."),
-    (11.06, 12.20, "Criação de sites."),
-    (12.20, 13.34, "Automatizar a rotina."),
-    (13.30, 14.56, "Planilhas e agenda em ordem!"),
-    (14.60, 16.40, "Um site feito sob medida..."),
-    (16.42, 17.28, "com método."),
-    (17.30, 18.72, "à altura do seu negócio."),
+    (2.62, 3.84, "Você trabalha até tarde..."),
+    (3.85, 5.62, "e mesmo assim, não dá conta."),
+    (5.66, 6.95, "Doze mensagens sem resposta."),
+    (6.98, 8.34, "Três horas por semana atualizando planilha à mão."),
+    (8.36, 9.40, "Cento e cinquenta e seis horas por ano."),
+    (9.40, 11.00, "Quase um mês de trabalho, todo ano."),
+    (11.02, 12.20, "O cliente procurou você... não achou. E foi no concorrente."),
+    (12.20, 13.32, "Um cliente perdido por mês..."),
+    (13.32, 14.60, "a quinhentos reais cada, são seis mil por ano."),
+    (14.60, 16.40, "Você não precisa trabalhar mais..."),
+    (16.42, 17.28, "nem dormir menos."),
+    (17.30, 18.72, "Precisa de tempo de volta."),
     (19.60, 21.90, "Nexo, operações que transformam."),
-    (23.35, 24.95, "Quero meu site."),
+    (23.35, 25.00, "Conta pra gente o que mais pesa no seu dia."),
 ]
 
 
@@ -259,15 +264,17 @@ def roteiro():
     for k, t in enumerate([2.68, 2.95, 3.18, 3.33]):
         add(t, pop(650 + 120 * k, 260, .1), .55)
     add(3.42, subida(.42, 400, 5000), .6)
-    # 4 · frase cresce, "mostra hoje." entra, saída com rastro
-    for k in range(5):
+    # 4 · "e mesmo assim" cresce, "não dá conta." entra, saída com rastro
+    for k in range(3):
         add(3.85 + k * .075, tick(1800 + 160 * k, .03), .22)
     add(4.52, whoosh(.38, 600, 3500, .9, 0), .45)
     add(5.02, pop(820, 330, .09), .45)
     add(5.38, whoosh(.36, 700, 5000, -.2, .9), .5)
-    # 5 · cartão de alerta
+    # 5 · notificação de mensagens: pings que se acumulam
     add(5.56, whoosh(.4, 300, 2500, .7, 0), .45)
-    add(5.69, alerta(), .32)
+    add(5.69, alerta(), .3)
+    for k in range(3):
+        add(6.0 + k * .14, sino(1760 + 220 * k, .35), .12)
     for k in range(4):
         add(5.78 + k * .11, tick(2000 + 150 * k, .03), .2)
     for k in range(4):
@@ -278,45 +285,52 @@ def roteiro():
         add(6.98 + k * .036, tick(rng.uniform(2600, 3600), .022), .2)
     add(7.15, carregando(.85), .18)
     add(8.06, bolha(520, 160, .26), .38)
-    # 7 · CTA: palavras, balanço, clique e subida
-    add(8.38, pop(760, 320, .08), .4)
-    add(8.55, pop(900, 360, .08), .4)
-    add(8.6, whoosh(.18, 900, 2600, -.4, .4), .18)
-    add(8.78, whoosh(.18, 900, 2600, .4, -.4), .18)
-    add(8.86, clique(), .7)
+    # 7 · contador de horas perdidas: tiques acelerando e um baque quando para em 156
+    add(8.36, pop(760, 320, .08), .4)
+    for k in range(16):
+        add(8.4 + .36 * (1 - (1 - k / 16) ** .5), tick(1500 + 70 * k, .025), .22)
+    add(8.46, pop(900, 360, .08), .3)
+    add(8.76, impacto(.7, 62, .8), .55)
     add(9.02, whoosh(.38, 400, 4500, 0, 0), .5)
-    # 8 · "Boas-vindas ao" + símbolo que se desenha
+    # 8 · "Quase um mês" + calendário girando para dentro
     add(9.4, pop(700, 300, .08), .35)
     add(9.56, pop(820, 320, .08), .35)
-    add(9.72, brilho(1.1, 1046.5), .3)
+    add(9.7, whoosh(.3, 500, 2500, -.3, .3), .3)
+    add(9.84, pop(520, 170, .16), .5)
+    add(10.05, tick(1600, .04), .25)
     add(10.6, whoosh(.38, 3500, 400, 0, 0, pico=.3), .4)
-    # 9 · cartão "Criação de sites"
+    # 9 · cartão "Procurou você": busca, "Não achou." (baque grave) e o cliente indo embora
     add(10.96, whoosh(.36, 300, 2800, -.6, 0), .4)
     add(11.08, pop(1000, 380, .1), .4)
-    for k in range(3):
+    for k in range(2):
         add(11.18 + k * .09, tick(2100 + 200 * k, .03), .2)
+    add(11.6, pop(420, 130, .2), .55)
+    add(11.78, whoosh(.55, 400, 3000, 0, 1.0), .5)
     add(11.93, whoosh(.3, 2000, 500, 0, .3, pico=.3), .32)
-    # 10 · pílula "Automatizar a rotina"
+    # 10 · pílula "−1 cliente por mês": tom descendo
     add(12.18, bolha(160, 640, .24), .38)
     add(12.28, pop(940, 360, .08), .3)
-    add(12.52, pop(1050, 420, .08), .38)
+    add(12.32, pop(500, 140, .22), .5)
+    add(12.52, pop(700, 300, .08), .3)
     add(12.96, whoosh(.4, 500, 4500, .2, -.8), .5)
-    # 11 · etiqueta que gira, cresce e desfoca
+    # 11 · etiqueta com a conta: tiques de calculadora e um sino grave no resultado
     add(13.28, whoosh(.42, 300, 3000, -.7, .3), .45)
-    for k in range(5):
-        add(13.32 + k * .07, tick(1700 + 180 * k, .03), .2)
+    for k in range(4):
+        add(13.32 + k * .07, tick(1700 + 180 * k, .03), .22)
+    add(13.6, sino(587.33, 1.0), .3)
+    add(13.6, pop(480, 150, .2), .4)
     add(14.3, subida(.36, 500, 4500), .45)
-    # 12 · "Um site feito" + troca "sob medida." → "com método."
+    # 12 · "Você não precisa" + troca "trabalhar mais." → "dormir menos."
     for k in range(3):
         add(14.65 + k * .12, pop(620 + 110 * k, 280, .08), .32)
     add(15.5, pop(980, 420, .1), .35)
-    add(15.5, brilho(.7, 1567.98, (0, 4, 7, 12), .05), .14)
     add(16.32, whoosh(.32, 600, 3200, 0, 0, pico=.4), .42)
     add(16.98, whoosh(.32, 2400, 500, 0, 0, pico=.3), .3)
-    # 12b · "à altura do seu negócio." e saída para a esquerda
+    # 12b · "Precisa de tempo de volta." (alívio: cintilado) e saída para a esquerda
     add(17.25, whoosh(.4, 300, 2600, .7, 0), .42)
-    for k in range(3):
-        add(17.48 + k * .1, pop(700 + 110 * k, 300, .08), .3)
+    for k in range(2):
+        add(17.3 + k * .12, pop(700 + 110 * k, 300, .08), .3)
+    add(17.56, brilho(1.0, 1046.5, (0, 4, 7, 12, 16), .06), .22)
     add(18.4, whoosh(.38, 700, 5000, .2, -.9), .5)
     # 13 · símbolo gira em 3D, letras caem, linha e assinatura
     add(18.66, whoosh(.85, 250, 2200, .9, -.3), .5)
@@ -337,7 +351,7 @@ def roteiro():
     add(23.36, clique(), .55)
     for k in range(5):
         add(23.55 + k * .135, tick(1400 * 2 ** (k * 2 / 12), .05), .32)
-    add(24.0, sino(1567.98, 1.2), .18)
+    add(23.4, sino(1567.98, 1.2), .16)
     return E
 
 

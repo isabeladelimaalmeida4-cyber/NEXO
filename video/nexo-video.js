@@ -169,6 +169,10 @@
     aviso: new Path2D('M12 4 2.5 20h19L12 4zM12 10v4.5M12 17.3h.01'),
     planilha: new Path2D('M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8.5 12.5h7M8.5 16h7M12 11v8'),
     seta: new Path2D('M5 12h14M13 6l6 6-6 6'),
+    mensagem: new Path2D('M4 4.5h16A1.5 1.5 0 0 1 21.5 6v10a1.5 1.5 0 0 1-1.5 1.5h-10l-5 4v-4H4A1.5 1.5 0 0 1 2.5 16V6A1.5 1.5 0 0 1 4 4.5zM7.5 10h9M7.5 13.5h6'),
+    agenda: new Path2D('M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM3 9h18M8 2.5v3M16 2.5v3M7.5 13h3M13.5 13h3M7.5 17h3'),
+    busca: new Path2D('M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.5 15.5l5 5'),
+    clienteMenos: new Path2D('M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2.5 21a6.5 6.5 0 0 1 13 0M16.5 11h5'),
   };
   function icone(g, nome, cx, cy, tam, cor, lw = 1.7) {
     g.save();
@@ -312,7 +316,7 @@
       camada(g, { blur: 8 * (1 - P(t, 1.05, 1.25)) }, x => tileSimbolo(x, p.x, p.y, base * p.s));
     } },
 
-    // 3 · mural tingido, ondas de choque e palavras dentro do tile; termina num zoom forte
+    // 3 · mural tingido, ondas de choque e "você trabalha até tarde." dentro do tile; termina num zoom forte
     { a: 2.4, b: 3.9, draw(g, t) {
       const e = P(t, 2.4, 3.9), kp = ease.in(P(t, 3.55, 3.9));
       camada(g, { alpha: 1 - ease.in(P(t, 3.66, 3.9)), blur: 26 * kp }, x => em(x, 540, CY, 1 + 2.6 * kp, 0, x => {
@@ -328,13 +332,13 @@
           x.beginPath(); x.arc(p.x, p.y, lerp(70, 1500, ease.out(k)), 0, Math.PI * 2); x.stroke();
           x.restore();
         }
-        const palavras = [['seu', 2.68], ['negócio', 2.95], ['é', 3.18], ['melhor.', 3.33]];
+        const palavras = [['você', 2.68], ['trabalha', 2.95], ['até', 3.18], ['tarde.', 3.33]];
         let atual = null;
         for (const w of palavras) if (t >= w[1]) atual = w;
         tileSimbolo(x, p.x, p.y, 150 * p.s, atual ? .28 : 1);
         if (atual) {
           const k = ease.back(P(t, atual[1], atual[1] + .22));
-          const fim = atual[0] === 'melhor.';
+          const fim = atual[0] === 'tarde.';
           x.save();
           x.translate(p.x, p.y + 38); x.scale(lerp(.5, 1, k), lerp(.5, 1, k));
           x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 40;
@@ -344,26 +348,26 @@
       }));
     } },
 
-    // 4 · "do que o seu site" cresce; "mostra hoje." entra e assume o centro
+    // 4 · "e mesmo assim" cresce; "não dá conta." entra e assume o centro
     { a: 3.75, b: 5.7, draw(g, t) {
-      const A = ['do', 'que', 'o', 'seu', 'site'].map((text, i) => ({ text, t0: 3.85 + i * .075, font: F(500, 84, SERIF), color: C.marfim }));
+      const A = ['e', 'mesmo', 'assim'].map((text, i) => ({ text, t0: 3.85 + i * .075, font: F(500, 84, SERIF), color: C.marfim }));
       const kA = P(t, 4.72, 5.0);
       camada(g, { alpha: 1 - kA, blur: 10 * kA }, x => em(x, 540, CY, lerp(.5, 1, ease.out(P(t, 3.8, 4.45))), 0, x => {
         x.translate(-150 * ease.inOut(P(t, 4.45, 4.8)) - 60 * kA, 0);
         frase(x, t, A, { x: 540, y: CY, gap: 20, dur: .4, de: { dx: -30, dy: -50, s: .4, blur: 6 } });
       }));
       const B = [
-        { text: 'mostra', t0: 4.6, font: F(600, 124, SERIF, true), color: C.champ },
-        { text: 'hoje.', t0: 5.02, font: F(600, 124, SERIF, true), color: C.marfim },
+        { text: 'não dá', t0: 4.6, font: F(600, 124, SERIF, true), color: C.champ },
+        { text: 'conta.', t0: 5.02, font: F(600, 124, SERIF, true), color: C.marfim },
       ];
       const kB = ease.in(P(t, 5.42, 5.68));
       camada(g, { alpha: 1 - kB, mx: 190 * kB }, x => em(x, 540, CY, [1 - .35 * kB, 1], 0, x => {
-        x.translate(lerp(340, 0, ease.inOut(P(t, 4.72, 5.1))), lerp(30, 0, ease.inOut(P(t, 4.72, 5.1))));
+        x.translate(lerp(300, 0, ease.inOut(P(t, 4.72, 5.1))), lerp(30, 0, ease.inOut(P(t, 4.72, 5.1))));
         frase(x, t, B, { x: 540, y: CY + 40, gap: 26, dur: .42, de: { dx: 70, dy: 50, s: .6, blur: 12 } });
       }));
     } },
 
-    // 5 · cartão de alerta com o texto entrando palavra a palavra
+    // 5 · notificação de mensagens acumuladas, texto palavra a palavra
     { zoom: 1.45, a: 5.6, b: 6.85, draw(g, t) {
       const ke = ease.out(P(t, 5.6, 5.92)), y = CY + 8 * Math.sin(t * 3);
       const w = 720, h = 140, esq = 540 - w / 2;
@@ -374,10 +378,10 @@
         if (ki > 0) {
           x.save(); x.translate(esq + 72, y); x.scale(ki, ki);
           x.fillStyle = rgba(C.champ, .16); x.beginPath(); x.arc(0, 0, 36, 0, Math.PI * 2); x.fill();
-          icone(x, 'aviso', 0, -1, 38, C.champ, 1.9);
+          icone(x, 'mensagem', 0, 1, 38, C.champ, 1.8);
           x.restore();
         }
-        const itens = ['Seu', 'site', 'está', 'desatualizado'].map((text, i) => ({
+        const itens = ['12', 'mensagens', 'sem', 'resposta'].map((text, i) => ({
           text, t0: 5.78 + i * .11, font: F(500, 38, SANS), color: i === 3 ? C.champ : C.marfim,
           alpha: 1 - P(t, 6.6 + (3 - i) * .05, 6.72 + (3 - i) * .05),
         }));
@@ -416,59 +420,63 @@
       });
     } },
 
-    // 7 · pílula CTA "Quero meu site", balança, é "clicada" e sobe
+    // 7 · pílula com o contador de horas perdidas no ano; "pesa" e sobe
     { zoom: 1.45, a: 8.32, b: 9.42, draw(g, t) {
       const itens = [
-        { text: 'Quero', t0: 8.38, font: F(600, 42, SANS), color: C.vinho },
-        { text: 'meu site', t0: 8.55, font: F(600, 42, SANS), color: C.vinho, de: { dx: 40, dy: 34, s: .5 } },
+        { w: largura({ text: '156', font: F(700, 46, SANS) }), t0: 8.36, draw: x => texto(x, String(Math.round(156 * ease.out(P(t, 8.4, 8.76)))), 0, 0, F(700, 46, SANS), C.vinho) },
+        { text: 'horas por ano', t0: 8.46, font: F(600, 42, SANS), color: C.vinho, de: { dx: 40, dy: 34, s: .5 } },
       ];
       const { total } = medir(t, itens, { gap: 12, dur: .35 });
-      const balanco = 46 * Math.sin((t - 8.6) * 7) * P(t, 8.6, 8.75) * (1 - P(t, 8.95, 9.08));
+      const balanco = 10 * Math.sin((t - 8.76) * 40) * P(t, 8.76, 8.8) * (1 - P(t, 8.84, 8.9));
       const ks = ease.in(P(t, 9.05, 9.36));
       const x0 = 540 + balanco, y0 = CY - 260 * ks;
-      const aperta = 1 - .07 * Math.sin(Math.PI * P(t, 8.86, 9.02));
+      const aperta = 1 + .08 * Math.sin(Math.PI * P(t, 8.74, 8.84));
       camada(g, { alpha: 1 - P(t, 9.18, 9.42), my: -150 * ks, blur: 18 * (1 - ease.out(P(t, 8.32, 8.46))) }, x => em(x, x0, y0, aperta, 0, x => {
         caixa(x, x0, y0, Math.max(480, total + 120), 124, 62, C.champ);
         frase(x, t, itens, { x: x0, y: y0 + 15, gap: 12, dur: .35, de: { dy: 30, s: .6, blur: 6 } });
       }));
     } },
 
-    // 8 · "Boas-vindas ao" + símbolo que se desenha
+    // 8 · "Quase um mês" + calendário, com o complemento embaixo
     { a: 9.36, b: 11.0, draw(g, t) {
       const itens = [
-        { text: 'Boas-vindas', t0: 9.4, font: F(600, 84, SERIF), color: C.marfim },
-        { text: 'ao', t0: 9.56, font: F(600, 84, SERIF), color: C.marfim },
-        { w: 128, t0: 9.72, dur: .3, de: { s: .4, dy: 0, dx: 0 }, draw: x => simbolo(x, 0, -34, 150, P(t, 9.72, 10.4)) },
+        { text: 'Quase', t0: 9.4, font: F(600, 92, SERIF), color: C.marfim },
+        { text: 'um mês', t0: 9.56, font: F(600, 92, SERIF, true), color: C.champ },
+        { w: 104, t0: 9.72, dur: .4, de: { s: .3, dy: 0, dx: 0, rot: -.6 }, draw: x => icone(x, 'agenda', 0, -32, 100, C.champ, 1.5) },
       ];
       const k = ease.in(P(t, 10.62, 10.98));
       camada(g, { alpha: 1 - k, blur: 6 * k }, x => em(x, 540, CY, (1 + .05 * P(t, 9.4, 10.6)) * lerp(1, .45, k), 0, x => {
         frase(x, t, itens, { x: 540, y: CY + 30, gap: 24, dur: .5, de: { dx: -90, dy: 80, s: .75, blur: 14 } });
+        const kc = P(t, 10.05, 10.35);
+        x.save(); x.globalAlpha *= kc;
+        texto(x, 'de trabalho, todo ano.', 540, CY + 120 + 18 * (1 - ease.out(kc)), F(400, 38, SANS), C.cinza);
+        x.restore();
       }));
     } },
 
-    // 9 · cartão "Criação de sites"
+    // 9 · cartão "Procurou você" → "Não achou. Foi no concorrente."
     { zoom: 1.35, a: 10.98, b: 12.22, draw(g, t) {
       const ke = P(t, 10.98, 11.24), kx = P(t, 11.95, 12.22);
       camada(g, { alpha: ease.out(ke) * (1 - kx), blur: 18 * (1 - ease.out(ke)) + 14 * kx }, x => em(x, 540, CY, lerp(.8, 1, ease.back(ke)) * lerp(1, .94, kx), 0, x => {
         caixa(x, 540, CY, 620, 340, 42, C.vinhoM, rgba(C.champ, .3));
         const ki = ease.back(P(t, 11.08, 11.3));
-        if (ki > 0) { x.save(); x.translate(540, CY - 92); x.scale(ki, ki); icone(x, 'site', 0, 0, 70, C.champ, 1.6); x.restore(); }
-        const itens = ['Criação', 'de', 'sites'].map((text, i) => ({ text, t0: 11.18 + i * .09, font: F(600, 60, SERIF), color: C.marfim }));
+        if (ki > 0) { x.save(); x.translate(540, CY - 92); x.scale(ki, ki); icone(x, 'busca', 0, 0, 70, C.champ, 1.6); x.restore(); }
+        const itens = ['Procurou', 'você'].map((text, i) => ({ text, t0: 11.18 + i * .09, font: F(600, 60, SERIF), color: C.marfim }));
         frase(x, t, itens, { x: 540, y: CY + 22, gap: 16, dur: .38, de: { dy: 30, s: .7, blur: 8 } });
-        const ks = P(t, 11.48, 11.75);
-        x.save(); x.globalAlpha *= ks;
-        texto(x, 'Sob medida para o seu negócio', 540, CY + 92 + 16 * (1 - ease.out(ks)), F(400, 30, SANS), C.cinza);
-        x.restore();
+        frase(x, t, [
+          { text: 'Não achou.', t0: 11.6, font: F(500, 32, SANS), color: C.cinza },
+          { text: 'Foi no concorrente.', t0: 11.78, font: F(600, 32, SANS), color: C.champ, de: { dx: 60, dy: 0, s: .9 } },
+        ], { x: 540, y: CY + 98, gap: 12, dur: .12, de: { dy: 18, s: .8, blur: 6 } });
       }));
     } },
 
-    // 10 · mancha desfocada vira pílula "Automatizar a rotina", que inclina e sai
+    // 10 · mancha desfocada vira pílula "−1 cliente por mês", que inclina e sai
     { zoom: 1.5, a: 12.18, b: 13.34, draw(g, t) {
       const kb = ease.out(P(t, 12.18, 12.42)), kx = ease.in(P(t, 12.98, 13.34));
       const itens = [
-        { w: 50, t0: 12.28, draw: x => icone(x, 'automacao', 0, -14, 46, C.champ, 1.8) },
-        { text: 'Automatizar', t0: 12.32, font: F(500, 42, SANS), color: C.marfim },
-        { text: 'a rotina', t0: 12.52, font: F(500, 42, SANS), color: C.champ, de: { dx: 50, dy: -46, s: .45 } },
+        { w: 50, t0: 12.28, draw: x => icone(x, 'clienteMenos', 0, -14, 46, C.champ, 1.8) },
+        { text: '−1 cliente', t0: 12.32, font: F(600, 42, SANS), color: C.marfim },
+        { text: 'por mês', t0: 12.52, font: F(500, 42, SANS), color: C.champ, de: { dx: 50, dy: -46, s: .45 } },
       ];
       const { total } = medir(t, itens, { gap: 16, dur: .38 });
       const w = lerp(240, total + 110, kb);
@@ -479,12 +487,12 @@
       }));
     } },
 
-    // 11 · etiqueta inclinada "Planilhas e agenda em ordem!" que gira, cresce e desfoca
+    // 11 · etiqueta inclinada com a conta "R$ 500 × 12 = R$ 6 mil/ano", que gira, cresce e desfoca
     { zoom: 1.5, a: 13.3, b: 14.64, draw(g, t) {
       const kr = ease.back(P(t, 13.3, 13.72)), kx = ease.in(P(t, 14.34, 14.64));
       const escalas = [1.5, .6, 1.4, .6, 1.3], alturas = [-34, 22, -22, 26, -16];
-      const itens = ['Planilhas', 'e', 'agenda', 'em', 'ordem!'].map((text, i) => ({
-        text, t0: 13.32 + i * .07, font: F(500, 40, SANS), color: i > 2 ? C.champ : C.marfim,
+      const itens = ['R$ 500', '×', '12', '=', 'R$ 6 mil/ano'].map((text, i) => ({
+        text, t0: 13.32 + i * .07, font: F(i === 4 ? 600 : 500, 40, SANS), color: i === 4 ? C.champ : C.marfim,
         de: { s: escalas[i], dy: alturas[i], blur: 8 },
       }));
       const { total } = medir(t, itens, { gap: 12, dur: .4 });
@@ -497,10 +505,10 @@
       }));
     } },
 
-    // 12 · "Um site feito" + troca em rolagem "sob medida." → "com método."
+    // 12 · "Você não precisa" + troca em rolagem "trabalhar mais." → "dormir menos."
     { a: 14.6, b: 17.3, draw(g, t) {
       const kx = P(t, 17.0, 17.28);
-      const l1 = ['Um', 'site', 'feito'].map((text, i) => ({ text, t0: 14.65 + i * .12, font: F(600, 92, SERIF), color: C.marfim }));
+      const l1 = ['Você', 'não', 'precisa'].map((text, i) => ({ text, t0: 14.65 + i * .12, font: F(600, 92, SERIF), color: C.marfim }));
       camada(g, { alpha: 1 - kx, blur: 12 * kx }, x => em(x, 540, CY, (1 + .05 * P(t, 14.6, 17)) * (1 - .05 * kx), 0, x => {
         frase(x, t, l1, { x: 540, y: CY - 40, gap: 24, dur: .5, de: { dx: 60, dy: 70, s: .7, blur: 12 } });
         const fonte = F(600, 108, SERIF, true);
@@ -511,20 +519,20 @@
           texto(x, s, 540, CY + 95 + dy, fonte, C.champ);
           x.restore();
         };
-        palavra('sob medida.', 80 * (1 - ki) - 90 * ease.inOut(kt), clamp(P(t, 15.5, 15.7)) * (1 - kt), 12 * (1 - ki) + 14 * kt);
-        palavra('com método.', 90 * (1 - ease.back(kt)), ease.out(kt), 14 * (1 - ease.out(kt)));
+        palavra('trabalhar mais.', 80 * (1 - ki) - 90 * ease.inOut(kt), clamp(P(t, 15.5, 15.7)) * (1 - kt), 12 * (1 - ki) + 14 * kt);
+        palavra('dormir menos.', 90 * (1 - ease.back(kt)), ease.out(kt), 14 * (1 - ease.out(kt)));
       }));
     } },
 
-    // 12b · "à altura do seu negócio." entra em degraus e sai para a esquerda com rastro
+    // 12b · "Precisa de tempo de volta." entra em degraus e sai para a esquerda com rastro
     { a: 17.25, b: 18.74, draw(g, t) {
       const kx = ease.in(P(t, 18.42, 18.74));
       const de = { dx: 60, dy: 80, s: .6, blur: 12 };
       camada(g, { alpha: 1 - kx, mx: -190 * kx }, x => {
         x.translate(-320 * kx, 0);
-        frase(x, t, [{ text: 'à altura', t0: 17.3, font: F(600, 132, SERIF, true), color: C.champ }], { x: 540, y: CY - 30, dur: .5, de });
-        frase(x, t, ['do', 'seu', 'negócio.'].map((text, i) => ({ text, t0: 17.48 + i * .1, font: F(600, 84, SERIF), color: C.marfim })),
-          { x: 540, y: CY + 90, gap: 22, dur: .5, de });
+        frase(x, t, ['Precisa', 'de'].map((text, i) => ({ text, t0: 17.3 + i * .12, font: F(600, 84, SERIF), color: C.marfim })),
+          { x: 540, y: CY - 70, gap: 22, dur: .5, de });
+        frase(x, t, [{ text: 'tempo de volta.', t0: 17.56, font: F(600, 124, SERIF, true), color: C.champ }], { x: 540, y: CY + 80, dur: .5, de });
       });
     } },
 
@@ -599,14 +607,14 @@
 
       const kw = ease.out(P(t, 23.0, 23.36)), o = lerp(20, 5, ease.inOut(P(t, 23.2, 23.65)));
       if (kw > 0) {
-        const w = 540 * kw, y = 1185;
+        const w = 660 * kw, y = 1185;
         caixa(g, 540 - o, y - o * .6, w, 118, 59, rgba(C.marfim, .85), null, false);
         caixa(g, 540 + o, y + o * .6, w, 118, 59, C.vinhoM, rgba(C.champ, .5), false);
         caixa(g, 540, y, w, 118, 59, C.champ, null, false);
         const kt = P(t, 23.35, 23.62);
         g.save(); g.globalAlpha *= kt;
-        texto(g, 'Quero meu site', 520, y + 15, F(600, 42, SANS), C.vinho);
-        icone(g, 'seta', 700 + 10 * (1 - kt) + 6 * Math.sin(t * 5) * P(t, 23.8, 24), y, 36, C.vinho, 2.2);
+        texto(g, 'Automatizar minha rotina', 515, y + 15, F(600, 42, SANS), C.vinho);
+        icone(g, 'seta', 810 + 10 * (1 - kt) + 6 * Math.sin(t * 5) * P(t, 23.8, 24), y, 36, C.vinho, 2.2);
         g.restore();
       }
 
@@ -625,26 +633,31 @@
       });
       g.restore();
 
-      const kr = P(t, 23.95, 24.35);
+      const kr = P(t, 23.4, 23.8);
       g.save(); g.globalAlpha *= kr;
-      texto(g, 'Sites · Automação · Planilhas e agenda · Sistemas', 540, 1480 + 16 * (1 - ease.out(kr)), F(400, 28, SANS), C.cinza);
+      texto(g, 'Conta pra gente o que mais pesa no seu dia.', 540, 1480 + 16 * (1 - ease.out(kr)), F(400, 34, SANS), C.cinza);
       g.restore();
     } },
   ];
 
-  /* Trechos desacelerados para a narração caber em ritmo natural: [início, fim, fator] em tempo de
-     animação. O mesmo mapa está no gerador da trilha (video/audio/gerar_trilha.py). */
-  const TRECHOS = [[5.6, 9.4, 1.55], [10.98, 14.64, 1.4]];
-  const DURACAO = DUR + TRECHOS.reduce((s, [a, b, f]) => s + (b - a) * (f - 1), 0);
+  /* Trechos esticados para cada fala caber em ritmo natural: [início, fim] em tempo de animação e
+     quanto esse trecho dura no vídeo. Trechos curtos com duração longa funcionam como pausas, com o
+     conteúdo já na tela (o fundo segue se movendo). O mesmo mapa está em video/audio/gerar_trilha.py. */
+  const TRECHOS = [
+    [2.6, 3.5, 1.55], [6.45, 6.55, .85], [7.0, 8.02, 2.6], [8.82, 8.84, 1.25], [10.45, 10.5, .65],
+    [11.45, 11.95, 3.4], [12.6, 12.9, 1.1], [13.72, 14.3, 1.9], [15.9, 16.3, .8], [16.75, 17.0, .7],
+    [18.0, 18.4, .9], [24.6, 25.0, 1.6],
+  ];
+  const DURACAO = DUR + TRECHOS.reduce((s, [a, b, d]) => s + d - (b - a), 0);
   function tempoCena(T) {
     let atraso = 0;
-    for (const [a, b, f] of TRECHOS) {
-      const va = a + atraso, vb = va + (b - a) * f;
+    for (const [a, b, d] of TRECHOS) {
+      const va = a + atraso;
       if (T < va) break;
-      if (T < vb) return a + (T - va) / f;
-      atraso += (b - a) * (f - 1);
+      if (T < va + d) return a + (T - va) * (b - a) / d;
+      atraso += d - (b - a);
     }
-    return T - atraso;
+    return Math.min(DUR, T - atraso);
   }
 
   // T = tempo do vídeo (o mesmo da narração)
@@ -652,8 +665,8 @@
     const t = tempoCena(T);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1; ctx.filter = 'none';
-    fundo(ctx, t);
-    camera(ctx, t);
+    fundo(ctx, T);
+    camera(ctx, T);
     for (const c of CENAS) {
       if (t < c.a || t >= c.b) continue;
       if (c.zoom) em(ctx, 540, CY, c.zoom, 0, g => c.draw(g, t));
