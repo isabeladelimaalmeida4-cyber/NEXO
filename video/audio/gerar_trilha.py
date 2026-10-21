@@ -1,89 +1,72 @@
-"""Gera a trilha do vídeo (video/trilha.m4a): narração feminina + efeitos sonoros + fundo musical.
+"""Gera a trilha do vídeo (video/trilha.m4a): dublagem gravada + efeitos sonoros + fundo musical.
 
-Narração: Kokoro v1.0, voz brasileira "pf_dora" (Apache-2.0), rodando local pelo sherpa-onnx.
+Voz: a gravação da dublagem (video/audio/dublagem.m4a), usada inteira. Só duas pausas entre frases
+ficam mais longas (PAUSAS) para a abertura do mural e a entrada do símbolo terem tempo de tela.
 Efeitos e fundo: sintetizados aqui mesmo (ruído filtrado, senoides), sem amostras de terceiros.
 
-  pip install sherpa-onnx soundfile numpy scipy
-  curl -L https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2 | tar xj
-  python3 gerar_trilha.py kokoro-multi-lang-v1_0 trilha.wav
+  pip install soundfile numpy scipy
+  python3 gerar_trilha.py dublagem.m4a trilha.wav
   ffmpeg -i trilha.wav -c:a aac -b:a 160k ../trilha.m4a
 
-Todos os tempos abaixo estão em tempo de animação (o mesmo de nexo-video.js); TRECHOS precisa
-ser igual ao do JS, que estica alguns trechos para cada fala caber.
+Os efeitos são marcados em tempo de animação (o mesmo de nexo-video.js) e convertidos para o tempo
+do vídeo pelas ÂNCORAS, que precisam ser iguais às do JS.
 """
+import subprocess
 import sys
 import numpy as np
 import scipy.signal as ss
 import soundfile as sf
 
 SR = 48000
-# (início, fim) em tempo de animação e quanto o trecho dura no vídeo
-TRECHOS = [
-    (2.6, 3.5, 1.55), (6.45, 6.55, .85), (7.0, 8.02, 2.6), (8.82, 8.84, 1.25), (10.45, 10.5, .65),
-    (11.45, 11.95, 3.4), (12.6, 12.9, 1.1), (13.72, 14.3, 1.9), (15.9, 16.3, .8), (16.75, 17.0, .7),
-    (18.0, 18.4, .9), (24.6, 25.0, 1.6),
+
+# (tempo de animação, tempo do vídeo): cada momento-chave da animação cai quando a palavra é dita.
+# Entre âncoras o tempo é linear; antes da primeira e depois da última, velocidade normal.
+ANCORAS = [
+    (0, 0), (.05, .62), (.29, 1.0), (.95, 1.75), (1.05, 1.85), (2.4, 3.0),
+    (2.68, 3.06), (2.95, 3.32), (3.18, 3.85), (3.33, 4.0), (3.55, 4.25),
+    (3.85, 4.42), (4.6, 4.97), (5.02, 5.5), (5.42, 6.0),
+    (5.6, 6.15), (5.78, 6.36), (5.89, 6.75), (6.0, 7.35), (6.11, 7.6), (6.55, 8.3),
+    (6.85, 8.45), (6.98, 8.55), (7.2, 9.0), (8.0, 11.5), (8.08, 11.75),
+    (8.36, 12.0), (8.4, 12.36), (8.76, 13.4), (8.84, 14.2), (9.05, 15.15),
+    (9.4, 15.44), (9.56, 15.75), (9.72, 16.1), (10.05, 16.45), (10.62, 17.7),
+    (10.98, 17.95), (11.18, 18.25), (11.27, 18.55), (11.6, 19.1), (11.78, 19.97), (11.95, 21.1),
+    (12.18, 21.4), (12.32, 21.63), (12.52, 22.46), (12.98, 23.0),
+    (13.32, 23.3), (13.39, 24.55), (13.46, 24.75), (13.53, 26.0), (13.6, 26.3), (14.3, 27.85),
+    (14.6, 28.2), (14.65, 28.34), (14.89, 28.9), (15.5, 29.3), (16.35, 30.6), (16.72, 31.25), (17.0, 31.85),
+    (17.3, 32.1), (17.56, 32.55), (18.42, 33.65), (18.68, 33.9), (19.62, 34.85), (20.12, 35.37),
+    (20.76, 36.9), (21.02, 37.05), (22.28, 37.9), (22.45, 38.0), (23.0, 38.5), (23.4, 38.9),
+    (24.6, 40.3), (25.0, 41.0),
 ]
 
 
 def video(t):
-    atraso = 0
-    for a, b, d in TRECHOS:
-        if t < a:
-            break
-        if t < b:
-            return a + atraso + (t - a) * d / (b - a)
-        atraso += d - (b - a)
-    return t + atraso
+    for (a0, v0), (a1, v1) in zip(ANCORAS, ANCORAS[1:]):
+        if t <= a1:
+            return v0 + (max(t, a0) - a0) * (v1 - v0) / (a1 - a0)
+    return ANCORAS[-1][1] + t - ANCORAS[-1][0]
 
 
 DUR = video(25.0)
 rng = np.random.default_rng(7)
 
-# ---------- narração: (início, fim máximo, texto); começa quando a legenda aparece ----------
-FALAS = [
-    (0.05, 1.30, "Deixa eu adivinhar..."),
-    (2.62, 3.84, "Você trabalha até tarde..."),
-    (3.85, 5.62, "e mesmo assim, não dá conta."),
-    (5.66, 6.95, "Doze mensagens sem resposta."),
-    (6.98, 8.34, "Três horas por semana atualizando planilha à mão."),
-    (8.36, 9.40, "Cento e cinquenta e seis horas por ano."),
-    (9.40, 11.00, "Quase um mês de trabalho, todo ano."),
-    (11.02, 12.20, "O cliente procurou você... não achou. E foi no concorrente."),
-    (12.20, 13.32, "Um cliente perdido por mês..."),
-    (13.32, 14.60, "a quinhentos reais cada, são seis mil por ano."),
-    (14.60, 16.40, "Você não precisa trabalhar mais..."),
-    (16.42, 17.28, "nem dormir menos."),
-    (17.30, 18.72, "Precisa de tempo de volta."),
-    (19.60, 21.90, "Nexo, operações que transformam."),
-    (23.35, 25.00, "Conta pra gente o que mais pesa no seu dia."),
-]
+# pausas alongadas na gravação: (tempo na gravação original, segundos de silêncio a mais)
+PAUSAS = [(1.80, 1.0), (32.78, .8)]
 
 
-def narracao(dir_modelo):
-    import sherpa_onnx
-    K = dir_modelo.rstrip('/') + '/'
-    tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(
-        kokoro=sherpa_onnx.OfflineTtsKokoroModelConfig(
-            model=K + 'model.onnx', voices=K + 'voices.bin', tokens=K + 'tokens.txt',
-            data_dir=K + 'espeak-ng-data', lang='pt-br'),
-        num_threads=4)))
-    voz = np.zeros(int(DUR * SR) + SR, np.float32)
-    for a, b, txt in FALAS:
-        ini, fim = video(a), video(b)
-        vel = 1.0
-        while True:
-            g = tts.generate(txt, sid=42, speed=vel)  # 42 = pf_dora
-            x = np.array(g.samples, np.float32)
-            nz = np.where(np.abs(x) > .01)[0]
-            x = x[max(0, nz[0] - 240): nz[-1] + 1200]
-            dur = len(x) / g.sample_rate
-            if ini + dur <= fim + .03 or vel >= 1.12:
-                break
-            vel = round(min(1.12, vel * dur / (fim - ini) * 1.01), 3)
-        x = ss.resample_poly(x, SR, g.sample_rate).astype(np.float32)
-        i = int(ini * SR)
-        voz[i:i + len(x)] += x[:len(voz) - i]
-        print(f"{'ok   ' if ini + dur <= fim + .03 else 'PASSA'} {ini:6.2f}–{ini + dur:6.2f} (até {fim:6.2f}) vel {vel:.2f}  {txt}")
+def dublagem(arquivo):
+    """Lê a gravação, limpa (corta graves, compressão leve, volume padrão) e alonga as PAUSAS."""
+    bruto = subprocess.run(
+        ['ffmpeg', '-v', 'error', '-i', arquivo, '-af',
+         'highpass=f=80,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=150,loudnorm=I=-16:TP=-1.5:LRA=7',
+         '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+    x = np.frombuffer(bruto, np.float32)
+    partes, ini = [], 0
+    for t, extra in PAUSAS:
+        i = int(t * SR)
+        partes += [x[ini:i], np.zeros(int(extra * SR), np.float32)]
+        ini = i
+    partes.append(x[ini:])
+    voz = np.concatenate(partes)
     return voz / np.max(np.abs(voz))
 
 
@@ -389,9 +372,9 @@ def fundo_musical(n):
 
 
 def main():
-    dir_modelo, saida = sys.argv[1], sys.argv[2]
+    gravacao, saida = sys.argv[1], sys.argv[2]
     n = int(DUR * SR) + SR // 2
-    voz = narracao(dir_modelo)[:n]
+    voz = dublagem(gravacao)[:n]
     voz = np.pad(voz, (0, n - len(voz)))
 
     efeitos = np.zeros((n, 2))

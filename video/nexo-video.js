@@ -640,24 +640,32 @@
     } },
   ];
 
-  /* Trechos esticados para cada fala caber em ritmo natural: [início, fim] em tempo de animação e
-     quanto esse trecho dura no vídeo. Trechos curtos com duração longa funcionam como pausas, com o
-     conteúdo já na tela (o fundo segue se movendo). O mesmo mapa está em video/audio/gerar_trilha.py. */
-  const TRECHOS = [
-    [2.6, 3.5, 1.55], [6.45, 6.55, .85], [7.0, 8.02, 2.6], [8.82, 8.84, 1.25], [10.45, 10.5, .65],
-    [11.45, 11.95, 3.4], [12.6, 12.9, 1.1], [13.72, 14.3, 1.9], [15.9, 16.3, .8], [16.75, 17.0, .7],
-    [18.0, 18.4, .9], [24.6, 25.0, 1.6],
+  /* Âncoras [tempo de animação, tempo do vídeo]: cada momento-chave da animação cai quando a palavra
+     correspondente é dita na dublagem. Entre âncoras o tempo é linear. A mesma lista está em
+     video/audio/gerar_trilha.py, que posiciona os efeitos sonoros. */
+  const ANCORAS = [
+    [0, 0], [.05, .62], [.29, 1.0], [.95, 1.75], [1.05, 1.85], [2.4, 3.0],
+    [2.68, 3.06], [2.95, 3.32], [3.18, 3.85], [3.33, 4.0], [3.55, 4.25],
+    [3.85, 4.42], [4.6, 4.97], [5.02, 5.5], [5.42, 6.0],
+    [5.6, 6.15], [5.78, 6.36], [5.89, 6.75], [6.0, 7.35], [6.11, 7.6], [6.55, 8.3],
+    [6.85, 8.45], [6.98, 8.55], [7.2, 9.0], [8.0, 11.5], [8.08, 11.75],
+    [8.36, 12.0], [8.4, 12.36], [8.76, 13.4], [8.84, 14.2], [9.05, 15.15],
+    [9.4, 15.44], [9.56, 15.75], [9.72, 16.1], [10.05, 16.45], [10.62, 17.7],
+    [10.98, 17.95], [11.18, 18.25], [11.27, 18.55], [11.6, 19.1], [11.78, 19.97], [11.95, 21.1],
+    [12.18, 21.4], [12.32, 21.63], [12.52, 22.46], [12.98, 23.0],
+    [13.32, 23.3], [13.39, 24.55], [13.46, 24.75], [13.53, 26.0], [13.6, 26.3], [14.3, 27.85],
+    [14.6, 28.2], [14.65, 28.34], [14.89, 28.9], [15.5, 29.3], [16.35, 30.6], [16.72, 31.25], [17.0, 31.85],
+    [17.3, 32.1], [17.56, 32.55], [18.42, 33.65], [18.68, 33.9], [19.62, 34.85], [20.12, 35.37],
+    [20.76, 36.9], [21.02, 37.05], [22.28, 37.9], [22.45, 38.0], [23.0, 38.5], [23.4, 38.9],
+    [24.6, 40.3], [25.0, 41.0],
   ];
-  const DURACAO = DUR + TRECHOS.reduce((s, [a, b, d]) => s + d - (b - a), 0);
+  const DURACAO = ANCORAS[ANCORAS.length - 1][1];
   function tempoCena(T) {
-    let atraso = 0;
-    for (const [a, b, d] of TRECHOS) {
-      const va = a + atraso;
-      if (T < va) break;
-      if (T < va + d) return a + (T - va) * (b - a) / d;
-      atraso += d - (b - a);
+    for (let i = 1; i < ANCORAS.length; i++) {
+      const [a0, v0] = ANCORAS[i - 1], [a1, v1] = ANCORAS[i];
+      if (T <= v1) return a0 + (Math.max(T, v0) - v0) * (a1 - a0) / (v1 - v0);
     }
-    return Math.min(DUR, T - atraso);
+    return DUR;
   }
 
   // T = tempo do vídeo (o mesmo da narração)
