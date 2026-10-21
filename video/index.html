@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXO — Vídeo da marca</title>
+<link rel="icon" href="../assets/marca/nexo-simbolo.svg">
+<style>
+  @font-face { font-family: "Playfair Display"; font-style: normal; font-weight: 400 900; src: url(fontes/PlayfairDisplay.woff2) format("woff2"); }
+  @font-face { font-family: "Playfair Display"; font-style: italic; font-weight: 400 900; src: url(fontes/PlayfairDisplay-Italic.woff2) format("woff2"); }
+  @font-face { font-family: "Work Sans"; font-style: normal; font-weight: 300 700; src: url(fontes/WorkSans.woff2) format("woff2"); }
+
+  :root { --vinho: #1F090B; --vinho-n: #2B1014; --vinho-m: #3A181D; --champ: #C6A16A; --marfim: #F4EEE8; --cinza: #D5C9C7; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #120405; color: var(--marfim); font-family: "Work Sans", system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; }
+  .tela { position: relative; height: min(calc(100vh - 110px), calc((100vw - 32px) * 16 / 9)); aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(198,161,106,.18); }
+  canvas { display: block; width: 100%; height: 100%; }
+  .controles { display: flex; align-items: center; gap: 10px; width: min(100%, 520px); }
+  button { font: 500 14px "Work Sans", sans-serif; color: var(--marfim); background: var(--vinho-m); border: 1px solid rgba(198,161,106,.35); border-radius: 999px; padding: 9px 14px; cursor: pointer; white-space: nowrap; }
+  button:hover { border-color: var(--champ); }
+  button.cta { background: var(--champ); color: var(--vinho); border-color: var(--champ); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: progress; }
+  input[type=range] { flex: 1; accent-color: var(--champ); min-width: 0; }
+  .tempo { font: 400 13px "Work Sans", sans-serif; color: var(--cinza); font-variant-numeric: tabular-nums; min-width: 74px; text-align: right; }
+  body.exportando .controles, body.exportando .tela { box-shadow: none; border-radius: 0; }
+</style>
+</head>
+<body>
+  <div class="tela"><canvas id="video" width="1080" height="1920"></canvas></div>
+  <div class="controles">
+    <button id="tocar" aria-label="Tocar">▶</button>
+    <button id="reiniciar" aria-label="Reiniciar">↺</button>
+    <input id="linha" type="range" min="0" max="41" step="0.01" value="0" aria-label="Linha do tempo">
+    <span class="tempo" id="tempo">0,0 / 41,0s</span>
+    <button class="cta" id="baixar">Baixar vídeo</button>
+  </div>
+  <audio id="narracao" src="trilha.m4a" preload="auto"></audio>
+  <script src="nexo-video.js"></script>
+</body>
+</html>
