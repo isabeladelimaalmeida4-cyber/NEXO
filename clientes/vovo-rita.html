@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vovó Rita Salgados | Sabor de casa em Rondonópolis</title>
+<meta name="description" content="Salgados feitos com carinho e fritos na hora em Rondonópolis. Conheça os sabores da Vovó Rita e encomende pelo WhatsApp.">
+<meta property="og:title" content="Vovó Rita Salgados | Sabor de casa em Rondonópolis">
+<meta property="og:description" content="Casquinha crocante, recheio generoso e receita de vó. Salgados e encomendas para sua festa em Rondonópolis.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,550;0,600;0,650;0,700;0,750;1,400;1,500;1,550;1,600&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --background: oklch(.985 .015 88); --foreground: oklch(.23 .025 270);
+  --primary: oklch(.83 .165 86); --primary-foreground: oklch(.23 .025 270);
+  --secondary: oklch(.985 .015 88); --secondary-foreground: oklch(.23 .025 270);
+  --muted: oklch(.947 .016 88); --muted-foreground: oklch(.51 .014 270);
+  --accent: oklch(.945 .042 88); --border: oklch(.88 .02 88);
+  --destructive: oklch(.6 .19 30); --hero: oklch(.195 .021 270);
+  --hero-foreground: oklch(.985 .015 88); --hero-border: oklch(.985 .015 88 / .3);
+  --success: oklch(.56 .13 152);
+  --hero-shade: linear-gradient(90deg, oklch(.195 .021 270) 0%, oklch(.195 .021 270 / .98) 26%, oklch(.195 .021 270 / .62) 49%, oklch(.195 .021 270 / .1) 75%, oklch(.195 .021 270 / .1) 100%);
+  --hero-mobile-shade: linear-gradient(0deg, oklch(.195 .021 270 / .25), oklch(.195 .021 270 / .6) 40%, oklch(.195 .021 270 / .95) 72%);
+  --shadow-float: 0 5px 24px oklch(.195 .021 270 / .2);
+  --font-sans: 'Figtree', sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+}
+* { border-color: var(--border); letter-spacing: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+h1,h2,h3 { font-family: var(--font-display); }
+a { text-decoration: none; color: inherit; }
+button,a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+img { display: block; }
+
+.container-site { width: min(1180px, calc(100% - 80px)); margin-inline: auto; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; cursor: pointer; font-family: var(--font-sans); font-weight: 600; border-radius: 6px; transition: background .2s, color .2s, transform .15s; }
+.btn svg { width: 17px; height: 17px; }
+.btn-brand { background: var(--primary); color: var(--primary-foreground); }
+.btn-brand:hover { background: oklch(.79 .165 86); }
+.btn-action { height: 50px; padding-inline: 22px; font-size: 13px; }
+.btn-hero-outline { background: transparent; color: var(--hero-foreground); border: 1px solid var(--hero-border); }
+.btn-hero-outline:hover { background: oklch(.985 .015 88 / .1); }
+.btn-circle { width: 42px; height: 42px; border-radius: 50%; background: transparent; border: 1px solid var(--border); color: var(--foreground); }
+.btn-circle:hover { background: var(--muted); }
+.btn-tab { height: 34px; padding-inline: 14px; font-size: 12px; background: transparent; color: var(--foreground); border-radius: 999px; }
+.btn-tab[data-active='true'] { background: var(--foreground); color: var(--background); }
+.btn-ghost-icon { width: 42px; height: 42px; background: transparent; color: var(--foreground); border-radius: 6px; }
+
+/* Header */
+.header { height: 88px; display: flex; align-items: center; background: var(--background); border-bottom: 1px solid var(--border); position: relative; z-index: 10; }
+.header-inner { display: flex; justify-content: space-between; align-items: center; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand-icon { width: 45px; height: 45px; display: grid; place-items: center; border-radius: 50%; color: var(--foreground); background: var(--primary); }
+.brand-icon svg { width: 27px; height: 27px; }
+.brand-name { font-family: var(--font-display); font-size: 25px; font-weight: 750; line-height: 1.1; }
+.brand-name .dot { color: var(--primary); }
+.brand-sub { display: block; font-size: 10px; text-transform: uppercase; margin-top: 4px; letter-spacing: 2px; }
+.desktop-nav { display: flex; gap: 30px; align-items: center; font-size: 13px; font-weight: 500; }
+.desktop-nav a:hover { color: var(--muted-foreground); }
+.mobile-menu { display: none; }
+.mobile-nav { position: absolute; top: 76px; left: 0; right: 0; padding: 24px; background: var(--background); border-bottom: 1px solid var(--border); display: grid; gap: 22px; font-size: 14px; }
+.mobile-nav[hidden] { display: none; }
+
+/* Hero */
+.hero { position: relative; min-height: 620px; overflow: hidden; background: var(--hero); color: var(--hero-foreground); }
+.hero-photo { position: absolute; width: 66%; height: 100%; inset: 0 0 0 auto; object-fit: cover; object-position: center 47%; }
+.hero::after { content: ''; position: absolute; inset: 0; background: var(--hero-shade); }
+.hero-content { position: relative; z-index: 1; padding-block: 68px 75px; }
+.eyebrow { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.eyebrow svg { width: 13px; height: 13px; }
+.hero .eyebrow { color: var(--primary); }
+.hero h1 { font-size: 82px; font-weight: 650; line-height: 1.02; margin: 23px 0 20px; }
+.hero h1 em { color: var(--primary); font-weight: 550; }
+.hero-description { font-size: 17px; line-height: 1.7; max-width: 365px; color: var(--hero-foreground); opacity: .8; margin: 0; }
+.hero-actions { display: flex; align-items: center; gap: 12px; margin-top: 28px; }
+.hero-note { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-top: 25px; opacity: .65; }
+.hero-note svg { width: 13px; height: 13px; }
+.hero-photo-caption { position: absolute; z-index: 2; right: 40px; bottom: 30px; color: var(--hero-foreground); font-size: 11px; display: flex; gap: 8px; align-items: center; }
+.hero-photo-caption svg { width: 14px; height: 14px; }
+.hero-seal { position: absolute; z-index: 2; top: 34px; right: 40px; width: 100px; height: 100px; border: 1px solid var(--primary); border-radius: 50%; color: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(9deg); background: var(--hero); font-size: 10px; text-transform: uppercase; gap: 4px; }
+.hero-seal strong { font-family: var(--font-display); font-size: 24px; text-transform: none; font-style: italic; }
+.hero-seal svg { width: 15px; height: 15px; }
+
+/* Qualities strip */
+.qualities { background: var(--primary); }
+.qualities-inner { min-height: 72px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.quality { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; }
+.quality svg { width: 21px; height: 21px; }
+
+/* Sections */
+.section { padding-block: 82px; }
+.section-heading { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 34px; }
+.section h2 { font-size: 43px; line-height: 1.15; font-weight: 550; margin: 13px 0 12px; }
+.section h2 em { font-weight: 500; }
+.section-description { color: var(--muted-foreground); font-size: 14px; line-height: 1.7; max-width: 475px; margin: 0; }
+.menu-controls { display: flex; gap: 22px; align-items: center; flex-shrink: 0; }
+.tabs { display: flex; gap: 5px; }
+.carousel-controls { display: flex; gap: 8px; }
+
+/* Products */
+.product-track { display: flex; gap: 24px; overflow: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.product-track::-webkit-scrollbar { display: none; }
+.product { flex: 0 0 calc((100% - 72px)/4); scroll-snap-align: start; min-width: 0; }
+.product-image { aspect-ratio: 1/1.13; overflow: hidden; border-radius: 6px; position: relative; background: var(--muted); }
+.product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.product:hover img { transform: scale(1.045); }
+.product-label { position: absolute; top: 14px; left: 14px; background: var(--background); font-size: 10px; padding: 6px 9px; border-radius: 3px; font-weight: 600; }
+.product h3 { margin: 18px 0 7px; font-size: 24px; font-weight: 550; }
+.product p { font-size: 13px; line-height: 1.7; color: var(--muted-foreground); margin: 0; }
+.product-request { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; font-size: 12px; font-weight: 600; }
+.product-request svg { width: 14px; height: 14px; }
+.product-request:hover { text-decoration: underline; }
+.menu-bottom { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 20px; font-size: 12px; color: var(--muted-foreground); }
+.menu-bottom a { font-weight: 600; color: var(--foreground); display: inline-flex; align-items: center; gap: 8px; }
+.menu-bottom a svg { width: 14px; height: 14px; }
+.menu-bottom a:hover { text-decoration: underline; }
+
+/* Story */
+.story { border-top: 1px solid var(--border); background: var(--muted); }
+.story-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 95px; }
+.steps { display: grid; gap: 24px; }
+.step { display: flex; gap: 20px; align-items: center; }
+.step img { width: 76px; height: 76px; object-fit: cover; border-radius: 50%; }
+.step-title { display: flex; align-items: baseline; gap: 12px; }
+.step-number { font-size: 11px; color: var(--muted-foreground); }
+.step h3 { font-size: 23px; margin: 0 0 5px; font-weight: 550; }
+.step p { font-size: 13px; line-height: 1.7; color: var(--muted-foreground); margin: 0; max-width: 330px; }
+
+/* Events */
+.events { background: var(--hero); color: var(--hero-foreground); }
+.events-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 90px; }
+.events-photo { width: 100%; height: 400px; object-fit: cover; border-radius: 6px; }
+.events .eyebrow { color: var(--primary); }
+.events h2 { font-size: 48px; }
+.events .section-description { color: var(--hero-foreground); opacity: .7; }
+.events ul { list-style: none; padding: 0; display: grid; gap: 12px; margin: 26px 0; font-size: 13px; }
+.events li { display: flex; gap: 10px; align-items: center; }
+.events li svg { color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
+
+/* Quantity calculator */
+.calc { margin-top: 72px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; padding: 40px; border: 1px solid var(--hero-border); border-radius: 10px; background: oklch(.23 .022 270); }
+.calc .eyebrow { color: var(--primary); }
+.calc h3 { font-size: 30px; font-weight: 550; line-height: 1.2; margin: 12px 0 26px; }
+.calc-field { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.calc-field label { font-size: 15px; opacity: .85; }
+.calc-stepper { display: flex; align-items: center; border: 1px solid var(--hero-border); border-radius: 999px; }
+.calc-stepper button { width: 40px; height: 40px; border: 0; background: transparent; color: var(--hero-foreground); font-size: 20px; cursor: pointer; border-radius: 50%; }
+.calc-stepper button:hover { background: oklch(.985 .015 88 / .1); }
+.calc-stepper input { width: 64px; height: 40px; border: 0; background: transparent; color: var(--hero-foreground); font-family: var(--font-sans); font-size: 17px; font-weight: 600; text-align: center; -moz-appearance: textfield; }
+.calc-stepper input::-webkit-outer-spin-button, .calc-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.calc-range { width: 100%; margin: 22px 0 28px; height: 8px; border-radius: 999px; appearance: none; -webkit-appearance: none; cursor: pointer; background: linear-gradient(90deg, var(--primary) var(--fill, 20%), oklch(.985 .015 88 / .18) var(--fill, 20%)); }
+.calc-range::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--primary); border: 0; }
+.calc-range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); border: 0; }
+.calc-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { height: 46px; padding-inline: 20px; border-radius: 999px; border: 1px solid var(--hero-border); background: transparent; color: var(--hero-foreground); font-family: var(--font-sans); font-size: 14px; cursor: pointer; transition: background .2s, color .2s; }
+.chip:hover { background: oklch(.985 .015 88 / .08); }
+.chip[aria-pressed='true'] { background: var(--hero-foreground); color: var(--hero); border-color: var(--hero-foreground); }
+.calc-result { display: flex; flex-direction: column; justify-content: center; }
+.calc-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; }
+.calc-total strong { font-family: var(--font-display); font-size: 96px; font-weight: 650; line-height: 1; color: var(--primary); }
+.calc-total span { font-size: 18px; opacity: .8; }
+.calc-note { font-size: 13px; line-height: 1.7; opacity: .6; margin: 18px 0 24px; }
+.calc .btn-action { width: 100%; height: auto; min-height: 54px; padding-block: 12px; font-size: 14px; }
+
+/* Contact */
+.contact-heading { text-align: center; }
+.contact-heading .eyebrow { justify-content: center; }
+.contact-heading .section-description { margin-inline: auto; }
+.contact-links { display: grid; grid-template-columns: repeat(4,1fr); margin-top: 40px; border-block: 1px solid var(--border); }
+.contact-channel { padding: 28px 25px; display: flex; align-items: center; gap: 16px; }
+.contact-channel + .contact-channel { border-left: 1px solid var(--border); }
+.contact-channel:hover { background: var(--muted); }
+.contact-channel > svg:first-child { width: 27px; height: 27px; flex-shrink: 0; }
+.contact-channel strong { display: block; font-size: 15px; margin-bottom: 5px; }
+.contact-channel small { font-size: 12px; color: var(--muted-foreground); }
+.contact-channel > svg:last-child { margin-left: auto; width: 17px; height: 17px; }
+
+/* Footer */
+.footer { border-top: 1px solid var(--border); padding: 28px 0; }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+.footer-note { font-size: 11px; color: var(--muted-foreground); margin: 0; }
+.footer-phone { display: inline-flex; align-items: center; gap: 8px; }
+.footer-phone svg { width: 13px; height: 13px; }
+
+/* Floating order button */
+.floating-order { position: fixed; bottom: 22px; right: 22px; z-index: 20; width: 56px; height: 56px; background: var(--success); color: var(--hero-foreground); border-radius: 50%; box-shadow: var(--shadow-float); display: grid; place-items: center; }
+.floating-order svg { width: 24px; height: 24px; }
+.floating-order:hover { transform: scale(1.05); }
+
+@media(min-width:1600px) { .hero { min-height: 670px; } .hero-content { padding-block: 90px; } }
+@media(max-width:1000px) {
+  .container-site { width: calc(100% - 48px); } .desktop-nav { gap: 18px; }
+  .hero h1 { font-size: 72px; } .hero-photo { width: 75%; }
+  .menu-controls { flex-direction: column; gap: 10px; align-items: end; }
+  .product { flex-basis: calc((100% - 48px)/3); } .story-grid { gap: 40px; } .events-grid { gap: 45px; }
+  .calc { grid-template-columns: 1fr; gap: 34px; }
+  .contact-links { grid-template-columns: 1fr 1fr; } .contact-channel:nth-child(3) { border-left: 0; } .contact-channel:nth-child(n+3) { border-top: 1px solid var(--border); }
+}
+@media(max-width:700px) {
+  .container-site { width: calc(100% - 40px); } .header { height: 76px; } .brand-name { font-size: 23px; } .brand-icon { width: 39px; height: 39px; } .brand-sub { font-size: 9px; }
+  .desktop-nav, .header-order { display: none; } .mobile-menu { display: inline-flex; }
+  .hero { min-height: 612px; } .hero-photo { width: 100%; height: 100%; object-position: center 85%; } .hero::after { background: var(--hero-mobile-shade); }
+  .hero-content { padding-block: 34px 270px; } .hero h1 { font-size: 58px; margin: 18px 0 15px; } .hero .eyebrow { font-size: 9px; letter-spacing: 1.5px; }
+  .hero-description { font-size: 14px; max-width: 320px; line-height: 1.6; }
+  .hero-actions { margin-top: 22px; gap: 9px; flex-wrap: wrap; } .hero-actions .btn { padding-inline: 17px; font-size: 12px; height: 44px; }
+  .hero-note { margin-top: 16px; font-size: 10px; } .hero-seal { top: auto; bottom: 45px; right: 20px; width: 88px; height: 88px; } .hero-photo-caption { display: none; }
+  .qualities-inner { display: grid; grid-template-columns: 1fr 1fr; padding-block: 19px; gap: 20px 12px; } .quality { font-size: 11px; gap: 8px; } .quality svg { width: 17px; height: 17px; }
+  .section { padding-block: 54px; } .section h2 { font-size: 34px; } .section-description { font-size: 13px; } .eyebrow { font-size: 9px; letter-spacing: 1.5px; }
+  .section-heading { flex-direction: column; align-items: stretch; gap: 13px; margin-bottom: 23px; }
+  .menu-controls { flex-direction: row; justify-content: space-between; align-items: center; } .tabs { gap: 0; } .btn-tab { font-size: 11px; }
+  .carousel-controls { gap: 5px; } .product-track { gap: 16px; } .product { flex-basis: 76%; } .product h3 { font-size: 23px; }
+  .menu-bottom { font-size: 11px; flex-direction: column; gap: 12px; }
+  .story-grid { grid-template-columns: 1fr; gap: 30px; } .step { gap: 16px; } .step img { width: 64px; height: 64px; } .step h3 { font-size: 22px; }
+  .events-grid { grid-template-columns: 1fr; gap: 30px; } .events-photo { height: 320px; } .events h2 { font-size: 37px; } .events-photo-wrap { order: 2; }
+  .calc { margin-top: 48px; padding: 28px 22px; } .calc h3 { font-size: 25px; margin-bottom: 22px; } .calc-total strong { font-size: 76px; } .calc-total span { font-size: 16px; } .chip { font-size: 13px; padding-inline: 16px; }
+  .contact-links { grid-template-columns: 1fr; margin-top: 26px; } .contact-channel { padding: 24px 4px; } .contact-channel + .contact-channel { border-left: 0; border-top: 1px solid var(--border); }
+  .footer-inner { flex-direction: column; align-items: start; gap: 18px; } .footer { padding-bottom: 90px; } .floating-order { bottom: 18px; right: 18px; }
+}
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } *,*::before,*::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- SVG icon sprite (Lucide icons) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-chef" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+    <symbol id="i-x"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  </defs>
+</svg>
+
+<header class="header" id="inicio">
+  <div class="container-site header-inner">
+    <a href="#inicio" class="brand" aria-label="Vovó Rita, início">
+      <span class="brand-icon"><svg><use href="#i-chef"/></svg></span>
+      <span><span class="brand-name">Vovó Rita<span class="dot">.</span></span><span class="brand-sub">Salgados &amp; carinho</span></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navegação principal">
+      <a href="#sabores">Nossos salgados</a>
+      <a href="#feito-aqui">Feito com carinho</a>
+      <a href="#eventos">Para sua festa</a>
+      <a class="js-cardapio" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Pode%20me%20enviar%20o%20card%C3%A1pio%20completo%3F" target="_blank" rel="noopener noreferrer">Cardápio digital</a>
+    </nav>
+    <div class="header-order">
+      <a class="btn btn-brand btn-action" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Vi%20o%20site%20e%20gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer"><svg><use href="#i-message"/></svg> Fazer pedido <svg><use href="#i-arrow-up-right"/></svg></a>
+    </div>
+    <button class="btn btn-ghost-icon mobile-menu" id="menu-toggle" aria-label="Abrir menu" aria-expanded="false"><svg><use href="#i-menu"/></svg></button>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação celular" hidden>
+    <a href="#sabores">Nossos salgados</a>
+    <a href="#feito-aqui">Feito com carinho</a>
+    <a href="#eventos">Para sua festa</a>
+    <a href="#quantidade">Quantos salgados pedir?</a>
+    <a class="js-cardapio" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Pode%20me%20enviar%20o%20card%C3%A1pio%20completo%3F" target="_blank" rel="noopener noreferrer">Cardápio digital</a>
+    <a href="#contato">Fale com a gente</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-label="Vovó Rita Salgados">
+    <img class="hero-photo" src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/3399dc65-f31c-40b2-8770-b2dfbac5aaee/vovo-rita-9.jpg" alt="Porção de salgados dourados da Vovó Rita com molhinhos" fetchpriority="high">
+    <div class="container-site hero-content">
+      <div class="eyebrow"><svg><use href="#i-map-pin"/></svg> De Rondonópolis, com carinho</div>
+      <h1>Vovó Rita<br><em>Salgados.</em></h1>
+      <p class="hero-description">Casquinha crocante, recheio generoso<br>e aquele sabor que abraça.<br>Feito aqui. Frito na hora. Do jeito da vó.</p>
+      <div class="hero-actions">
+        <a class="btn btn-brand btn-action" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Vi%20o%20site%20e%20gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer"><svg><use href="#i-message"/></svg> Pedir pelo WhatsApp <svg><use href="#i-arrow-up-right"/></svg></a>
+        <a class="btn btn-hero-outline btn-action" href="#sabores">Conhecer os sabores <svg><use href="#i-arrow-down"/></svg></a>
+      </div>
+      <div class="hero-note"><svg><use href="#i-heart"/></svg> Receita de casa. Carinho em cada mordida.</div>
+    </div>
+    <div class="hero-seal"><span>Feito com</span><strong>carinho</strong><svg><use href="#i-heart"/></svg></div>
+    <div class="hero-photo-caption"><svg><use href="#i-bag"/></svg> Salgados da nossa cozinha</div>
+  </section>
+
+  <div class="qualities">
+    <div class="container-site qualities-inner">
+      <div class="quality"><svg><use href="#i-flame"/></svg><span>Fritos na hora</span></div>
+      <div class="quality"><svg><use href="#i-chef"/></svg><span>Massa feita aqui</span></div>
+      <div class="quality"><svg><use href="#i-heart"/></svg><span>Recheio generoso</span></div>
+      <div class="quality"><svg><use href="#i-party"/></svg><span>Encomendas para festas</span></div>
+    </div>
+  </div>
+
+  <section class="section" id="sabores">
+    <div class="container-site">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">Os queridinhos da casa</div>
+          <h2>Uma mordida. <em>Um sorriso.</em></h2>
+          <p class="section-description">Dos clássicos fritinhos aos favoritos de forno.<br>Escolha o seu e deixe o resto com a vó.</p>
+        </div>
+        <div class="menu-controls">
+          <div class="tabs" aria-label="Categorias de salgados">
+            <button class="btn btn-tab" data-category="Todos" data-active="true" aria-pressed="true">Todos</button>
+            <button class="btn btn-tab" data-category="Fritos" data-active="false" aria-pressed="false">Fritos</button>
+            <button class="btn btn-tab" data-category="Assados" data-active="false" aria-pressed="false">Assados</button>
+          </div>
+          <div class="carousel-controls">
+            <button class="btn btn-circle" id="scroll-prev" aria-label="Salgados anteriores" title="Salgados anteriores"><svg><use href="#i-arrow-left"/></svg></button>
+            <button class="btn btn-circle" id="scroll-next" aria-label="Próximos salgados" title="Próximos salgados"><svg><use href="#i-arrow-right"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="product-track" id="product-track" aria-live="polite">
+        <article class="product" data-category="Fritos">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/3134fbf2-f662-42d3-b840-337ec971e666/vovo-rita-2.jpg" alt="Coxinha da Vovó Rita" loading="lazy"><span class="product-label">Clássico da vó</span></div>
+          <h3>Coxinha</h3>
+          <p>Casquinha crocante e frango cremoso até a pontinha.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20coxinha.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+        <article class="product" data-category="Fritos">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/dc9a8206-2f71-409f-98cf-4587e80fb9d1/vovo-rita-7.jpg" alt="Bolinha de queijo da Vovó Rita" loading="lazy"><span class="product-label">Para dividir</span></div>
+          <h3>Bolinha de queijo</h3>
+          <p>Douradinha por fora. Muito queijo e sabor por dentro.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20bolinha%20de%20queijo.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+        <article class="product" data-category="Assados">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/9ebb58aa-fa9e-4d82-95e3-192592b9ac75/vovo-rita-4.jpg" alt="Mini pizza da Vovó Rita" loading="lazy"><span class="product-label">Sai do forno</span></div>
+          <h3>Mini pizza</h3>
+          <p>Presunto, queijo e tomate. Pequena no tamanho, grande no sabor.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20mini%20pizza.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+        <article class="product" data-category="Assados">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/069c26d7-44b4-4269-86b7-b2b1bb1ed228/vovo-rita-5.jpg" alt="Quiche da Vovó Rita" loading="lazy"><span class="product-label">Pausa gostosa</span></div>
+          <h3>Quiche</h3>
+          <p>Massa amanteigada, recheio cremoso e queijo gratinado.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20quiche.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+        <article class="product" data-category="Fritos">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/9a3f5a45-68b9-47ae-ac6d-4dc8e408ab22/vovo-rita-3.jpg" alt="Massa de batata da Vovó Rita" loading="lazy"><span class="product-label">Receita de casa</span></div>
+          <h3>Massa de batata</h3>
+          <p>Macia por dentro, levinha e feita na nossa cozinha.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20massa%20de%20batata.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+        <article class="product" data-category="Assados">
+          <div class="product-image"><img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/a55a8cae-9de5-4f85-ae5b-a09274ef884a/vovo-rita-6.jpg" alt="Torta da Vovó Rita" loading="lazy"><span class="product-label">Com um café</span></div>
+          <h3>Torta</h3>
+          <p>Recheio generoso de presunto e queijo em cada fatia.</p>
+          <a class="product-request" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20pedir%20torta.%20Pode%20me%20passar%20as%20op%C3%A7%C3%B5es%20e%20os%20valores%3F" target="_blank" rel="noopener noreferrer">Quero esse <svg><use href="#i-arrow-up-right"/></svg></a>
+        </article>
+      </div>
+      <div class="menu-bottom">
+        <span>Veja todos os sabores e valores no nosso cardápio digital.</span>
+        <a class="js-cardapio" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Pode%20me%20enviar%20o%20card%C3%A1pio%20completo%3F" target="_blank" rel="noopener noreferrer"><svg><use href="#i-book"/></svg> Ver cardápio digital <svg><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section story" id="feito-aqui">
+    <div class="container-site story-grid">
+      <div>
+        <div class="eyebrow">Da nossa cozinha para você</div>
+        <h2>O segredo?<br><em>Fazer com carinho.</em></h2>
+        <p class="section-description">Receita de vó não vem pronta em pacote. A massa nasce aqui, o recheio é caprichado e a fritura acontece na hora do seu pedido.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/622b7120-4dcf-4582-8aef-e853955c1cc5/vovo-rita-11.jpg" alt="A massa é nossa" loading="lazy">
+          <div><div class="step-title"><span class="step-number">01</span><h3>A massa é nossa</h3></div><p>Preparada na nossa cozinha, no ponto certo para ficar macia.</p></div>
+        </div>
+        <div class="step">
+          <img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/0424c3fb-01dc-4379-9da8-32ae097befc0/vovo-rita-12.jpg" alt="Um por um, à mão" loading="lazy">
+          <div><div class="step-title"><span class="step-number">02</span><h3>Um por um, à mão</h3></div><p>Recheados e modelados com cuidado. O sabor está nos detalhes.</p></div>
+        </div>
+        <div class="step">
+          <img src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/aa4377fa-2705-4f69-b009-f50e8206d9d9/vovo-rita-13.jpg" alt="Quentinho de verdade" loading="lazy">
+          <div><div class="step-title"><span class="step-number">03</span><h3>Quentinho de verdade</h3></div><p>Frito quando você pede, para chegar dourado e sequinho.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section events" id="eventos">
+    <div class="container-site events-grid">
+      <div class="events-photo-wrap">
+        <img class="events-photo" src="https://ritas-snack-hub.lovable.app/__l5e/assets-v1/43811a6a-bce0-4c9f-930a-7ce40c5e397d/vovo-rita-14.jpg" alt="Caixinhas de salgados da Vovó Rita preparadas para um evento" loading="lazy">
+      </div>
+      <div>
+        <div class="eyebrow"><svg><use href="#i-party"/></svg> Tem festa chegando?</div>
+        <h2>A sua comemoração.<br><em>O carinho da vó.</em></h2>
+        <p class="section-description">Aniversário, encontro de família ou confraternização. Encomende o cento e leve o sabor da Vovó Rita para a sua mesa.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg> Quantidade e sabores combinados com você</li>
+          <li><svg><use href="#i-check"/></svg> Salgados fritos perto da hora da festa</li>
+          <li><svg><use href="#i-check"/></svg> Orçamento direto, sem complicação</li>
+        </ul>
+        <a class="btn btn-brand btn-action" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Quero%20um%20or%C3%A7amento%20de%20salgados%20para%20um%20evento." target="_blank" rel="noopener noreferrer"><svg><use href="#i-message"/></svg> Pedir um orçamento <svg><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </div>
+
+    <div class="container-site">
+      <div class="calc" id="quantidade">
+        <div>
+          <div class="eyebrow">Quantos salgados pedir?</div>
+          <h3>Diga quantas pessoas vão comer e a gente faz a conta.</h3>
+          <div class="calc-field">
+            <label for="calc-guests">Convidados</label>
+            <div class="calc-stepper">
+              <button type="button" id="calc-minus" aria-label="Menos convidados">−</button>
+              <input type="number" id="calc-guests" inputmode="numeric" min="1" max="1000" value="40">
+              <button type="button" id="calc-plus" aria-label="Mais convidados">+</button>
+            </div>
+          </div>
+          <input class="calc-range" type="range" id="calc-range" min="5" max="200" step="5" value="40" aria-label="Convidados">
+          <div class="calc-chips" role="group" aria-label="Tipo de evento">
+            <button type="button" class="chip" data-rate="6" data-label="café ou lanche" aria-pressed="false">Café ou lanche</button>
+            <button type="button" class="chip" data-rate="10" data-label="festa com outros pratos" aria-pressed="true">Festa com outros pratos</button>
+            <button type="button" class="chip" data-rate="15" data-label="só salgados" aria-pressed="false">Só salgados</button>
+          </div>
+        </div>
+        <div class="calc-result">
+          <div class="calc-total" aria-live="polite"><strong id="calc-total">400</strong><span id="calc-unit">salgados · 4 centos</span></div>
+          <p class="calc-note">Estimativa de referência. A quantidade final é combinada no orçamento.</p>
+          <a class="btn btn-brand btn-action" id="calc-order" href="https://wa.me/556699008293" target="_blank" rel="noopener noreferrer"><svg><use href="#i-message"/></svg> Pedir orçamento com essa quantidade</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contato">
+    <div class="container-site">
+      <div class="contact-heading">
+        <div class="eyebrow">A gente cuida do seu pedido</div>
+        <h2>Bateu a vontade? <em>Chama a vó.</em></h2>
+        <p class="section-description">No coração de Rondonópolis, com entrega pela cidade.</p>
+      </div>
+      <div class="contact-links">
+        <a class="contact-channel" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Vi%20o%20site%20e%20gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer">
+          <svg><use href="#i-message"/></svg>
+          <div><strong>WhatsApp</strong><small>Pedidos e encomendas</small></div>
+          <svg><use href="#i-arrow-up-right"/></svg>
+        </a>
+        <a class="contact-channel" href="https://instagram.com/vovoritasalgados" target="_blank" rel="noopener noreferrer">
+          <svg><use href="#i-instagram"/></svg>
+          <div><strong>Instagram</strong><small>@vovoritasalgados</small></div>
+          <svg><use href="#i-arrow-up-right"/></svg>
+        </a>
+        <a class="contact-channel js-cardapio" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Pode%20me%20enviar%20o%20card%C3%A1pio%20completo%3F" target="_blank" rel="noopener noreferrer">
+          <svg><use href="#i-book"/></svg>
+          <div><strong>Cardápio digital</strong><small>Sabores e valores</small></div>
+          <svg><use href="#i-arrow-up-right"/></svg>
+        </a>
+        <a class="contact-channel" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Gostaria%20de%20saber%20as%20op%C3%A7%C3%B5es%20de%20entrega%20para%20o%20meu%20endere%C3%A7o." target="_blank" rel="noopener noreferrer">
+          <svg><use href="#i-map-pin"/></svg>
+          <div><strong>Rondonópolis, MT</strong><small>Consulte a entrega para seu bairro</small></div>
+          <svg><use href="#i-arrow-up-right"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container-site footer-inner">
+    <a href="#inicio" class="brand" aria-label="Vovó Rita, início">
+      <span class="brand-icon"><svg><use href="#i-chef"/></svg></span>
+      <span><span class="brand-name">Vovó Rita<span class="dot">.</span></span><span class="brand-sub">Salgados &amp; carinho</span></span>
+    </a>
+    <p class="footer-note">Sabor de casa. Carinho de vó.</p>
+    <a class="footer-note footer-phone" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Vi%20o%20site%20e%20gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer"><svg><use href="#i-phone"/></svg> (66) 9900-8293</a>
+  </div>
+</footer>
+
+<a class="floating-order" href="https://wa.me/556699008293?text=Oi%2C%20Vov%C3%B3%20Rita!%20Vi%20o%20site%20e%20gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer" aria-label="Fazer pedido pelo WhatsApp" title="Fazer pedido pelo WhatsApp"><svg><use href="#i-message"/></svg></a>
+
+<script>
+// Link do cardápio digital. Enquanto estiver vazio, os botões de cardápio pedem o cardápio pelo WhatsApp.
+var CARDAPIO_URL = '';
+
+(function () {
+  if (CARDAPIO_URL) {
+    document.querySelectorAll('.js-cardapio').forEach(function (link) { link.href = CARDAPIO_URL; });
+  }
+
+  // Quantity calculator
+  var guestsInput = document.getElementById('calc-guests');
+  var range = document.getElementById('calc-range');
+  var chips = document.querySelectorAll('.chip');
+  var totalEl = document.getElementById('calc-total');
+  var unitEl = document.getElementById('calc-unit');
+  var orderLink = document.getElementById('calc-order');
+  var activeChip = document.querySelector('.chip[aria-pressed="true"]');
+
+  function centos(total) {
+    var whole = Math.floor(total / 100);
+    var half = total % 100 === 50;
+    if (whole === 0) return 'meio cento';
+    return whole + (whole === 1 ? ' cento' : ' centos') + (half ? ' e meio' : '');
+  }
+
+  function update(guests) {
+    guests = Math.min(1000, Math.max(1, Math.round(guests) || 1));
+    var rate = Number(activeChip.getAttribute('data-rate'));
+    var total = Math.max(50, Math.ceil(guests * rate / 50) * 50);
+    range.value = Math.min(guests, Number(range.max));
+    range.style.setProperty('--fill', ((range.value - range.min) / (range.max - range.min) * 100) + '%');
+    totalEl.textContent = total;
+    unitEl.textContent = 'salgados · ' + centos(total);
+    var message = 'Oi, Vovó Rita! Quero um orçamento de cerca de ' + total + ' salgados (' + centos(total) + ') para ' +
+      guests + (guests === 1 ? ' pessoa' : ' pessoas') + ', ' + activeChip.getAttribute('data-label') + '.';
+    orderLink.href = 'https://wa.me/556699008293?text=' + encodeURIComponent(message);
+    return guests;
+  }
+
+  guestsInput.addEventListener('input', function () { if (guestsInput.value !== '') update(Number(guestsInput.value)); });
+  guestsInput.addEventListener('change', function () { guestsInput.value = update(Number(guestsInput.value)); });
+  range.addEventListener('input', function () { guestsInput.value = update(Number(range.value)); });
+  document.getElementById('calc-minus').addEventListener('click', function () { guestsInput.value = update(Number(guestsInput.value) - 5); });
+  document.getElementById('calc-plus').addEventListener('click', function () { guestsInput.value = update(Number(guestsInput.value) + 5); });
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      activeChip = chip;
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
+      update(Number(guestsInput.value));
+    });
+  });
+  update(Number(guestsInput.value));
+})();
+
+(function () {
+  // Mobile menu
+  var toggle = document.getElementById('menu-toggle');
+  var nav = document.getElementById('mobile-nav');
+  toggle.addEventListener('click', function () {
+    var open = nav.hasAttribute('hidden');
+    if (open) { nav.removeAttribute('hidden'); } else { nav.setAttribute('hidden', ''); }
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    toggle.querySelector('use').setAttribute('href', open ? '#i-x' : '#i-menu');
+  });
+  nav.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      nav.setAttribute('hidden', '');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menu');
+      toggle.querySelector('use').setAttribute('href', '#i-menu');
+    });
+  });
+
+  // Category filter
+  var tabs = document.querySelectorAll('.btn-tab');
+  var products = document.querySelectorAll('.product');
+  var track = document.getElementById('product-track');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var category = tab.getAttribute('data-category');
+      tabs.forEach(function (t) {
+        var active = t === tab;
+        t.setAttribute('data-active', String(active));
+        t.setAttribute('aria-pressed', String(active));
+      });
+      products.forEach(function (p) {
+        p.style.display = (category === 'Todos' || p.getAttribute('data-category') === category) ? '' : 'none';
+      });
+      track.scrollTo({ left: 0 });
+    });
+  });
+
+  // Carousel arrows
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function scrollTrack(direction) {
+    track.scrollBy({ left: direction * (track.clientWidth * 0.8), behavior: reduced ? 'instant' : 'smooth' });
+  }
+  document.getElementById('scroll-prev').addEventListener('click', function () { scrollTrack(-1); });
+  document.getElementById('scroll-next').addEventListener('click', function () { scrollTrack(1); });
+})();
+</script>
+</body>
+</html>
