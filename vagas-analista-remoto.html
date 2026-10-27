@@ -43,6 +43,19 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,44px);lin
 .contacts a.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
 .contacts a:hover{border-color:var(--accent)}
 .empty{color:var(--muted);padding:24px 0}
+.job.done{border-color:var(--accent);background:linear-gradient(var(--accent-soft),var(--accent-soft)) top/100% 4px no-repeat,var(--surface)}
+.top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.top h2{min-width:0}
+.mark{display:inline-flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 7px;color:var(--muted);user-select:none}
+.mark input{accent-color:var(--accent);width:16px;height:16px;margin:0;cursor:pointer}
+.mark:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.mark:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.when{font-size:12px;color:var(--accent)}
+.progress{display:grid;gap:6px;max-width:520px}
+.progress .bar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
+.progress .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.progress small{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.progress .bar i{transition:none}}
 footer{color:var(--muted);font-size:13px;max-width:80ch}
 </style>
 <div class="wrap">
@@ -51,12 +64,14 @@ footer{color:var(--muted);font-size:13px;max-width:80ch}
     <p class="lede">Levantamento de 27 de outubro de 2026 com vagas de analista (dados, BI, negócios, financeiro, contábil, RH, QA, suporte, marketing e mais) abertas para trabalho remoto em português ou inglês. Cada vaga tem pelo menos dois canais de contato: o anúncio para se candidatar, a página da empresa no LinkedIn e o site oficial.</p>
   </header>
   <div class="stats" id="stats"></div>
+  <div class="progress"><small id="prog">Nenhuma empresa marcada como contatada ainda. Use o botão “Contatei” em cada vaga.</small><div class="bar"><i id="bar"></i></div><small id="saveinfo">Carregando suas marcações…</small></div>
   <div class="note"><strong>Antes de se candidatar:</strong> vagas dos EUA, Canadá, Reino Unido e Portugal costumam exigir que a pessoa more ou tenha autorização de trabalho no país. Confira no anúncio. E-mails e telefones de recrutadores não aparecem nesses anúncios, então os contatos aqui são o link da vaga, o LinkedIn da empresa e o site/carreiras (onde o site não foi confirmado, o botão abre uma busca pela página de carreiras).</div>
   <div class="filters">
     <input id="q" type="search" placeholder="Buscar cargo ou empresa" aria-label="Buscar cargo ou empresa">
     <select id="pais" aria-label="País"><option value="">Todos os países</option></select>
     <select id="area" aria-label="Área"><option value="">Todas as áreas</option></select>
     <select id="lang" aria-label="Idioma"><option value="">PT e EN</option><option value="PT">Português</option><option value="EN">Inglês</option></select>
+    <select id="status" aria-label="Contato"><option value="">Todas as empresas</option><option value="no">Ainda não contatei</option><option value="yes">Já contatei</option></select>
     <span id="count"></span>
   </div>
   <div class="list" id="list"></div>
@@ -71,13 +86,34 @@ function fill(sel,key){[...new Set(DATA.map(r=>r[key]))].sort().forEach(v=>{cons
 fill($("#pais"),"p");fill($("#area"),"a");
 const byP={};DATA.forEach(r=>byP[r.p]=(byP[r.p]||0)+1);
 $("#stats").innerHTML=`<div><b>${DATA.length}</b> <span>vagas</span></div><div><b>${new Set(DATA.map(r=>r.e)).size}</b> <span>empresas</span></div>`+Object.entries(byP).sort((a,b)=>b[1]-a[1]).map(([p,n])=>`<div><b>${n}</b> <span>${esc(p)}</span></div>`).join("");
+const LS="vagas-analista-contatos";
+let marks={};
+try{marks=JSON.parse(localStorage.getItem(LS)||"{}")||{}}catch(e){}
+let ref=null,writing=Promise.resolve();
+const COMPANIES=new Set(DATA.map(r=>r.e));
+function progress(){
+  const n=[...COMPANIES].filter(c=>marks[c]).length,tot=COMPANIES.size;
+  $("#prog").textContent=n?`${n} de ${tot} empresas contatadas`:"Nenhuma empresa marcada como contatada ainda. Use o botão “Contatei” em cada vaga.";
+  $("#bar").style.width=(n/tot*100)+"%";
+}
+function save(){
+  try{localStorage.setItem(LS,JSON.stringify(marks))}catch(e){}
+  if(!ref)return;
+  const body={empresas:{...marks}};
+  writing=writing.then(()=>ref.set(body)).then(()=>{$("#saveinfo").textContent="Salvo na sua conta. Só você vê suas marcações."}).catch(()=>{$("#saveinfo").textContent="Não consegui salvar na sua conta agora. As marcações ficaram guardadas neste navegador."});
+}
+function toggle(company,on){
+  if(on)marks[company]=new Date().toISOString().slice(0,10);else delete marks[company];
+  save();render();
+}
 function render(){
-  const q=$("#q").value.trim().toLowerCase(),p=$("#pais").value,a=$("#area").value,l=$("#lang").value;
-  const rows=DATA.filter(r=>(!q||(r.t+" "+r.e).toLowerCase().includes(q))&&(!p||r.p===p)&&(!a||r.a===a)&&(!l||r.l.includes(l)));
+  progress();
+  const q=$("#q").value.trim().toLowerCase(),p=$("#pais").value,a=$("#area").value,l=$("#lang").value,st=$("#status").value;
+  const rows=DATA.filter(r=>(!q||(r.t+" "+r.e).toLowerCase().includes(q))&&(!p||r.p===p)&&(!a||r.a===a)&&(!l||r.l.includes(l))&&(!st||(st==="yes")===!!marks[r.e]));
   $("#count").textContent=rows.length+" de "+DATA.length;
-  $("#list").innerHTML=rows.length?rows.map(r=>`<article class="job">
-    <h2>${esc(r.t)}</h2>
-    <div class="co">${esc(r.e)}</div>
+  $("#list").innerHTML=rows.length?rows.map((r,i)=>`<article class="job${marks[r.e]?" done":""}">
+    <div class="top"><h2>${esc(r.t)}</h2><label class="mark"><input type="checkbox" id="m-${esc(r.v.split("/").pop())}" data-co="${esc(r.e)}" ${marks[r.e]?"checked":""}> Contatei</label></div>
+    <div class="co">${esc(r.e)}</div>${marks[r.e]?`<div class="when">Contato marcado em ${fmt(marks[r.e])}</div>`:""}
     <div class="meta"><span class="chip lang">${esc(r.l)}</span><span class="chip">${esc(r.p)} · remoto</span><span class="chip">${esc(r.a)}</span>${r.ty?`<span class="chip">${esc(r.ty)}</span>`:""}<span class="chip">publicada ${fmt(r.d)}</span></div>
     ${r.s?`<div class="sal">${esc(r.s)}</div>`:""}
     <div class="contacts">
@@ -86,6 +122,24 @@ function render(){
       <a href="${esc(r.site)}" target="_blank" rel="noopener">${r.known?"Site oficial":"Buscar site/carreiras"}</a>
     </div></article>`).join(""):`<p class="empty">Nenhuma vaga com esses filtros. Limpe a busca ou escolha outro país.</p>`;
 }
-["#q","#pais","#area","#lang"].forEach(s=>$(s).addEventListener("input",render));
+["#q","#pais","#area","#lang","#status"].forEach(s=>$(s).addEventListener("input",render));
+$("#list").addEventListener("change",e=>{const c=e.target.dataset&&e.target.dataset.co;if(c)toggle(c,e.target.checked)});
 render();
+(async()=>{
+  const local="As marcações ficam guardadas só neste navegador.";
+  try{
+    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+    const id=user&&await user.id();
+    if(!db||!id){$("#saveinfo").textContent=local;return}
+    ref=db.doc("data/users/"+id+"/contatos");
+    const snap=await ref.get();
+    const remote=(snap.exists&&snap.data().empresas)||{};
+    const merged={...remote,...marks};
+    marks=merged;
+    if(JSON.stringify(merged)!==JSON.stringify(remote))save();
+    else $("#saveinfo").textContent="Salvo na sua conta. Só você vê suas marcações.";
+    try{localStorage.setItem(LS,JSON.stringify(marks))}catch(e){}
+    render();
+  }catch(e){$("#saveinfo").textContent=local}
+})();
 </script>
