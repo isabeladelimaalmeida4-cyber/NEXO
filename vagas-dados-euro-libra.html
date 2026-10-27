@@ -1,0 +1,142 @@
+<title>Dados Remoto em Euro e Libra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: cabeçalho, referência salarial por moeda, filtros fixos, cartões de vaga em grade */
+:root{
+  --bg:#f4f4f7; --surface:#ffffff; --fg:#191a2c; --muted:#5d6077; --line:#dcdde8;
+  --accent:#3b3fb6; --accent-soft:#e3e4fa; --chip:#eeeef4; --eur:#1d4fa0; --gbp:#7a2d6b; --usd:#2c6b3f; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --chip:#23253a; --eur:#8fb4ff; --gbp:#e19ad3; --usd:#8fd6a5; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --chip:#23253a; --eur:#8fb4ff; --gbp:#e19ad3; --usd:#8fd6a5; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:18px;margin:0}
+.lede{color:var(--muted);max-width:70ch;margin:8px 0 0}
+.stats{display:flex;flex-wrap:wrap;gap:8px 20px;font-variant-numeric:tabular-nums}
+.stats b{font-family:var(--display);font-size:22px;color:var(--accent)}
+.stats span{color:var(--muted);font-size:13px}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:85ch}
+.note strong{color:var(--warn)}
+.ref{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.ref div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:4px;min-width:0}
+.ref .cur{font-family:var(--display);font-weight:800;font-size:20px}
+.ref small{color:var(--muted);font-size:13px}
+.cur.EUR{color:var(--eur)}.cur.GBP{color:var(--gbp)}.cur.USD{color:var(--usd)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding-block:10px;z-index:5;border-bottom:1px solid var(--line)}
+.filters input,.filters select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+.filters input{flex:1 1 220px}
+.filters input:focus-visible,.filters select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#count{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media (max-width:420px){.list{grid-template-columns:1fr}}
+.job{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;min-width:0;align-content:start}
+.job.done{border-color:var(--accent)}
+.top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.job h2{font-family:var(--display);font-weight:600;font-size:17px;line-height:1.25;margin:0;min-width:0}
+.co{font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);color:var(--muted);font-size:12px;border-radius:4px;padding:2px 7px;letter-spacing:.02em}
+.chip.EUR,.chip.GBP,.chip.USD{font-weight:700;background:var(--accent-soft)}
+.chip.EUR{color:var(--eur)}.chip.GBP{color:var(--gbp)}.chip.USD{color:var(--usd)}
+.sal{font-size:14px;font-variant-numeric:tabular-nums}
+.who{font-size:13px;color:var(--muted)}
+.contacts{display:flex;flex-wrap:wrap;gap:6px}
+.contacts a{font-size:13px;text-decoration:none;border:1px solid var(--line);border-radius:5px;padding:4px 9px;color:var(--fg)}
+.contacts a.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.contacts a:hover{border-color:var(--accent)}
+.mark{display:inline-flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 7px;color:var(--muted);user-select:none}
+.mark input{accent-color:var(--accent);width:16px;height:16px;margin:0;cursor:pointer}
+.mark:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.mark:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.boards{display:grid;gap:8px;max-width:85ch}
+.boards ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.boards a{color:var(--accent)}
+.empty{color:var(--muted);padding:24px 0}
+footer{color:var(--muted);font-size:13px;max-width:85ch}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Análise de dados remota, pagando em euro, libra ou dólar</h1>
+    <p class="lede">Vagas de analista de dados, BI e áreas de análise (marketing analytics, pesquisa, métricas) em trabalho remoto, com salário em euro (€), libra (£) ou dólar (US$). Levantamento de 27 de outubro de 2026.</p>
+  </header>
+  <div class="stats" id="stats"></div>
+  <div class="note"><strong>Leia antes:</strong> não encontrei nenhuma vaga de dados atual, pagando nessas moedas, aberta para quem mora no Brasil. Todas as vagas abaixo são remotas <em>dentro</em> de um país: a empresa exige que a pessoa more lá e tenha autorização de trabalho. Cada cartão diz qual é a exigência. Para vagas realmente abertas a qualquer país, use os sites da seção "Onde procurar vagas para qualquer país", no fim da página.</div>
+  <section class="ref" aria-label="Referência salarial">
+    <div><span class="cur EUR">€ Euro</span><small>Analista de dados remoto na Europa: cerca de €59 mil a €89 mil por ano (média de vagas do Remote Rocketship). Na Europa os anúncios quase nunca mostram o salário.</small></div>
+    <div><span class="cur GBP">£ Libra</span><small>Analista de dados remoto no Reino Unido: cerca de £28 mil a £44 mil por ano, média de £35 mil (Glassdoor, junho de 2026).</small></div>
+    <div><span class="cur USD">US$ Dólar</span><small>Nos EUA o salário aparece no anúncio: de US$ 16 por hora (júnior) a US$ 115 mil por ano nas vagas desta lista.</small></div>
+  </section>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Buscar cargo ou empresa" aria-label="Buscar cargo ou empresa">
+    <select id="moeda" aria-label="Moeda"><option value="">Todas as moedas</option><option value="EUR">Euro (€)</option><option value="GBP">Libra (£)</option><option value="USD">Dólar (US$)</option></select>
+    <select id="nivel" aria-label="Nível"><option value="">Todos os níveis</option></select>
+    <select id="status" aria-label="Contato"><option value="">Todas</option><option value="no">Ainda não me candidatei</option><option value="yes">Já me candidatei</option></select>
+    <span id="count"></span>
+  </div>
+  <div class="list" id="list"></div>
+  <section class="boards">
+    <h3>Onde procurar vagas para qualquer país</h3>
+    <ul>
+      <li><a href="https://www.remoterocketship.com/country/latin-america/jobs/data-analyst/" target="_blank" rel="noopener">Remote Rocketship – Data Analyst, América Latina</a> (vagas que aceitam quem mora no Brasil, muitas em dólar)</li>
+      <li><a href="https://www.remoterocketship.com/country/europe/jobs/data-analyst/" target="_blank" rel="noopener">Remote Rocketship – Data Analyst, Europa</a> (salários em euro)</li>
+      <li><a href="https://euremotejobs.com/remote-data-jobs/" target="_blank" rel="noopener">EU Remote Jobs – vagas de dados</a></li>
+      <li><a href="https://kickstartremote.com/country/latin-america/jobs/analyst" target="_blank" rel="noopener">Kickstart Remote – Analyst, América Latina</a></li>
+      <li><a href="https://www.latojobs.com/" target="_blank" rel="noopener">LATO Jobs – vagas para a América Latina</a></li>
+    </ul>
+    <p class="who">Nesses sites, filtre por "Anywhere", "Worldwide" ou "LATAM". Empresas como GitLab, Automattic e Zapier contratam no mundo todo, muitas vezes como prestação de serviço (você emite nota como PJ ou via plataformas como Deel e Remote).</p>
+  </section>
+  <footer>Fonte: busca no Indeed com filtro de trabalho remoto na Irlanda, Alemanha, Holanda, Espanha, Portugal, Itália, França, Bélgica, Polônia, Reino Unido e EUA. Foram excluídas vagas presenciais, cargos de engenharia de dados e vagas pagas em outras moedas. Na Europa quase nenhum anúncio informa o salário; os valores de referência vêm do <a href="https://www.glassdoor.co.uk/Salaries/remote-data-analyst-salary-SRCH_KO0,19.htm" target="_blank" rel="noopener">Glassdoor</a> e do <a href="https://www.remoterocketship.com/country/europe/jobs/data-analyst/" target="_blank" rel="noopener">Remote Rocketship</a>.</footer>
+</div>
+<script>
+const DATA = [{"t": "Analyst – Reporting (Full time, Remote)", "e": "Maximus", "p": "EUA", "m": "USD", "a": "Dados/BI", "d": "2026-10-27", "ty": "Tempo integral", "s": "US$ 44.800 – 69.400/ano", "v": "https://to.indeed.com/aa4nsgdnkkpq", "n": "Júnior", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=Maximus", "site": "https://maximus.com/careers", "known": true}, {"t": "Data Analyst – Requirements & Data Quality Support", "e": "Everforth ECS", "p": "EUA", "m": "USD", "a": "Dados/BI", "d": "2026-10-26", "ty": "", "s": "US$ 105.000 – 110.000/ano", "v": "https://to.indeed.com/aamw7h869s7w", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=Everforth%20ECS", "site": "https://www.google.com/search?q=Everforth%20ECS%20careers", "known": false}, {"t": "Training Data / Proficiency Analyst", "e": "Edera L3C", "p": "EUA", "m": "USD", "a": "Dados/IA", "d": "2026-10-26", "ty": "", "s": "US$ 40,46 – 48,58/hora", "v": "https://to.indeed.com/aa92qgmck6bl", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=Edera%20L3C", "site": "https://www.google.com/search?q=Edera%20L3C%20careers", "known": false}, {"t": "Data Reconciliation Analyst (Remote)", "e": "FCT", "p": "EUA", "m": "USD", "a": "Dados/BI", "d": "2026-10-26", "ty": "Tempo integral", "s": "US$ 16,07 – 24,04/hora", "v": "https://to.indeed.com/aaf2wd84ykw7", "n": "Júnior", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=FCT", "site": "https://www.google.com/search?q=FCT%20careers", "known": false}, {"t": "Growth Analyst", "e": "Kayzen", "p": "Espanha / Portugal", "m": "EUR", "a": "Marketing analytics", "d": "2026-10-22", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aaxsbw8d6vbr", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho na Espanha ou em Portugal (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Kayzen", "site": "https://kayzen.io", "known": true}, {"t": "Data Analyst – Qlik Sense", "e": "Informet IT", "p": "Itália", "m": "EUR", "a": "Dados/BI", "d": "2026-10-22", "ty": "Colaboração (PJ)", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aa22svxv7t9z", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho na Itália (UE); pode exigir italiano", "li": "https://www.linkedin.com/search/results/companies/?keywords=Informet%20IT", "site": "https://www.google.com/search?q=Informet%20IT%20careers", "known": false}, {"t": "International Sales Analyst – Intern", "e": "NAAM Elektroonika (Estônia)", "p": "França", "m": "EUR", "a": "Vendas/Análise", "d": "2026-10-22", "ty": "Estágio", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aab9k8l44bj8", "n": "Estágio", "w": "Precisa morar na UE; confira no anúncio", "li": "https://www.linkedin.com/search/results/companies/?keywords=NAAM%20Elektroonika", "site": "https://www.google.com/search?q=NAAM%20Elektroonika%20careers", "known": false}, {"t": "Data Analyst", "e": "Log-U Carers", "p": "Portugal", "m": "EUR", "a": "Dados/BI", "d": "2026-10-16", "ty": "Efetivo", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aazqkgqc2w8n", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho em Portugal (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Log-U%20Carers", "site": "https://www.google.com/search?q=Log-U%20Carers%20careers", "known": false}, {"t": "Business Analyst", "e": "Tribal Group", "p": "Reino Unido", "m": "GBP", "a": "Negócios", "d": "2026-10-12", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aasmfbgz4q7h", "n": "Não informado", "w": "Precisa morar e ter direito de trabalho no Reino Unido", "li": "https://www.linkedin.com/search/results/companies/?keywords=Tribal%20Group", "site": "https://www.tribalgroup.com", "known": true}, {"t": "Data Analyst (100% Remote)", "e": "ClearCaptions", "p": "EUA", "m": "USD", "a": "Dados/BI", "d": "2026-10-12", "ty": "", "s": "US$ 100.000 – 115.000/ano", "v": "https://to.indeed.com/aamnyyztmr6w", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=ClearCaptions", "site": "https://clearcaptions.com", "known": true}, {"t": "Data Analyst III (Remote)", "e": "CrowdStrike", "p": "Irlanda", "m": "EUR", "a": "Dados/BI", "d": "2026-10-08", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aak7dm9tpmdd", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Irlanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=CrowdStrike", "site": "https://www.crowdstrike.com/careers/", "known": true}, {"t": "Market Research Analyst", "e": "CC Management Consulting", "p": "Reino Unido", "m": "GBP", "a": "Pesquisa de mercado", "d": "2026-10-08", "ty": "Efetivo", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aarjjfz6flb8", "n": "Não informado", "w": "Precisa morar e ter direito de trabalho no Reino Unido", "li": "https://www.linkedin.com/search/results/companies/?keywords=CC%20Management%20Consulting", "site": "https://www.google.com/search?q=CC%20Management%20Consulting%20careers", "known": false}, {"t": "Marketing Lead Analyst", "e": "Companio (Estônia)", "p": "Espanha", "m": "EUR", "a": "Marketing analytics", "d": "2026-10-07", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aa8wd2rfcc86", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Espanha (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Companio", "site": "https://www.google.com/search?q=Companio%20careers", "known": false}, {"t": "GTM Analyst", "e": "FindCryptoETFs.com", "p": "Reino Unido", "m": "GBP", "a": "Marketing analytics", "d": "2026-10-04", "ty": "Meio período", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aa99zsc7vhgt", "n": "Não informado", "w": "Precisa morar e ter direito de trabalho no Reino Unido", "li": "https://www.linkedin.com/search/results/companies/?keywords=FindCryptoETFs.com", "site": "https://www.google.com/search?q=FindCryptoETFs.com%20careers", "known": false}, {"t": "Senior Marketing Analyst", "e": "Social Discovery Group", "p": "Irlanda", "m": "EUR", "a": "Marketing analytics", "d": "2026-10-01", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aacsfvfy77b4", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Irlanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Social%20Discovery%20Group", "site": "https://www.google.com/search?q=Social%20Discovery%20Group%20careers", "known": false}, {"t": "Data Analyst", "e": "Oxford Global Resources", "p": "Alemanha", "m": "EUR", "a": "Dados/BI", "d": "2026-09-22", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aaztw89byqxy", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho na Alemanha (UE); pode exigir alemão", "li": "https://www.linkedin.com/search/results/companies/?keywords=Oxford%20Global%20Resources", "site": "https://www.oxfordcorp.com", "known": true}, {"t": "Data Analysts (eCommerce) – 100% remote, 12+ months", "e": "wynwood tech LLC", "p": "Alemanha", "m": "EUR", "a": "Dados/BI", "d": "2026-09-17", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aacwck74h4z9", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho na Alemanha (UE); pode exigir alemão", "li": "https://www.linkedin.com/search/results/companies/?keywords=wynwood%20tech%20LLC", "site": "https://www.google.com/search?q=wynwood%20tech%20LLC%20careers", "known": false}, {"t": "Ecommerce Product Catalog & Research Analyst", "e": "Uvation", "p": "Irlanda", "m": "EUR", "a": "Pesquisa/E-commerce", "d": "2026-09-10", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aanbwy9m6p4p", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho na Irlanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Uvation", "site": "https://www.google.com/search?q=Uvation%20careers", "known": false}, {"t": "Data Analyst I", "e": "Goldbelt", "p": "EUA", "m": "USD", "a": "Dados/BI", "d": "2026-09-08", "ty": "Tempo integral", "s": "US$ 80.000 – 90.000/ano", "v": "https://to.indeed.com/aapjwhwxw9fc", "n": "Júnior", "w": "Precisa morar e ter autorização de trabalho nos EUA", "li": "https://www.linkedin.com/search/results/companies/?keywords=Goldbelt", "site": "https://www.goldbelt.com", "known": true}, {"t": "Financial Analyst – Revenue & Metrics (Ireland based)", "e": "LaunchDarkly", "p": "Irlanda", "m": "EUR", "a": "Finanças/Métricas", "d": "2026-08-12", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aafsgdcvpn8q", "n": "Pleno", "w": "Precisa morar e ter autorização de trabalho na Irlanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=LaunchDarkly", "site": "https://launchdarkly.com/careers/", "known": true}, {"t": "AI Product Analyst – Voice AI Agents", "e": "MEDvidi Health", "p": "Portugal", "m": "EUR", "a": "Produto/IA", "d": "2026-07-28", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aahm64d9lcn8", "n": "Não informado", "w": "Precisa morar e ter autorização de trabalho em Portugal (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=MEDvidi%20Health", "site": "https://medvidi.com", "known": true}, {"t": "Lead Marketing Analyst", "e": "Social Discovery Group", "p": "Irlanda", "m": "EUR", "a": "Marketing analytics", "d": "2026-07-08", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aa2v7qz6lqrt", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Irlanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Social%20Discovery%20Group", "site": "https://www.google.com/search?q=Social%20Discovery%20Group%20careers", "known": false}, {"t": "Senior Data Analyst – Fraud", "e": "Moniepoint", "p": "Portugal", "m": "EUR", "a": "Dados/BI", "d": "2026-06-30", "ty": "", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aaszb2rvbnj8", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho em Portugal (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Moniepoint", "site": "https://moniepoint.com", "known": true}, {"t": "Senior Data Analyst", "e": "Veeva Systems", "p": "Espanha", "m": "EUR", "a": "Dados/BI", "d": "2026-03-30", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aankzrtgsx9k", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Espanha (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Veeva%20Systems", "site": "https://careers.veeva.com", "known": true}, {"t": "Praktikant:in Data Analyst (estágio)", "e": "HireWood", "p": "Alemanha", "m": "EUR", "a": "Dados/BI", "d": "2026-03-17", "ty": "Estágio", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aa6kjncwljsf", "n": "Estágio", "w": "Precisa morar e ter autorização de trabalho na Alemanha (UE); pode exigir alemão", "li": "https://www.linkedin.com/search/results/companies/?keywords=HireWood", "site": "https://www.google.com/search?q=HireWood%20careers", "known": false}, {"t": "Senior Data Analyst", "e": "Walker & Dunlop", "p": "Holanda", "m": "EUR", "a": "Dados/BI", "d": "2026-02-19", "ty": "Tempo integral", "s": "Salário não informado no anúncio", "v": "https://to.indeed.com/aajppxlcrnql", "n": "Sênior", "w": "Precisa morar e ter autorização de trabalho na Holanda (UE)", "li": "https://www.linkedin.com/search/results/companies/?keywords=Walker%20%26%20Dunlop", "site": "https://www.walkerdunlop.com", "known": true}];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=d=>{const [y,m,dd]=d.split("-");return dd+"/"+m+"/"+y};
+[...new Set(DATA.map(r=>r.n))].sort().forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;$("#nivel").appendChild(o)});
+const byM={EUR:0,GBP:0,USD:0};DATA.forEach(r=>byM[r.m]++);
+$("#stats").innerHTML=`<div><b>${DATA.length}</b> <span>vagas</span></div><div><b>${byM.EUR}</b> <span>em euro</span></div><div><b>${byM.GBP}</b> <span>em libra</span></div><div><b>${byM.USD}</b> <span>em dólar</span></div>`;
+const LS="vagas-dados-moeda-forte";
+let marks={};try{marks=JSON.parse(localStorage.getItem(LS)||"{}")||{}}catch(e){}
+let ref=null,writing=Promise.resolve();
+function save(){
+  try{localStorage.setItem(LS,JSON.stringify(marks))}catch(e){}
+  if(!ref)return;
+  const body={vagas:{...marks}};
+  writing=writing.then(()=>ref.set(body)).catch(()=>{});
+}
+function render(){
+  const q=$("#q").value.trim().toLowerCase(),m=$("#moeda").value,n=$("#nivel").value,st=$("#status").value;
+  const rows=DATA.filter(r=>(!q||(r.t+" "+r.e).toLowerCase().includes(q))&&(!m||r.m===m)&&(!n||r.n===n)&&(!st||(st==="yes")===!!marks[r.v]));
+  $("#count").textContent=rows.length+" de "+DATA.length;
+  $("#list").innerHTML=rows.length?rows.map(r=>`<article class="job${marks[r.v]?" done":""}">
+    <div class="top"><h2>${esc(r.t)}</h2><label class="mark"><input type="checkbox" id="m-${esc(r.v.split("/").pop())}" data-v="${esc(r.v)}" ${marks[r.v]?"checked":""}> Me candidatei</label></div>
+    <div class="co">${esc(r.e)}</div>
+    <div class="meta"><span class="chip ${r.m}">${r.m==="EUR"?"€ Euro":r.m==="GBP"?"£ Libra":"US$ Dólar"}</span><span class="chip">${esc(r.p)} · remoto</span><span class="chip">${esc(r.a)}</span><span class="chip">Nível: ${esc(r.n)}</span>${r.ty?`<span class="chip">${esc(r.ty)}</span>`:""}<span class="chip">publicada ${fmt(r.d)}</span></div>
+    <div class="sal">${esc(r.s)}</div>
+    <div class="who">${esc(r.w)}</div>
+    <div class="contacts">
+      <a class="primary" href="${esc(r.v)}" target="_blank" rel="noopener">Ver vaga e candidatar</a>
+      <a href="${esc(r.li)}" target="_blank" rel="noopener">LinkedIn da empresa</a>
+      <a href="${esc(r.site)}" target="_blank" rel="noopener">${r.known?"Site/carreiras":"Buscar site/carreiras"}</a>
+    </div></article>`).join(""):`<p class="empty">Nenhuma vaga com esses filtros. Escolha outra moeda ou nível.</p>`;
+}
+["#q","#moeda","#nivel","#status"].forEach(s=>$(s).addEventListener("input",render));
+$("#list").addEventListener("change",e=>{const v=e.target.dataset&&e.target.dataset.v;if(!v)return;if(e.target.checked)marks[v]=new Date().toISOString().slice(0,10);else delete marks[v];save();render()});
+render();
+(async()=>{try{
+  const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+  const id=user&&await user.id();if(!db||!id)return;
+  ref=db.doc("data/users/"+id+"/candidaturas");
+  const snap=await ref.get();const remote=(snap.exists&&snap.data().vagas)||{};
+  const merged={...remote,...marks};marks=merged;
+  if(JSON.stringify(merged)!==JSON.stringify(remote))save();
+  render();
+}catch(e){}})();
+</script>
