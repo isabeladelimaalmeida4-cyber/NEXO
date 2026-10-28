@@ -1,0 +1,71 @@
+<title>Nova Rodada de Vagas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: título curto, duas tabelas (rascunhos criados / sem e-mail), aviso de elegibilidade */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#162231; --muted:#56657a; --line:#d8dfe8;
+  --accent:#0d6a8a; --ok:#2c6b3f; --ok-soft:#dff1e4; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:22px}
+h1{font-family:var(--display);font-size:clamp(26px,4.5vw,38px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lede{color:var(--muted);max-width:70ch;margin:8px 0 0}
+.pill{font-family:var(--body);font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.no{background:var(--warn-soft);color:var(--warn)}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:85ch}
+.note strong{color:var(--warn)}
+section{display:grid;gap:10px;min-width:0}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td b{display:block}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all;user-select:all}
+.pay{font-variant-numeric:tabular-nums;white-space:nowrap}
+a{color:var(--accent);font-weight:700}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{color:var(--muted);font-size:13px;max-width:85ch}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Nova rodada de vagas júnior</h1>
+    <p class="lede">Busca de 28 de outubro de 2026: vagas remotas de nível júnior em dados, pagas em dólar ou libra. As que têm e-mail viraram rascunho no seu Gmail com o currículo em inglês anexado; as que não têm estão na segunda tabela.</p>
+  </header>
+  <div class="note"><strong>Antes de enviar:</strong> as duas vagas com rascunho pedem, no anúncio, que a pessoa more nos EUA ou no Reino Unido. Por isso cada e-mail pergunta se aceitam candidatas que moram no Brasil.</div>
+
+  <section>
+    <h2>Rascunhos criados no Gmail <span class="pill ok">2 empresas</span></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Empresa</th><th>Vaga</th><th>E-mail</th><th>Salário</th><th>O que o e-mail diz</th></tr></thead>
+      <tbody>
+        <tr><td><b>Planned Systems International</b>EUA</td><td>Jr. Data Analyst (remoto, equipe de métricas)</td><td class="mono">HRDepartment@plan-sys.com</td><td class="pay">Não informado</td><td>Pede ao RH para encaminhar ao recrutador da vaga e pergunta se aceitam quem mora no Brasil.</td></tr>
+        <tr><td><b>Tenth Revolution Group</b>Reino Unido (recrutadora)</td><td>Junior Power BI Consultant (home-based)</td><td class="mono">v.simpson@tenthrevolution.com</td><td class="pay">£30.000 – 35.000/ano</td><td>Destaca seu Power BI e pergunta se aceitam candidatas fora do Reino Unido, nesta ou em outras vagas de dados.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Vagas sem e-mail <span class="pill no">4 empresas</span></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Empresa</th><th>Vaga</th><th>Salário</th><th>Como se candidatar</th></tr></thead>
+      <tbody>
+        <tr><td><b>Wheel the World</b>EUA</td><td>Entry-Level Data Analyst (remoto, EUA)</td><td class="pay">Não informado</td><td>Pelo link da vaga: <a href="https://jobfound.org/job/wheel-the-world-is-hiring-for-data-analyst-united-states-remote-usa-21-october-2026" target="_blank" rel="noopener">ver vaga</a></td></tr>
+        <tr><td><b>Microflexinfra</b>EUA</td><td>Junior Business Analyst (remoto)</td><td class="pay">US$ 68.000 – 75.000/ano</td><td>Anúncio no SimplyHired, sem e-mail. Busque "Junior Business Analyst Microflexinfra" no SimplyHired ou no Indeed.</td></tr>
+        <tr><td><b>HSAG</b> (Health Services Advisory Group)<br>EUA</td><td>Analyst I (remoto)</td><td class="pay">US$ 70.000 – 75.000/ano</td><td>Pelo site de carreiras da HSAG. Telefones encontrados, não confirmados: <span class="mono">+1 602-264-6382</span> e <span class="mono">+1 602-801-6701</span>.</td></tr>
+        <tr><td><b>Remote.com</b><br>Global</td><td>Junior Data Analyst</td><td class="pay">Não informado</td><td>A vaga já expirou. Existe o e-mail <span class="mono">hiring@remote.com</span>, mas não fiz rascunho porque a vaga não está mais aberta.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer>Os e-mails usados são os publicados pelas empresas; nenhum foi adivinhado. Os rascunhos não têm links no texto (o Gmail troca links por endereços que expiram); o LinkedIn vai no currículo anexado.</footer>
+</div>
