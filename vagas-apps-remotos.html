@@ -1,0 +1,77 @@
+<title>Vagas dos Apps Remotos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: cabeçalho curto + um cartão grande por vaga (dados da vaga, currículo adaptado, o que foi mudado, o que falta) */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#162231; --muted:#56657a; --line:#d8dfe8;
+  --accent:#0d6a8a; --accent-soft:#dcedf3; --ok:#2c6b3f; --ok-soft:#dff1e4; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --accent-soft:#163543; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --accent-soft:#163543; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:20px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:72ch;margin:8px 0 0}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:85ch}
+.note strong{color:var(--warn)}
+.job{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:12px;min-width:0}
+.head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.head h2{font-family:var(--display);font-weight:600;font-size:21px;margin:0;line-height:1.2}
+.co{font-weight:700;color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--accent-soft);color:var(--fg);font-size:12px;border-radius:4px;padding:2px 8px}
+.chip.app{background:var(--accent);color:var(--surface);font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.box{border-radius:8px;padding:12px 14px;min-width:0}
+.box h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.box ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.box.added{background:var(--ok-soft)}.box.added h3{color:var(--ok)}
+.box.gap{background:var(--warn-soft)}.box.gap h3{color:var(--warn)}
+.links{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.links a{color:var(--surface);background:var(--accent);text-decoration:none;font-weight:700;border-radius:6px;padding:6px 12px}
+.links a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.file{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);word-break:break-all}
+footer{color:var(--muted);font-size:13px;max-width:85ch}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Vagas dos apps Remote IT Jobs e Remote-Work.app</h1>
+    <p class="lede">As 4 vagas de nível de entrada em dados encontradas nos dois aplicativos, cada uma com um currículo em inglês adaptado para ela, o que mudou nesse currículo e o que a vaga pede que você ainda não tem. Levantamento de 28 de outubro de 2026.</p>
+  </header>
+  <div class="note"><strong>Antes de se candidatar:</strong> nenhuma das 4 aceita, pelo anúncio, quem mora no Brasil. Nenhuma publica e-mail; a candidatura é pelo link da vaga. Os currículos adaptados foram enviados como arquivos na conversa, com o nome de cada empresa.</div>
+  <div id="list" style="display:grid;gap:16px"></div>
+  <footer>Fontes: páginas das vagas em remoteitjobs.app e remote-work.app, encontradas por busca na web (o ambiente não abre os sites diretamente). Salários marcados como "estimado" são estimativas do próprio app, não do anúncio. Nada foi inventado nos currículos: só foi reorganizado e reescrito o que já estava no seu currículo.</footer>
+</div>
+<script>
+const J=[
+{co:"Hyra",title:"Junior Data Analyst",app:"Remote IT Jobs",url:"https://www.remoteitjobs.app/job/hyra-junior-data-analyst",pay:"Provável libra (não informado)",who:"Reino Unido",level:"Nível de entrada",asks:"Power BI, Tableau, SQL, Python e Excel; escrever consultas SQL para extrair e organizar dados.",file:"Isabela_de_Lima_Almeida_Resume_Hyra.pdf",
+ added:["Título trocado para \"Junior Data Analyst\", igual ao da vaga.","Resumo reescrito com foco em escrever consultas SQL, montar dashboards e precisão dos dados, nas palavras do anúncio.","Nova seção \"Core skills for this role\" no topo: SQL, Power BI, Excel, Python e limpeza de dados.","Experiência na Agroserv reescrita destacando dados precisos e o catálogo como um conjunto de dados estruturado e consultável."],
+ gaps:["Tableau: a vaga pede e você não tem. Um curso gratuito (por exemplo, Tableau Public) já permitiria incluir.","Python aparece como básico; a vaga espera algum uso prático. Um projeto simples no seu GitHub ajudaria."]},
+{co:"Nova Infotek",title:"Junior Data Analyst",app:"Remote IT Jobs",url:"https://www.remoteitjobs.app/job/nova-infotek-junior-data-analyst",pay:"US$ 45.000 – 65.000/ano (estimado)",who:"EUA (base em Nova York)",level:"Júnior",asks:"Relatórios básicos, Excel ou Google Sheets, SQL (preferível); Tableau ou Power BI é diferencial.",file:"Isabela_de_Lima_Almeida_Resume_Nova_Infotek.pdf",
+ added:["Título \"Junior Data Analyst | Reporting\", porque a vaga é focada em relatórios.","Resumo reescrito em torno de relatórios recorrentes, planilhas e precisão.","\"Core skills\" com Reporting em primeiro lugar e SQL marcado como a habilidade preferida da vaga.","Experiência reordenada: primeiro a manutenção das planilhas e os relatórios; o catálogo vem em seguida."],
+ gaps:["Google Sheets: a vaga cita e não está no seu currículo. Se você usa, me avise que eu incluo.","Tableau: diferencial que você não tem (o Power BI já cobre o requisito)."]},
+{co:"ADF Medical",title:"Data Analyst (nível de entrada, meio período ou integral)",app:"Remote-Work.app",url:"https://www.remote-work.app/job/adf-medical-data-analyst-part-time",pay:"US$ 45.000 – 65.000/ano (estimado)",who:"EUA",level:"Nível de entrada",asks:"Relatórios, dashboards e acompanhamento de indicadores (KPIs).",file:"Isabela_de_Lima_Almeida_Resume_ADF_Medical.pdf",
+ added:["Título \"Entry-Level Data Analyst | Reporting, Dashboards & KPIs\".","Resumo usa a frase do seu currículo original em português, \"gestão de indicadores, dashboards e relatórios\", traduzida como KPI tracking.","Incluída a disponibilidade para meio período ou período integral, como a vaga oferece.","Experiência destaca o cuidado com documentos sensíveis (confidencialidade), relevante para uma empresa da área médica."],
+ gaps:["Experiência com dados da área de saúde: a empresa é médica e você não tem. Não incluí nada sobre isso."]},
+{co:"Appinio",title:"Analytics Engineer (nível de entrada)",app:"Remote IT Jobs",url:"https://www.remoteitjobs.app/job/appinio-analytics-engineer-m-f-d-remote-uk",pay:"Provável euro ou libra (não informado)",who:"Alemanha, Reino Unido, Portugal, Holanda ou Espanha",level:"Nível de entrada",asks:"Vaga de engenharia de dados: estruturar dados, SQL e montar os sistemas por trás dos relatórios.",file:"Isabela_de_Lima_Almeida_Resume_Appinio.pdf",
+ added:["Título \"Junior Analytics Engineer | Data & BI\".","Resumo voltado para o lado de engenharia: estruturar dados, escrever SQL e construir sistemas.","O catálogo da Agroserv aparece como projeto de modelagem de dados: você definiu os campos (caixa, categoria, data, local) e planejou a migração para SQL.","Sua empresa de sites, sistemas e automações ganhou destaque como experiência de construção de sistemas."],
+ gaps:["dbt, Git e data warehouses na nuvem (BigQuery, Snowflake): comuns nesse cargo e não estão no currículo. Você tem conta no GitHub; se usa Git, me avise que eu incluo.","Python: só básico, e Analytics Engineers costumam usar mais."]},
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("list").innerHTML=J.map(j=>`<article class="job">
+  <div class="head"><h2>${esc(j.title)}</h2><span class="co">${esc(j.co)}</span></div>
+  <div class="meta"><span class="chip app">App: ${esc(j.app)}</span><span class="chip">${esc(j.level)}</span><span class="chip">${esc(j.pay)}</span><span class="chip">${esc(j.who)}</span></div>
+  <div><b>O que a vaga pede:</b> ${esc(j.asks)}</div>
+  <div class="cols">
+    <div class="box added"><h3>O que mudei no currículo</h3><ul>${j.added.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
+    <div class="box gap"><h3>O que a vaga pede e você não tem</h3><ul>${j.gaps.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
+  </div>
+  <div class="links"><a href="${esc(j.url)}" target="_blank" rel="noopener">Ver vaga no app</a><span class="file">Currículo: ${esc(j.file)}</span></div>
+</article>`).join("");
+</script>
