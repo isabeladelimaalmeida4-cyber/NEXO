@@ -23,6 +23,10 @@ h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
 .drafts h2{font-size:17px;color:var(--ok)}
 .drafts ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;user-select:all;word-break:break-all}
+.tscroll{overflow-x:auto}
+.drafts table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+.drafts th,.drafts td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.drafts th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
 @media (max-width:420px){.list{grid-template-columns:1fr}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;min-width:0;align-content:start}
@@ -44,14 +48,21 @@ footer{color:var(--muted);font-size:13px;max-width:90ch}
 <div class="wrap">
   <header>
     <h1>Onde falar com cada empresa</h1>
-    <p class="lede">As 12 vagas júnior remotas (euro, libra ou dólar) que não têm e-mail de contato. Para cada uma: a vaga, o telefone quando existe e onde se cadastrar. As duas que aceitam quem mora no Brasil aparecem primeiro, com borda destacada.</p>
+    <p class="lede">As vagas júnior remotas (euro, libra ou dólar) que não têm e-mail de contato. A lista cresce a cada nova busca; as mais recentes aparecem com a etiqueta "Nova". Para cada uma: a vaga, o telefone quando existe e onde se cadastrar. As duas que aceitam quem mora no Brasil aparecem primeiro, com borda destacada.</p>
   </header>
   <section class="drafts">
-    <h2>Já com rascunho no seu Gmail (currículo em inglês anexado)</h2>
-    <ul>
-      <li><b>Vintti</b>: Junior Data Analyst (USD – Remote), para <span class="mono">partnerships@vintti.com</span>. Telefone: +1 (786) 767-6968</li>
-      <li><b>Careerswift</b>: Junior Data Analyst, para <span class="mono">rodionys@careerswift.ai</span></li>
-    </ul>
+    <h2>Rascunhos no seu Gmail (currículo em inglês anexado, nada enviado)</h2>
+    <div class="tscroll"><table>
+      <thead><tr><th>Empresa</th><th>Vaga</th><th>Para</th><th>Telefone</th></tr></thead>
+      <tbody>
+        <tr><td>LMI</td><td>Junior Power BI Developer</td><td class="mono">recruiting@lmi.org</td><td>—</td></tr>
+        <tr><td>Maximus</td><td>Analyst – Reporting</td><td class="mono">applicantaccom@maximus.com</td><td>—</td></tr>
+        <tr><td>Kaizen Analytix</td><td>Jr. Business Analyst – Enterprise Data</td><td class="mono">marketing@kaizenanalytix.com</td><td class="mono">+1 678-712-7092</td></tr>
+        <tr><td>Vintti</td><td>Junior Data Analyst (USD – Remote)</td><td class="mono">partnerships@vintti.com</td><td class="mono">+1 (786) 767-6968</td></tr>
+        <tr><td>Careerswift</td><td>Junior Data Analyst</td><td class="mono">rodionys@careerswift.ai</td><td>—</td></tr>
+        <tr><td>Tria (agência, Reino Unido)</td><td>Junior Data Analyst (100% remoto, contrato de 6 meses, £28–32 mil/ano)</td><td class="mono">info@triarecruitment.com</td><td class="mono">+44 117 332 7000</td></tr>
+      </tbody>
+    </table></div>
   </section>
   <div class="list" id="list"></div>
   <footer>Telefones marcados como "não confirmado" vieram de bases de dados de empresas, não do site delas. E-mails deduzidos (nome.sobrenome@empresa) e de sites que vendem contatos foram deixados de fora. Levantamento de 28 de outubro de 2026.</footer>
@@ -60,6 +71,9 @@ footer{color:var(--muted);font-size:13px;max-width:90ch}
 const C=[
 {co:"Stefanini",job:"Junior Data Analyst (PJ)",jobUrl:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/",pay:"US$ 3.500 – 4.500/mês",who:"Aceita quem mora no Brasil, Colômbia, México ou Argentina",br:true,phone:"",reg:[["Página de carreiras na Gupy (stefanini.com → Carreiras)","https://www.google.com/search?q=Stefanini+carreiras+Gupy"],["Vagas da Stefanini no InfoJobs","https://www.infojobs.com.br/stefanini/vagas"]],tip:"Cadastro em português. É a melhor opção da lista para você."},
 {co:"Spiralyze",job:"Junior Analytics Specialist",jobUrl:"https://www.remoterocketship.com/country/brazil/jobs/data-analyst",pay:"US$ 800 – 1.200/mês",who:"Aceita quem mora no Brasil",br:true,phone:"",reg:[["Página de carreiras da Spiralyze (candidatura pelo Pinpoint)","https://www.google.com/search?q=Spiralyze+careers"]],tip:"Anúncio com cerca de 1 ano; confira se ainda está aberto."},
+{co:"Chumi-IT",isNew:true,job:"Analista de Datos Junior (MTT0401)",jobUrl:"https://chumi-it.com/trabajos/mtt-analista-datos-junior",pay:"US$ 900 – 1.400/mês",who:"100% remoto para a América Latina (confirme se inclui Brasil); provavelmente exige espanhol",phone:"",reg:[["Vaga no portal Chumi-IT","https://chumi-it.com/trabajos/mtt-analista-datos-junior"]],tip:"Pede Excel, SQL e Power BI ou Tableau, que você tem."},
+{co:"Lean Solutions Group",isNew:true,job:"Junior Data Analyst",jobUrl:"https://remotive.com/remote/jobs/data/junior-data-analyst-6243458",pay:"Moeda e salário não informados",who:"América Latina (confirme se inclui Brasil)",phone:"+1 888-323-9995 (não confirmado)",reg:[["Cadastro no portal de candidatos (Portal.leangroup.com)","https://leangroup.com/careers"],["Vaga no Remotive","https://remotive.com/remote/jobs/data/junior-data-analyst-6243458"]],tip:"A empresa pede cadastro no portal e depois o time de recrutamento entra em contato."},
+{co:"Lucid Services Group",isNew:true,job:"Junior Data Analyst / SQL Developer",jobUrl:"https://jobfound.org/job/lucid-services-group-is-hiring-for-junior-data-analyst-united-states-remote-usa-25-october-2026",pay:"Provável dólar (não informado)",who:"EUA, contrato",phone:"",reg:[["Vaga no Jobfound (publicada em 25/10/2026)","https://jobfound.org/job/lucid-services-group-is-hiring-for-junior-data-analyst-united-states-remote-usa-25-october-2026"]]},
 {co:"Workana",job:"Junior Data Analyst – Hispanic/LATAM",jobUrl:"https://www.remoterocketship.com/company/workana/jobs/junior-data-analyst-hispanic-latam-mexico-remote/",pay:"US$ 1.000/mês",who:"México; exige espanhol",phone:"",reg:[["Vagas da Workana no Indeed México","https://mx.indeed.com/cmp/Workana/jobs"]]},
 {co:"Calibrate",job:"Junior Data Analyst",jobUrl:"https://www.flexjobs.com/publicjobs/junior-data-analyst-50d37f12-942b-42a6-9dde-1bb877231955",pay:"US$ 60.000 – 65.000/ano",who:"EUA",phone:"",reg:[["Site de carreiras (joincalibrate.com → Careers)","https://www.google.com/search?q=joincalibrate+careers"]]},
 {co:"Decisive Point Consulting",job:"Junior Data Analyst",jobUrl:"https://remotive.com/remote/jobs/data/junior-data-analyst-4574854",pay:"US$ 25 – 28/hora",who:"EUA",phone:"+1 (703) 517-2043 (não confirmado)",reg:[["Vaga no Remotive","https://remotive.com/remote/jobs/data/junior-data-analyst-4574854"]]},
@@ -73,7 +87,7 @@ const C=[
 ];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 document.getElementById("list").innerHTML=C.map(c=>`<article class="card${c.br?" br":""}">
-  <div class="co">${esc(c.co)}</div>
+  <div class="co">${esc(c.co)}${c.isNew?` <span class="chip br">Nova</span>`:""}</div>
   <div class="job"><a href="${esc(c.jobUrl)}" target="_blank" rel="noopener">${esc(c.job)}</a></div>
   <div class="meta">${c.br?`<span class="chip br">Aceita Brasil</span>`:""}<span class="chip">${esc(c.pay)}</span><span class="chip">${esc(c.who)}</span></div>
   <dl>
