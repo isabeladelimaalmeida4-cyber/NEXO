@@ -24,9 +24,12 @@ h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
 .drafts ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;user-select:all;word-break:break-all}
 .tscroll{overflow-x:auto}
-.drafts table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
-.drafts th,.drafts td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-.drafts th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.drafts table,.others table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+.drafts th,.drafts td,.others th,.others td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.drafts th,.others th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.others{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px}
+.others h2{font-size:17px}
+.small{margin:0;font-size:13px;color:var(--muted)}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
 @media (max-width:420px){.list{grid-template-columns:1fr}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;min-width:0;align-content:start}
@@ -51,16 +54,39 @@ footer{color:var(--muted);font-size:13px;max-width:90ch}
     <p class="lede">As vagas júnior remotas (euro, libra ou dólar) que não têm e-mail de contato. A lista cresce a cada nova busca; as mais recentes aparecem com a etiqueta "Nova". Para cada uma: a vaga, o telefone quando existe e onde se cadastrar. As duas que aceitam quem mora no Brasil aparecem primeiro, com borda destacada.</p>
   </header>
   <section class="drafts">
-    <h2>Rascunhos no seu Gmail (currículo em inglês anexado, nada enviado)</h2>
+    <h2>Todos os rascunhos criados no seu Gmail, do primeiro ao último</h2>
+    <p class="small">Todos em inglês, com o currículo em inglês anexado. Nada foi enviado. Horário de Mato Grosso.</p>
     <div class="tscroll"><table>
-      <thead><tr><th>Empresa</th><th>Vaga</th><th>Para</th><th>Telefone</th></tr></thead>
+      <thead><tr><th>#</th><th>Criado em</th><th>Empresa</th><th>Vaga</th><th>Para</th><th>Assunto</th></tr></thead>
       <tbody>
-        <tr><td>LMI</td><td>Junior Power BI Developer</td><td class="mono">recruiting@lmi.org</td><td>—</td></tr>
-        <tr><td>Maximus</td><td>Analyst – Reporting</td><td class="mono">applicantaccom@maximus.com</td><td>—</td></tr>
-        <tr><td>Kaizen Analytix</td><td>Jr. Business Analyst – Enterprise Data</td><td class="mono">marketing@kaizenanalytix.com</td><td class="mono">+1 678-712-7092</td></tr>
-        <tr><td>Vintti</td><td>Junior Data Analyst (USD – Remote)</td><td class="mono">partnerships@vintti.com</td><td class="mono">+1 (786) 767-6968</td></tr>
-        <tr><td>Careerswift</td><td>Junior Data Analyst</td><td class="mono">rodionys@careerswift.ai</td><td>—</td></tr>
-        <tr><td>Tria (agência, Reino Unido)</td><td>Junior Data Analyst (100% remoto, contrato de 6 meses, £28–32 mil/ano)</td><td class="mono">info@triarecruitment.com</td><td class="mono">+44 117 332 7000</td></tr>
+        <tr><td>1</td><td>27/10, 23h37 (anexo incluído às 23h47)</td><td>LMI</td><td>Junior Power BI Developer</td><td class="mono">recruiting@lmi.org</td><td>Question about the Junior Power BI Developer position (remote)</td></tr>
+        <tr><td>2</td><td>27/10, 23h37 (anexo incluído às 23h48)</td><td>Maximus</td><td>Analyst – Reporting</td><td class="mono">applicantaccom@maximus.com</td><td>Analyst – Reporting (remote): eligibility question, please forward to Recruiting</td></tr>
+        <tr><td>3</td><td>27/10, 23h37 (anexo incluído às 23h48)</td><td>Kaizen Analytix</td><td>Jr. Business Analyst – Enterprise Data</td><td class="mono">marketing@kaizenanalytix.com</td><td>Jr. Business Analyst – Enterprise Data: please forward to Recruiting</td></tr>
+        <tr><td>4</td><td>28/10, 00h05</td><td>Vintti</td><td>Junior Data Analyst (USD – Remote)</td><td class="mono">partnerships@vintti.com</td><td>Junior Data Analyst (USD – Remote): please forward to your Talent team</td></tr>
+        <tr><td>5</td><td>28/10, 00h05</td><td>Careerswift</td><td>Junior Data Analyst</td><td class="mono">rodionys@careerswift.ai</td><td>Junior Data Analyst (remote): question about eligibility, please forward to the hiring team</td></tr>
+        <tr><td>6</td><td>28/10, 00h10</td><td>Tria (agência, Reino Unido)</td><td>Junior Data Analyst (100% remoto, contrato de 6 meses)</td><td class="mono">info@triarecruitment.com</td><td>Junior Data Analyst (fully remote, 6-month FTC): application and eligibility question</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+  <section class="others">
+    <h2>Outros e-mails e telefones encontrados, fora dos rascunhos</h2>
+    <p class="small">Tudo o que achei na conversa e não usei em rascunho, com o motivo. Telefones dos EUA e do Reino Unido são ligações internacionais.</p>
+    <div class="tscroll"><table>
+      <thead><tr><th>Empresa</th><th>Tipo</th><th>Contato</th><th>Por que não está em rascunho / observação</th></tr></thead>
+      <tbody>
+        <tr><td>HireWood (Alemanha)</td><td>E-mail</td><td class="mono">karriere@hirewood.com</td><td>E-mail de candidatura de verdade, mas a vaga é de estágio e você pediu para tirá-la. Provavelmente exige alemão.</td></tr>
+        <tr><td>Kaizen Analytix</td><td>E-mail</td><td class="mono">jessica.schuler@kaizenanalytix.com</td><td>Contato de imprensa da empresa. O rascunho já foi para marketing@kaizenanalytix.com.</td></tr>
+        <tr><td>Kaizen Analytix</td><td>Telefone</td><td class="mono">+1 678-712-7092</td><td>Telefone que aparece junto ao contato de imprensa. Peça para falar com o recrutamento.</td></tr>
+        <tr><td>Tria</td><td>E-mail</td><td class="mono">tim.donaghy@triarecruitment.com</td><td>Contato da Tria para contratos com o governo britânico, não para vagas de dados. Use só se info@ não responder.</td></tr>
+        <tr><td>Tria</td><td>Telefone</td><td class="mono">+44 117 332 7000</td><td>Escritório de Bristol (site de terceiros).</td></tr>
+        <tr><td>Vintti</td><td>Telefone</td><td class="mono">+1 (786) 767-6968</td><td>Telefone geral da empresa.</td></tr>
+        <tr><td>Decisive Point Consulting</td><td>Telefone</td><td class="mono">+1 (703) 517-2043</td><td>Não confirmado (base de dados de terceiros).</td></tr>
+        <tr><td>TSTC (Totalsys Tech)</td><td>Telefone</td><td class="mono">+1 276-496-4458</td><td>Não confirmado; pode ser de outra empresa com nome parecido (Total Systems Technologies).</td></tr>
+        <tr><td>Lean Solutions Group</td><td>Telefone</td><td class="mono">+1 888-323-9995</td><td>Não confirmado (base de dados de terceiros).</td></tr>
+        <tr><td>SOSi</td><td>Telefone</td><td class="mono">+1 (703) 391-9680</td><td>Sede da empresa (vaga Jr. Geospatial Research Analyst). Não confirmado.</td></tr>
+        <tr><td>SPA</td><td>E-mail</td><td class="mono">ASTRO@spa.com</td><td>Contato de um programa do governo americano, não de recrutamento. Não recomendo enviar currículo.</td></tr>
+        <tr><td>Stefanini</td><td>E-mail</td><td class="mono">rhpoa@stefanini.com.br</td><td>Publicado em 2008, provavelmente desativado. A candidatura atual é pela Gupy.</td></tr>
+        <tr><td>Money Expert</td><td>Endereço</td><td>Suite B1, The Quadrant, Mercury Court, Chester CH1 4QR, Reino Unido</td><td>Sem e-mail nem telefone publicados.</td></tr>
       </tbody>
     </table></div>
   </section>
