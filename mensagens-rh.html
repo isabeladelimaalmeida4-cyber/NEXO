@@ -1,0 +1,98 @@
+<title>Mensagens para RH</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: cabeçalho curto + tabela larga (rolagem horizontal própria) com mensagem, e-mail e tradução por empresa */
+:root{
+  --bg:#f4f4f7; --surface:#ffffff; --fg:#191a2c; --muted:#5d6077; --line:#dcdde8;
+  --accent:#3b3fb6; --accent-soft:#e3e4fa; --ok:#2c6b3f; --ok-soft:#dff1e4; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:20px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:75ch;margin:8px 0 0}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:90ch}
+.note strong{color:var(--warn)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:1100px}
+th,td{text-align:left;vertical-align:top;padding:14px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--bg);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.co{width:190px}
+td.co b{font-family:var(--display);font-size:17px;display:block}
+td.co span{color:var(--muted);font-size:13px;display:block}
+.mail{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;user-select:all;word-break:break-all;display:block;margin-top:8px;color:var(--accent)}
+.tag{display:inline-block;margin-top:8px;font-size:12px;font-weight:700;border-radius:4px;padding:2px 7px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.msg{white-space:pre-wrap;font-size:14px;margin:0}
+.subj{font-weight:700;display:block;margin-bottom:6px}
+.lang{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+td.tr .msg{color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+button{font:inherit;font-size:13px;border:1px solid var(--accent);background:var(--accent);color:var(--surface);border-radius:5px;padding:4px 10px;cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{color:var(--muted);font-size:13px;max-width:90ch}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Mensagens prontas para cada e-mail</h1>
+    <p class="lede">Os quatro e-mails publicados pelas próprias empresas das vagas júnior em moeda forte, com assunto e mensagem no idioma da empresa e a tradução em português ao lado. Em todos, anexe o currículo corrigido (Isabela_de_Lima_Almeida_Analista_Dados_Jr.pdf).</p>
+  </header>
+  <div class="note"><strong>Antes de enviar:</strong> só o da HireWood é um e-mail de candidatura. Os outros três têm outra função (verificar golpes, acessibilidade e imprensa), por isso as mensagens deles pedem com educação que o e-mail seja repassado ao recrutamento e perguntam se quem mora no Brasil pode participar. Todas as vagas pedem, no anúncio, que a pessoa more no país da empresa.</div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Empresa e e-mail</th><th>Mensagem pronta (idioma da empresa)</th><th>Tradução</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <footer>Fontes dos e-mails: anúncios de estágio da HireWood (karriere@hirewood.com), página de contato da LMI (recruiting@lmi.org), aviso de acessibilidade da Maximus (applicantaccom@maximus.com) e comunicado de imprensa da Kaizen Analytix (marketing@kaizenanalytix.com). SPA, Goldbelt, SOSi, FCT e NAAM Elektroonika não publicam e-mail; a candidatura delas é pelo link da vaga.</footer>
+</div>
+<script>
+const SIG_EN="Best regards,\nIsabela de Lima Almeida\n+55 66 99973-5872 · IsabeladeLimaAlmeida4@gmail.com\nlinkedin.com/in/isabela-de-lima-almeida-3310b53ba";
+const SIG_PT="Atenciosamente,\nIsabela de Lima Almeida\n+55 66 99973-5872 · IsabeladeLimaAlmeida4@gmail.com\nlinkedin.com/in/isabela-de-lima-almeida-3310b53ba";
+const ROWS=[
+{co:"HireWood",job:"Estágio Data Analyst · Alemanha · euro",mail:"karriere@hirewood.com",kind:"ok",kindTxt:"E-mail de candidatura",lang:"Alemão",
+ subj:"Bewerbung als Praktikantin Data Analyst (Homeoffice)",
+ msg:"Sehr geehrtes HireWood-Team,\n\nmit großem Interesse habe ich Ihre Ausschreibung für das Praktikum als Data Analyst im Homeoffice gelesen und bewerbe mich hiermit.\n\nIch studiere Marktintelligenz und Datenanalyse an der Anhanguera (Brasilien) und arbeite derzeit als Verwaltungsassistentin bei Agroserv. Dort erstelle ich Berichte in Excel und baue ein Katalogsystem für über 40 Jahre Firmendokumente auf, dessen Migration in eine SQL-Datenbank geplant ist. Ich habe Kenntnisse in SQL (MySQL, Oracle, PostgreSQL), Power BI (mittleres Niveau), fortgeschrittenem Excel und Grundkenntnisse in Python.\n\nPortugiesisch ist meine Muttersprache, Englisch spreche ich auf B2-Niveau; Deutsch spreche ich derzeit nicht. Ich lebe in Brasilien und würde gern erfahren, ob das Praktikum auch vollständig remote von dort aus möglich ist.\n\nMeinen Lebenslauf finden Sie im Anhang. Über eine Rückmeldung freue ich mich sehr.\n\nMit freundlichen Grüßen\nIsabela de Lima Almeida\n+55 66 99973-5872 · IsabeladeLimaAlmeida4@gmail.com\nlinkedin.com/in/isabela-de-lima-almeida-3310b53ba",
+ trSubj:"Candidatura para estágio de Analista de Dados (home office)",
+ tr:"Prezada equipe da HireWood,\n\nLi com muito interesse o anúncio do estágio de Analista de Dados em home office e venho me candidatar.\n\nEstudo Inteligência de Mercado e Análise de Dados na Anhanguera (Brasil) e trabalho atualmente como assistente administrativa na Agroserv. Lá crio relatórios em Excel e estou estruturando um sistema de catalogação de mais de 40 anos de documentos da empresa, com migração planejada para um banco de dados SQL. Tenho conhecimento de SQL (MySQL, Oracle, PostgreSQL), Power BI (intermediário), Excel avançado e Python básico.\n\nPortuguês é minha língua nativa e falo inglês no nível B2; no momento não falo alemão. Moro no Brasil e gostaria de saber se o estágio também pode ser feito de forma 100% remota daqui.\n\nMeu currículo está em anexo. Fico muito feliz com um retorno.\n\n"+SIG_PT},
+{co:"LMI",job:"Junior Power BI Developer · EUA · dólar",mail:"recruiting@lmi.org",kind:"warn",kindTxt:"Para confirmar contatos de recrutamento",lang:"Inglês",
+ subj:"Question about the Junior Power BI Developer position (remote)",
+ msg:"Dear LMI Recruiting Team,\n\nI am very interested in the Junior Power BI Developer position (remote) and would like to confirm the right way to apply.\n\nI am a Market Intelligence and Data Analytics student with hands-on experience in SQL (MySQL, Oracle, PostgreSQL), intermediate Power BI and advanced Excel. In my current administrative role at Agroserv, I build reports and I am structuring a catalog of more than 40 years of company records, with a planned migration to a SQL database.\n\nI live in Brazil. Could you let me know whether candidates based outside the United States can be considered for this role and, if so, whether I should apply through careers-lmi.icims.com? My résumé is attached for reference.\n\nThank you for your time.\n\n"+SIG_EN,
+ trSubj:"Dúvida sobre a vaga de Junior Power BI Developer (remota)",
+ tr:"Prezada equipe de recrutamento da LMI,\n\nTenho muito interesse na vaga de Junior Power BI Developer (remota) e gostaria de confirmar a forma correta de me candidatar.\n\nSou estudante de Inteligência de Mercado e Análise de Dados, com experiência prática em SQL (MySQL, Oracle, PostgreSQL), Power BI intermediário e Excel avançado. No meu trabalho atual como assistente administrativa na Agroserv, crio relatórios e estou estruturando um catálogo de mais de 40 anos de registros da empresa, com migração planejada para um banco de dados SQL.\n\nMoro no Brasil. Vocês poderiam me dizer se candidatos que moram fora dos Estados Unidos podem ser considerados para essa vaga e, se sim, se devo me candidatar pelo site careers-lmi.icims.com? Meu currículo está em anexo.\n\nObrigada pela atenção.\n\n"+SIG_PT},
+{co:"Maximus",job:"Analyst – Reporting · EUA · dólar",mail:"applicantaccom@maximus.com",kind:"warn",kindTxt:"Para pedidos de acessibilidade",lang:"Inglês",
+ subj:"Analyst – Reporting (remote): eligibility question, please forward to Recruiting",
+ msg:"Hello Maximus People Operations team,\n\nI understand this address is meant for accommodation requests, so I would be grateful if you could forward my message to the recruiting team responsible for the Analyst – Reporting (full-time, remote) position.\n\nI am a Market Intelligence and Data Analytics student with experience in SQL (MySQL, Oracle, PostgreSQL), intermediate Power BI and advanced Excel, and I currently build operational reports in my administrative role at Agroserv.\n\nI live in Brazil and would like to know whether candidates based outside the United States can be considered for this role. My résumé is attached for reference.\n\nThank you very much.\n\n"+SIG_EN,
+ trSubj:"Analyst – Reporting (remota): dúvida sobre elegibilidade, favor encaminhar ao recrutamento",
+ tr:"Olá, equipe de People Operations da Maximus,\n\nSei que este endereço é destinado a pedidos de acessibilidade, então agradeceria se pudessem encaminhar minha mensagem à equipe de recrutamento responsável pela vaga de Analyst – Reporting (tempo integral, remota).\n\nSou estudante de Inteligência de Mercado e Análise de Dados, com experiência em SQL (MySQL, Oracle, PostgreSQL), Power BI intermediário e Excel avançado, e atualmente crio relatórios operacionais no meu trabalho como assistente administrativa na Agroserv.\n\nMoro no Brasil e gostaria de saber se candidatos que moram fora dos Estados Unidos podem ser considerados para essa vaga. Meu currículo está em anexo.\n\nMuito obrigada.\n\n"+SIG_PT},
+{co:"Kaizen Analytix",job:"Jr. Business Analyst – Enterprise Data · EUA · dólar",mail:"marketing@kaizenanalytix.com",kind:"warn",kindTxt:"Imprensa e marketing",lang:"Inglês",
+ subj:"Jr. Business Analyst – Enterprise Data: please forward to Recruiting",
+ msg:"Hello Kaizen Analytix team,\n\nI could not find a direct careers address, so I would appreciate it if you could forward this message to your recruiting team.\n\nI am interested in the Jr. Business Analyst – Enterprise Data position (remote). I am a Market Intelligence and Data Analytics student with experience in SQL (MySQL, Oracle, PostgreSQL), intermediate Power BI and advanced Excel. At Agroserv, where I work as an administrative assistant, I identified the need for and am building a catalog of more than 40 years of company records, structured for a planned migration to a SQL database. I also have experience gathering requirements and turning business needs into working solutions through my own small tech business.\n\nI live in Brazil. Could you let me know whether candidates based outside the United States can be considered? My résumé is attached for reference.\n\nThank you for your help.\n\n"+SIG_EN,
+ trSubj:"Jr. Business Analyst – Enterprise Data: favor encaminhar ao recrutamento",
+ tr:"Olá, equipe da Kaizen Analytix,\n\nNão encontrei um e-mail direto de carreiras, então agradeceria se pudessem encaminhar esta mensagem à equipe de recrutamento.\n\nTenho interesse na vaga de Jr. Business Analyst – Enterprise Data (remota). Sou estudante de Inteligência de Mercado e Análise de Dados, com experiência em SQL (MySQL, Oracle, PostgreSQL), Power BI intermediário e Excel avançado. Na Agroserv, onde trabalho como assistente administrativa, identifiquei a necessidade e estou criando um catálogo de mais de 40 anos de registros da empresa, estruturado para uma migração planejada para banco de dados SQL. Também tenho experiência em levantar requisitos e transformar necessidades de negócio em soluções funcionais com minha própria pequena empresa de tecnologia.\n\nMoro no Brasil. Vocês poderiam me dizer se candidatos que moram fora dos Estados Unidos podem ser considerados? Meu currículo está em anexo.\n\nObrigada pela ajuda.\n\n"+SIG_PT},
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("rows").innerHTML=ROWS.map((r,i)=>`<tr>
+  <td class="co"><b>${esc(r.co)}</b><span>${esc(r.job)}</span><span class="mail">${esc(r.mail)}</span><span class="tag ${r.kind}">${esc(r.kindTxt)}</span>
+    <div class="btns"><button type="button" class="ghost" data-copy="mail" data-i="${i}">Copiar e-mail</button></div></td>
+  <td><span class="lang">${esc(r.lang)}</span><span class="subj">Assunto: ${esc(r.subj)}</span><p class="msg">${esc(r.msg)}</p>
+    <div class="btns"><button type="button" data-copy="subj" data-i="${i}">Copiar assunto</button><button type="button" data-copy="msg" data-i="${i}">Copiar mensagem</button></div></td>
+  <td class="tr"><span class="lang">Português</span><span class="subj">Assunto: ${esc(r.trSubj)}</span><p class="msg">${esc(r.tr)}</p></td>
+</tr>`).join("");
+document.getElementById("rows").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-copy]");if(!b)return;
+  const r=ROWS[+b.dataset.i],txt=r[b.dataset.copy],old=b.textContent;
+  const done=ok=>{b.textContent=ok?"Copiado":"Selecione e copie";setTimeout(()=>b.textContent=old,1600)};
+  try{navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}catch(err){done(false)}
+});
+</script>
