@@ -1,0 +1,87 @@
+<title>Contatos das Vagas Júnior</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: cabeçalho, faixa com os rascunhos já criados, lista de empresas em cartões (vaga, telefone, onde se cadastrar) */
+:root{
+  --bg:#f4f4f7; --surface:#ffffff; --fg:#191a2c; --muted:#5d6077; --line:#dcdde8;
+  --accent:#3b3fb6; --accent-soft:#e3e4fa; --ok:#2c6b3f; --ok-soft:#dff1e4; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111220; --surface:#1a1b2d; --fg:#e7e7f2; --muted:#a3a5bd; --line:#2d2f47;
+  --accent:#9ea2ff; --accent-soft:#272a5a; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:22px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
+.lede{color:var(--muted);max-width:75ch;margin:8px 0 0}
+.drafts{background:var(--ok-soft);border-radius:8px;padding:14px 16px;display:grid;gap:8px;max-width:90ch}
+.drafts h2{font-size:17px;color:var(--ok)}
+.drafts ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;user-select:all;word-break:break-all}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media (max-width:420px){.list{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;min-width:0;align-content:start}
+.card.br{border-color:var(--accent)}
+.co{font-family:var(--display);font-weight:600;font-size:18px;line-height:1.2}
+.job a{color:var(--accent);font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--accent-soft);color:var(--muted);font-size:12px;border-radius:4px;padding:2px 7px}
+.chip.br{background:var(--accent);color:var(--surface);font-weight:700}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+dt{color:var(--muted)}
+dd{margin:0;min-width:0;overflow-wrap:anywhere}
+dd a{color:var(--accent)}
+.none{color:var(--muted)}
+.tip{font-size:13px;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:6px 9px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{color:var(--muted);font-size:13px;max-width:90ch}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Onde falar com cada empresa</h1>
+    <p class="lede">As 12 vagas júnior remotas (euro, libra ou dólar) que não têm e-mail de contato. Para cada uma: a vaga, o telefone quando existe e onde se cadastrar. As duas que aceitam quem mora no Brasil aparecem primeiro, com borda destacada.</p>
+  </header>
+  <section class="drafts">
+    <h2>Já com rascunho no seu Gmail (currículo em inglês anexado)</h2>
+    <ul>
+      <li><b>Vintti</b>: Junior Data Analyst (USD – Remote), para <span class="mono">partnerships@vintti.com</span>. Telefone: +1 (786) 767-6968</li>
+      <li><b>Careerswift</b>: Junior Data Analyst, para <span class="mono">rodionys@careerswift.ai</span></li>
+    </ul>
+  </section>
+  <div class="list" id="list"></div>
+  <footer>Telefones marcados como "não confirmado" vieram de bases de dados de empresas, não do site delas. E-mails deduzidos (nome.sobrenome@empresa) e de sites que vendem contatos foram deixados de fora. Levantamento de 28 de outubro de 2026.</footer>
+</div>
+<script>
+const C=[
+{co:"Stefanini",job:"Junior Data Analyst (PJ)",jobUrl:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/",pay:"US$ 3.500 – 4.500/mês",who:"Aceita quem mora no Brasil, Colômbia, México ou Argentina",br:true,phone:"",reg:[["Página de carreiras na Gupy (stefanini.com → Carreiras)","https://www.google.com/search?q=Stefanini+carreiras+Gupy"],["Vagas da Stefanini no InfoJobs","https://www.infojobs.com.br/stefanini/vagas"]],tip:"Cadastro em português. É a melhor opção da lista para você."},
+{co:"Spiralyze",job:"Junior Analytics Specialist",jobUrl:"https://www.remoterocketship.com/country/brazil/jobs/data-analyst",pay:"US$ 800 – 1.200/mês",who:"Aceita quem mora no Brasil",br:true,phone:"",reg:[["Página de carreiras da Spiralyze (candidatura pelo Pinpoint)","https://www.google.com/search?q=Spiralyze+careers"]],tip:"Anúncio com cerca de 1 ano; confira se ainda está aberto."},
+{co:"Workana",job:"Junior Data Analyst – Hispanic/LATAM",jobUrl:"https://www.remoterocketship.com/company/workana/jobs/junior-data-analyst-hispanic-latam-mexico-remote/",pay:"US$ 1.000/mês",who:"México; exige espanhol",phone:"",reg:[["Vagas da Workana no Indeed México","https://mx.indeed.com/cmp/Workana/jobs"]]},
+{co:"Calibrate",job:"Junior Data Analyst",jobUrl:"https://www.flexjobs.com/publicjobs/junior-data-analyst-50d37f12-942b-42a6-9dde-1bb877231955",pay:"US$ 60.000 – 65.000/ano",who:"EUA",phone:"",reg:[["Site de carreiras (joincalibrate.com → Careers)","https://www.google.com/search?q=joincalibrate+careers"]]},
+{co:"Decisive Point Consulting",job:"Junior Data Analyst",jobUrl:"https://remotive.com/remote/jobs/data/junior-data-analyst-4574854",pay:"US$ 25 – 28/hora",who:"EUA",phone:"+1 (703) 517-2043 (não confirmado)",reg:[["Vaga no Remotive","https://remotive.com/remote/jobs/data/junior-data-analyst-4574854"]]},
+{co:"pureIntegration",job:"Junior Data Analyst (contrato de 6 a 9 meses)",jobUrl:"https://remotive.com/remote/jobs/data/junior-data-analyst-4285075",pay:"US$ 30 – 40/hora",who:"EUA",phone:"",reg:[["Site de carreiras (pureintegration.com → Careers)","https://www.google.com/search?q=pureIntegration+careers"]]},
+{co:"Fanatics",job:"Data Analyst I",jobUrl:"https://www.remoterocketship.com/gb/jobs/junior-data-analyst/",pay:"£41.800 – 52.800/ano",who:"Reino Unido",phone:"",reg:[["Site de carreiras da Fanatics","https://www.fanaticsinc.com/careers"]],tip:"Recrutadores da Fanatics só escrevem de @fanatics.com ou @fanatics.co.uk e nunca cobram nada."},
+{co:"Money Expert",job:"Junior Data Analyst",jobUrl:"https://www.cv-library.co.uk/remote-junior-data-analyst-jobs",pay:"£30.000/ano",who:"Reino Unido",phone:"",reg:[["Vaga no CV-Library","https://www.cv-library.co.uk/remote-junior-data-analyst-jobs"],["Site da empresa (moneyexpert.com)","https://www.google.com/search?q=moneyexpert.com+careers"]],addr:"Suite B1, The Quadrant, Mercury Court, Chester CH1 4QR, Reino Unido"},
+{co:"Qualify Nation Recruitment",job:"Junior Data Analyst (várias vagas)",jobUrl:"https://www.reed.co.uk/jobs/work-from-home-junior-data-analyst-jobs",pay:"£28.000 – 38.000/ano",who:"Reino Unido",phone:"",reg:[["Vagas no Reed","https://www.reed.co.uk/jobs/work-from-home-junior-data-analyst-jobs"]]},
+{co:"SwissBorg",job:"Junior Data Analyst",jobUrl:"https://jobs.lever.co/swissborg/1dc0e5fc-c001-4e6b-891e-7b3fdec92015",pay:"Moeda não informada",who:"Fuso horário europeu",phone:"",reg:[["Vaga no Lever (candidatura direta)","https://jobs.lever.co/swissborg/1dc0e5fc-c001-4e6b-891e-7b3fdec92015"]]},
+{co:"TSTC (Totalsys Tech)",job:"Junior Data Analyst",jobUrl:"https://jobs.lever.co/totalsystech/e96d1334-8c05-443a-a866-1c9b00bc9638",pay:"Moeda não informada",who:"\"Remote\"; confirme os países",phone:"+1 276-496-4458 (não confirmado; pode ser de outra empresa com nome parecido)",reg:[["Vaga no Lever (candidatura direta)","https://jobs.lever.co/totalsystech/e96d1334-8c05-443a-a866-1c9b00bc9638"]]},
+{co:"Hire Hangar",job:"Junior Data Analyst",jobUrl:"https://jobs.ashbyhq.com/hirehangar/3c708fbc-3ef1-437f-b45b-7277ed2e3adf",pay:"Provável dólar",who:"Fuso horário dos EUA",phone:"",reg:[["Vaga no Ashby (candidatura direta)","https://jobs.ashbyhq.com/hirehangar/3c708fbc-3ef1-437f-b45b-7277ed2e3adf"]]},
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("list").innerHTML=C.map(c=>`<article class="card${c.br?" br":""}">
+  <div class="co">${esc(c.co)}</div>
+  <div class="job"><a href="${esc(c.jobUrl)}" target="_blank" rel="noopener">${esc(c.job)}</a></div>
+  <div class="meta">${c.br?`<span class="chip br">Aceita Brasil</span>`:""}<span class="chip">${esc(c.pay)}</span><span class="chip">${esc(c.who)}</span></div>
+  <dl>
+    <dt>Telefone</dt><dd>${c.phone?`<span class="mono">${esc(c.phone)}</span>`:`<span class="none">não encontrado</span>`}</dd>
+    <dt>E-mail</dt><dd><span class="none">não publicado</span></dd>
+    ${c.addr?`<dt>Endereço</dt><dd>${esc(c.addr)}</dd>`:""}
+    <dt>Cadastro</dt><dd>${c.reg.map(([t,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("<br>")}</dd>
+  </dl>
+  ${c.tip?`<div class="tip">${esc(c.tip)}</div>`:""}
+</article>`).join("");
+</script>
