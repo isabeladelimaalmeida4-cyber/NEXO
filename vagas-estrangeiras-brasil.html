@@ -1,0 +1,151 @@
+<title>Vagas Estrangeiras para o Brasil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: título, resumo em números, filtros em chips, tabela única com rolagem própria */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#18202e; --muted:#566178; --line:#d7dce7;
+  --accent:#2f54c8; --accent-soft:#e2e8fb; --ok:#256b3e; --ok-soft:#dcf0e3; --warn:#8a5a00; --warn-soft:#fbefd5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10141c; --surface:#181e2a; --fg:#e4e9f2; --muted:#9ea9be; --line:#2a3242;
+  --accent:#8fa8f5; --accent-soft:#1f2a47; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141c; --surface:#181e2a; --fg:#e4e9f2; --muted:#9ea9be; --line:#2a3242;
+  --accent:#8fa8f5; --accent-soft:#1f2a47; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:20px}
+h1{font-family:var(--display);font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:75ch;margin:8px 0 0}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:92ch;display:grid;gap:6px}
+.note strong{color:var(--warn)}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+.stat b{font-family:var(--display);font-size:20px;margin-right:6px;font-variant-numeric:tabular-nums}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.filters button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:940px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.n{color:var(--muted);font-variant-numeric:tabular-nums}
+td b{display:block}
+.pay{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;margin-bottom:3px}
+.p-br{background:var(--ok-soft);color:var(--ok)}.p-la{background:var(--accent-soft);color:var(--accent)}.p-ck{background:var(--warn-soft);color:var(--warn)}
+.mail{display:inline-block;margin-top:4px;background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:12.5px;border-radius:4px;padding:1px 7px;word-break:break-all}
+.src{color:var(--muted);font-size:12.5px}
+a{color:var(--accent);font-weight:700}
+footer{color:var(--muted);font-size:13px;max-width:92ch;display:grid;gap:6px}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Vagas estrangeiras remotas que aceitam quem mora no Brasil</h1>
+    <p class="lede">Vagas remotas de empresas de fora do Brasil, pagas em dólar, abertas a quem mora no Brasil ou na América Latina. Inclui dados e BI, operações e administração, e atendimento ao cliente. Levantamento de 29 de outubro de 2026.</p>
+  </header>
+  <div class="note">
+    <div><strong>Sobre os e-mails:</strong> quase todas estas empresas recebem candidatura só por formulário no site. Criei rascunho apenas onde o próprio anúncio ou a página de carreiras publica um e-mail para candidatura. Não usei e-mails adivinhados nem endereços genéricos de vendas ou suporte.</div>
+    <div><strong>Sobre os países:</strong> "Aceita Brasil" quer dizer que o anúncio cita o Brasil. "América Latina" quer dizer que o anúncio aceita a região, mas não cita o Brasil; algumas dessas vagas listam só alguns países, então confirme antes.</div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="filters" role="group" aria-label="Filtrar vagas">
+    <button type="button" data-f="all" aria-pressed="true">Todas</button>
+    <button type="button" data-f="draft" aria-pressed="false">Com rascunho no Gmail</button>
+    <button type="button" data-f="br" aria-pressed="false">Aceita Brasil</button>
+    <button type="button" data-f="dados" aria-pressed="false">Dados e BI</button>
+    <button type="button" data-f="ops" aria-pressed="false">Operações e administração</button>
+    <button type="button" data-f="cs" aria-pressed="false">Atendimento e customer success</button>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Empresa e vaga</th><th>Pagamento</th><th>Quem pode se candidatar</th><th>Fonte</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <footer>
+    <div>Valores por mês e por ano como aparecem no anúncio. Algumas vagas vêm de páginas que podem estar desatualizadas; confira no link se ainda estão abertas. Nenhuma empresa séria cobra para você se candidatar.</div>
+    <div>Fontes consultadas por busca na web: Remotive, WeRemoto, RemoteJobs.lat, Get on Board, Jobgether, Torre, Himalayas, Dynamite Jobs, Built In, Remote Rocketship e páginas de carreiras das empresas.</div>
+  </footer>
+</div>
+<script>
+// a: área (dados, ops, cs); r: br = cita o Brasil, la = América Latina, ck = confirmar; m: e-mail com rascunho criado
+const V=[
+{co:"Stefanini LATAM",t:"Junior Data Analyst (PJ)",p:"US$ 3.500 – 4.500/mês",a:"dados",r:"br",w:"Brasil, Colômbia, México ou Argentina",s:"Remote Rocketship",u:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/"},
+{co:"Azumo",t:"Data Analyst – Latin America",p:"Em dólar (cerca de US$ 40 – 80 mil/ano, estimado)",a:"dados",r:"la",w:"América Latina; países citados não incluem o Brasil",s:"Built In",u:"https://builtin.com/job/data-analyst-latin-america-remote/3290412",m:"people@azumo.co",old:1},
+{co:"Criptoro",t:"Data Analyst",p:"US$ 7.000 – 8.000 (período não informado)",a:"dados",r:"br",w:"Brasil",s:"Remote OK",u:"https://remoteok.com/remote-jobs/remote-data-analyst-criptoro-1131219"},
+{co:"Sezzle",t:"Data Analyst",p:"US$ 2.800 – 6.800/mês",a:"dados",r:"br",w:"América Latina, inclui Brasil",s:"Kickstart Remote",u:"https://kickstartremote.com/country/latin-america/jobs/data-analyst"},
+{co:"Community Tax",t:"Business Intelligence and Marketing Data Analyst",p:"US$ 3.000 – 5.000/mês",a:"dados",r:"la",w:"Só América Latina",s:"Remote.com",u:"https://remote.com/jobs/all?page=186"},
+{co:"PadSplit",t:"MarTech Analyst (LATAM)",p:"US$ 55.000 – 64.000/ano",a:"dados",r:"la",w:"Só América Latina",s:"Remote.com",u:"https://remote.com/jobs/all?page=186"},
+{co:"Hey Support",t:"Data Analyst",p:"US$ 5.000 – 7.500/mês",a:"dados",r:"br",w:"Brasil está entre os países aceitos; nível não informado",s:"Torre",u:"https://torre.ai/careers/HeySupport"},
+{co:"Oscilar",t:"Fraud & AML Data Analyst",p:"Não informado",a:"dados",r:"br",w:"EUA, Canadá, Brasil, Polônia ou Reino Unido",s:"Hacker News (julho de 2026)",u:"https://news.ycombinator.com/item?id=48747976"},
+{co:"Trax Technologies",t:"Logistics Data Analyst",p:"Não informado",a:"dados",r:"la",w:"Remoto a partir da América Latina",s:"Jobgether",u:"https://jobgether.com/remote-jobs/latam/data-analyst"},
+{co:"CookUnity",t:"Senior Data Analyst, Growth Analytics (CRM)",p:"Não informado",a:"dados",r:"la",w:"América Latina; nível sênior",s:"Jobgether",u:"https://jobgether.com/remote-jobs/latam/data-analyst"},
+{co:"Framework",t:"Business Intelligence Analyst – Senior",p:"Em dólar, valor não informado",a:"dados",r:"br",w:"Brasil; nível sênior",s:"Remotive",u:"https://remotive.com/remote/jobs/data/business-intelligence-analyst-senior-5281560"},
+{co:"Sagan Recruitment",t:"Sales & Operations Data Analyst",p:"Até US$ 2.200/mês",a:"dados",r:"la",w:"América Latina; prestador de serviço",s:"Remotive",u:"https://remotive.com/remote/jobs/data/sales-operations-data-analyst-1366767"},
+{co:"Sagan Recruitment",t:"Financial and Operations Analyst",p:"Não informado",a:"dados",r:"br",w:"América Latina, com foco no Brasil",s:"WeRemoto",u:"https://www.weremoto.com/categoria-de-trabajo/finanzas"},
+{co:"GoFasti",t:"1097 – Data Analyst",p:"Não informado",a:"dados",r:"la",w:"América Latina; inglês fluente",s:"Jobgether",u:"https://jobgether.com/offer/6a14d2771afd2625c12d56dd-1097--data-analyst"},
+{co:"GoFasti",t:"Senior Data Analyst",p:"US$ 4.000 – 5.500/mês",a:"dados",r:"la",w:"América Latina; nível sênior",s:"Remotive",u:"https://remotive.com/remote/jobs/data/senior-data-analyst-6276268"},
+{co:"Venon Solutions",t:"#876 – Data Analyst",p:"Em dólar, valor não informado",a:"dados",r:"la",w:"Só residentes na América Latina; inglês B2",s:"Careers Page",u:"https://www.careers-page.com/venon-solutions/job/Y6V64665"},
+{co:"Coderslab.io",t:"Analista de Power BI / BI Developer",p:"US$ 1.500 – 2.000/mês",a:"dados",r:"la",w:"América do Sul; pede 3 a 5 anos de Power BI",s:"Get on Board",u:"https://www.getonbrd.com/empleos/data-science-analytics/analista-de-power-bi-bi-developer-coderslab-io-remote"},
+{co:"Compara",t:"Business Intelligence Analyst",p:"US$ 2.500 – 4.000/mês",a:"dados",r:"la",w:"Remoto",s:"Get on Board",u:"https://www.getonbrd.com/jobs/data-science-analytics"},
+{co:"Hyqoo",t:"Power BI Developer (SSIS)",p:"US$ 3.000 – 4.000/mês",a:"dados",r:"la",w:"América do Sul e México",s:"Get on Board",u:"https://www.getonbrd.com/jobs-microsoft%20power%20bi"},
+{co:"Lisit",t:"Especialista Power BI",p:"US$ 1.800 – 2.400/mês",a:"dados",r:"la",w:"Remoto",s:"Get on Board",u:"https://www.getonbrd.com/jobs-microsoft%20power%20bi"},
+{co:"Artefact LatAm",t:"Analytics Engineer",p:"US$ 1.500 – 2.000/mês",a:"dados",r:"la",w:"Remoto",s:"Get on Board",u:"https://www.getonbrd.com/jobs/data-science-analytics"},
+{co:"Asesoría y Gestión de Procesos",t:"Data Analyst (Azure + BI)",p:"US$ 1.200 – 1.800/mês",a:"dados",r:"la",w:"Remoto",s:"Get on Board",u:"https://www.getonbrd.com/jobs-microsoft%20power%20bi"},
+{co:"BairesDev",t:"Analista de BI Júnior",p:"Em dólar ou real, não informado",a:"dados",r:"br",w:"100% remoto; pede 1 ano de experiência",s:"Remotar",u:"https://remotar.com.br/job/159736/bairesdev/trabalhe-de-casa-analista-de-bi-junior-ref.-0078p"},
+{co:"Lean Tech",t:"Junior Data Systems Analyst",p:"Não informado",a:"dados",r:"la",w:"Remoto – América Latina",s:"Jobvite",u:"https://jobs.jobvite.com/leantechio/job/okajxfw4"},
+{co:"Lean Tech",t:"Junior+/Mid Data Analyst",p:"Não informado",a:"dados",r:"la",w:"Remoto – América Latina",s:"Jobvite",u:"https://jobs.jobvite.com/leantechio/job/oncTyfwK"},
+{co:"Empresa não identificada (via Jobgether)",t:"Insight Analyst – 100% Remote LATAM",p:"Não informado",a:"dados",r:"la",w:"América Latina; 1 a 2 anos de experiência",s:"Jobgether",u:"https://jobgether.com/offer/6a3133db63c956434a798828-insight-analyst-100-remote-latam"},
+{co:"Pavago",t:"Financial & Data Analyst",p:"Não informado",a:"dados",r:"br",w:"Colômbia, Argentina, Brasil ou México; 2 anos de experiência",s:"WeRemoto",u:"https://www.weremoto.com/job-posts/id-financial-data-analyst-pavago"},
+{co:"Cloudbeds",t:"Data Services Analyst",p:"Não informado",a:"dados",r:"la",w:"100% remoto na América Latina; Excel e Google Sheets",s:"WeRemoto",u:"https://www.weremoto.com/job-posts/id-data-services-analyst-cloudbeds"},
+{co:"Remote Talent LATAM",t:"Virtual Marketplace Data Analyst (Amazon)",p:"US$ 2.000/mês",a:"dados",r:"la",w:"Só América Latina",s:"WeRemoto",u:"https://www.weremoto.com/job-posts/id-product-optimization-analyst-remote-latam-talent"},
+{co:"atomic* HR",t:"Remote Data Analyst – Latin America (startups dos EUA)",p:"Não informado",a:"dados",r:"la",w:"América Latina",s:"Jobgether",u:"https://jobgether.com/offer/66f54d86fe4b55feaba2bde7-remote-data-analyst-latin-america-for-u.s.-startups"},
+{co:"atomic* HR",t:"Entry-Level Property Research Analyst",p:"Não informado",a:"dados",r:"la",w:"América Latina; nível de entrada",s:"Jobgether",u:"https://jobgether.com/offer/67f115543b1cb2ad1729e28f-entry-level-property-research-analyst-real-estate-sourcing-remote-latam-based"},
+{co:"atomic* HR",t:"People Research Specialist",p:"US$ 30.000 – 38.000/ano",a:"dados",r:"la",w:"América Latina",s:"Jobgether",u:"https://jobgether.com/offer/67938867c58f91dcb95e9cf9-people-research-specialist-work-remote-from-latam-for-north-american-startups"},
+{co:"atomic* HR",t:"Entry-Level Outbound Research Coordinator",p:"US$ 18.000 – 24.000/ano",a:"dados",r:"la",w:"América Latina; nível de entrada",s:"Jobgether",u:"https://jobgether.com/offer/6979e57173a8e8b5e77e493b-entry-level-outbound-research-coordinator-remote-latam-based"},
+{co:"Virtual Talent Latam",t:"Admin and Data Analyst Assistant (ZM0625)",p:"Cerca de US$ 840/mês",a:"dados",r:"la",w:"América Latina (anúncio cita a Colômbia); nível de entrada",s:"Zoho Recruit",u:"https://virtualtalentlatam.zohorecruit.com/jobs/careers/724715000006281010/Admin-and-data-analyst-Assistant-ZM0625-",m:"resumes@virtualtalentlatam.zohorecruitmail.com"},
+{co:"Virtual Talent Latam",t:"Data Analyst",p:"Não informado",a:"dados",r:"la",w:"América Latina; pede 3 anos de experiência",s:"Torre",u:"https://torre.ai/post/kWR1y50r-virtual-talent-latam-data-analyst",m:"resumes@virtualtalentlatam.zohorecruitmail.com",same:1},
+{co:"AI Digital",t:"Junior BI Analyst",p:"Em dólar, valor não informado",a:"dados",r:"ck",w:"Anúncio diz mundial, mas outra parte indica só EUA; pede 2 anos de experiência",s:"Remotive",u:"https://remotive.com/remote/jobs/data/junior-bi-analyst-5078300"},
+{co:"Prometeo Talent",t:"Analista de Datos (100% remoto LATAM)",p:"Não informado",a:"dados",r:"la",w:"América Latina; vaga de entrada, pede SQL e inglês",s:"Himalayas",u:"https://himalayas.app/companies/prometeo-talent/jobs/analista-de-datos-100-remoto-latam"},
+{co:"Torre",t:"Data Analyst (Product Team)",p:"US$ 1.500/mês",a:"dados",r:"br",w:"Vários países, inclui Brasil",s:"BuscoJobs",u:"https://buscojobs.com.ar/data-analyst-product-team-at-torre-en-cordoba-ID-6226648"},
+{co:"Activate Talent",t:"Sales Operations Analyst",p:"Não informado",a:"dados",r:"br",w:"Brasil",s:"Remotive",u:"https://remotive.com/remote/jobs/sales/sales-operations-analyst-6009426"},
+{co:"Sia Admissions Consulting",t:"Client & Operations Coordinator",p:"Em dólar, valor não informado",a:"ops",r:"la",w:"Américas, horário da Costa Leste dos EUA",s:"WeRemoto",u:"https://www.weremoto.com/job-posts/id-part-time-client-operations-coordinator-sia-admissions-consulting",m:"jobs@siaadmissions.com"},
+{co:"Revive Health Associates",t:"Virtual Assistant",p:"Não informado",a:"ops",r:"la",w:"Remoto, tempo integral; publicada em site de vagas para a América Latina",s:"RemoteJobs.lat",u:"https://remotejobs.lat/en/job-offers/36683-virtual-assistant-2",m:"Support@ReviveHealthFL.com"},
+{co:"Hire VP",t:"Remote Executive Support Manager",p:"US$ 1.500 – 2.000/mês",a:"ops",r:"la",w:"Contrato, horário dos EUA; publicada em 19/10/2026",s:"Dynamite Jobs",u:"https://dynamitejobs.com/company/hirevp1/remote-job/remote-executive-support-manager",m:"Info@hirevp.us"},
+{co:"HireLATAM",t:"Executive & Recruiting Assistant",p:"US$ 1.450 – 1.750/mês",a:"ops",r:"la",w:"Só América Latina",s:"Remotive",u:"https://remotive.com/remote/jobs/human-resources/executive-recruiting-assistant-5274873"},
+{co:"HireLATAM",t:"Office Administrator & Bookkeeping Assistant",p:"US$ 1.200 – 1.500/mês",a:"ops",r:"la",w:"América Latina; pede QuickBooks Online",s:"Lensa",u:"https://lensa.com/job-v1/hirelatam/remote/assistant-bookkeeping/482d18b213c9d6e7936042416e20f767"},
+{co:"HireLATAM",t:"Remote Operations & Analytics Coordinator",p:"US$ 2.000 – 3.000/mês",a:"ops",r:"la",w:"América Latina; dashboards, KPIs e planilhas",s:"Recruiterflow",u:"https://recruiterflow.com/hirelatam/jobs/1713?widget=1"},
+{co:"ConnectLatam",t:"Remote Executive Assistant (LATAM)",p:"US$ 1.200 – 1.500/mês",a:"ops",r:"la",w:"América Latina; inglês C1",s:"Careers Page",u:"https://www.careers-page.com/connectlatam/job/4RV38937"},
+{co:"Business Staffing of America",t:"Virtual Assistant (Business & Operations Support)",p:"Não informado",a:"ops",r:"la",w:"Só América Latina; horário dos EUA",s:"Breezy",u:"https://business-staffing-of-america-inc.breezy.hr/p/24bce52449a7-virtual-assistant-latam-business-operations-support"},
+{co:"Empresa americana de limpeza (nome não divulgado)",t:"Virtual Assistant – Sales & Operations",p:"Não informado",a:"ops",r:"br",w:"Só Brasil; anúncio em português",s:"Remotive",u:"https://remotive.com/remote/jobs/all-others/virtual-assistant-sales-operations-5352097"},
+{co:"Valatam",t:"Jr. Operations Assistant",p:"US$ 696 – 1.044/mês",a:"ops",r:"ck",w:"Países citados: Equador, Colômbia, Peru e outros; confirme o Brasil",s:"Workable",u:"https://apply.workable.com/valatam/jobs/view/AB378C3CB9.md"},
+{co:"Puente",t:"Campaign Operations Coordinator",p:"US$ 3.000/mês",a:"ops",r:"la",w:"América Latina",s:"Puente",u:"https://puentetalent.com/jobs"},
+{co:"Remote Talent LATAM",t:"SEO Analyst (Client-Facing)",p:"US$ 2.000/mês",a:"ops",r:"la",w:"Só América Latina; prestador de serviço",s:"Jobgether",u:"https://jobgether.com/offer/69e905c9c646310ee3979d97-seo-analyst-client-facing-latam-only-81158"},
+{co:"Guidepost Marketing",t:"Junior Client Success Manager",p:"US$ 1.500/mês + bônus",a:"cs",r:"la",w:"Remoto, horário da Costa Leste dos EUA; o e-mail está no fim do anúncio",s:"WeRemoto",u:"https://www.weremoto.com/job-posts/id-wanted-the-best-remote-junior-client-success-manager-in-the-world-guidepost-marketing"},
+{co:"LatamCent",t:"Customer Success Ops",p:"US$ 40.000 – 45.000/ano",a:"cs",r:"br",w:"América Latina; o anúncio lista o Brasil",s:"Remotive",u:"https://remotive.com/remote/jobs/customer-service/customer-success-ops-5342517"},
+{co:"Alpaca",t:"Customer Success Manager – LATAM",p:"Em dólar (faixa do anúncio pouco clara)",a:"cs",r:"la",w:"América Latina; horário da Costa Leste",s:"Dynamite Jobs",u:"https://dynamitejobs.com/company/alpaca/remote-job/customer-success-manager-latam"},
+{co:"CrewAI",t:"Customer Success Manager, LATAM",p:"Não informado",a:"cs",r:"br",w:"Brasil e América Latina; pede português e 4 anos de experiência",s:"Remotive",u:"https://remotive.com/remote/jobs/customer-service/customer-success-manager-5094282"},
+{co:"BA Global Talent",t:"Junior Product Support (LATAM & The Caribbean)",p:"Não informado",a:"cs",r:"la",w:"América Latina; 1 a 2 anos de experiência",s:"Jobgether",u:"https://jobgether.com/offer/69b295dd24d79271ee041592-junior-product-support-latam-the-caribbean"},
+{co:"Amplemarket",t:"Junior Product Support Specialist",p:"Não informado",a:"cs",r:"la",w:"Nas Américas, horário dos EUA",s:"Jobgether",u:"https://jobgether.com/offer/69908741da7696de2f523e98-junior-product-support-specialist"},
+{co:"Valatam",t:"Junior Customer Support Representative",p:"US$ 696 – 1.044/mês",a:"cs",r:"la",w:"América Latina",s:"Remotive",u:"https://remotive.com/remote/jobs/customer-service/junior-customer-support-representative-6245922"}
+];
+const R={br:["p-br","Aceita Brasil"],la:["p-la","América Latina"],ck:["p-ck","Confirmar país"]};
+const A={dados:"Dados e BI",ops:"Operações e administração",cs:"Atendimento e customer success"};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let f="all";
+function render(){
+  const c=k=>V.filter(k).length;
+  document.getElementById("stats").innerHTML=`<span class="stat"><b>${V.length}</b>vagas</span><span class="stat"><b>${c(v=>v.m&&!v.same)}</b>com rascunho no Gmail</span><span class="stat"><b>${c(v=>v.r==="br")}</b>citam o Brasil</span><span class="stat"><b>${c(v=>v.a==="dados")}</b>dados e BI</span>`;
+  document.getElementById("rows").innerHTML=V.map((v,i)=>({v,i})).filter(({v})=>f==="all"||(f==="draft"&&v.m)||(f==="br"&&v.r==="br")||v.a===f).map(({v,i})=>`<tr>
+    <td class="n">${i+1}</td>
+    <td><b>${esc(v.co)}</b>${esc(v.t)}<br><span class="src">${A[v.a]}</span>${v.m?`<br><span class="mail">${v.old?"Rascunho já estava no Gmail":v.same?"Coberta pelo mesmo rascunho":"Rascunho criado"}: ${esc(v.m)}</span>`:""}</td>
+    <td class="pay">${esc(v.p)}</td>
+    <td><span class="pill ${R[v.r][0]}">${R[v.r][1]}</span><br>${esc(v.w)}</td>
+    <td><a href="${esc(v.u)}" target="_blank" rel="noopener">Ver vaga</a><br><span class="src">${esc(v.s)}</span></td>
+  </tr>`).join("");
+}
+document.querySelector(".filters").addEventListener("click",e=>{const b=e.target.closest("button[data-f]");if(!b)return;f=b.dataset.f;document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));render();});
+render();
+</script>
