@@ -70,6 +70,7 @@ footer{color:var(--muted);font-size:13px;max-width:90ch;display:grid;gap:6px}
   </table></div>
   <footer>
     <div>Valores em libra convertidos a cerca de US$ 1,33 por libra. Salários por hora convertidos considerando 2.080 horas por ano. Salários por mês multiplicados por 12. Os valores marcados "estimado" vêm do próprio site de vagas, não do anúncio.</div>
+    <div>Saíram da lista: Uptrail (é um curso pago, não um emprego) e Money Expert (só aceita quem mora perto de Chester e trabalha no escritório). Entraram ClearCaptions e Knock.</div>
     <div>Algumas vagas vieram de páginas que podem estar desatualizadas. Antes de se candidatar, confira no link se a vaga ainda está aberta. A marcação "Me candidatei" fica salva só neste navegador.</div>
   </footer>
 </div>
@@ -107,7 +108,7 @@ const V=[
 {co:"Astrana Health",t:"Business Data Analyst (nível pleno)",s:"US$ 72.000 – 84.000/ano",u:"",r:"us",w:"EUA; pede mais experiência que júnior",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/astrana-health/jobs/business-data-analyst"},
 {co:"Coders Data",t:"Junior Data Analyst",s:"US$ 60.000 – 80.000/ano",u:"",r:"us",w:"EUA",src:"LinkedIn",d:"data não confirmada",url:"https://www.linkedin.com/jobs/view/junior-data-analyst-at-coders-data-3875346105"},
 {co:"Blue Water Thinking",t:"Jr. Data Analyst",s:"US$ 70.000 – 100.000/ano",u:"",r:"us",w:"EUA; exige liberação de segurança federal (Public Trust)",src:"Greenhouse",d:"data não confirmada",url:"https://job-boards.greenhouse.io/bluewaterthinking/jobs/4715460006"},
-{co:"TSTC (Totalsys Tech)",t:"Junior Data Analyst",s:"US$ 50.000 – 75.000/ano",u:"",r:"us",w:"Morar a até 200 milhas de Washington DC",src:"Lever",d:"29/04/2026",url:"https://jobs.lever.co/totalsystech/e96d1334-8c05-443a-a866-1c9b00bc9638"},
+{co:"TSTC (Totalsys Tech)",t:"Junior Data Analyst",s:"US$ 50.000 – 75.000/ano",u:"",r:"us",w:"Morar a até 200 milhas de Washington DC",src:"Lever",d:"29/04/2026",url:"https://jobs.lever.co/totalsystech/e96d1334-8c05-443a-a866-1c9b00bc9638",seen:"Já tem rascunho no seu Gmail (HR@totalsystech.com)"},
 {co:"Dane Street",t:"Junior Business Intelligence Analyst",s:"US$ 40.000 – 60.000/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote/jobs/data/junior-business-intelligence-analyst-5529066"},
 {co:"University of Arizona Global Campus",t:"Data Analyst, Level I",s:"US$ 53.039 – 66.299/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote/jobs/data/data-analyst-level-i-5427657"},
 {co:"Peraton",t:"Junior Business Analyst (Data & Integration)",s:"US$ 51.000 – 82.000/ano",u:"",r:"us",w:"EUA",src:"Himalayas",d:"21/10/2026",url:"https://himalayas.app/companies/peraton/jobs/junior-business-analyst-data-integration-213420654"},
@@ -124,8 +125,8 @@ const V=[
 {co:"Tenth Revolution Group",t:"Junior Power BI Consultant",s:"£30.000 – 35.000/ano",u:"≈ US$ 40 – 47 mil/ano",r:"uk",w:"Reino Unido",src:"ITJobsWatch",d:"outubro de 2026",url:"https://www.itjobswatch.co.uk/jv/Tenth-Revolution-Group/Junior-Power-Bi-Consultant-Job-Birmingham-West-Midlands-West-Midlands-County-UK-4sgype?jr=8n6-mav-0",seen:"Já tem rascunho no seu Gmail"},
 {co:"Datasource",t:"Junior Power BI Data Analyst",s:"£30.000 – 35.000/ano",u:"≈ US$ 40 – 47 mil/ano",r:"uk",w:"Exige morar no Reino Unido há pelo menos 5 anos",src:"Busca na web",d:"outubro de 2026",url:"https://www.google.com/search?q=Datasource+%22Junior+Power+BI+Data+Analyst%22+remote"},
 {co:"Qualify Nation Recruitment",t:"Junior Data Analyst (várias vagas)",s:"£28.000 – 38.000/ano",u:"≈ US$ 37 – 51 mil/ano",r:"uk",w:"Reino Unido",src:"Reed",d:"data não confirmada",url:"https://www.reed.co.uk/jobs/work-from-home-junior-data-analyst-jobs"},
-{co:"Money Expert",t:"Junior Data Analyst",s:"£30.000/ano",u:"≈ US$ 40 mil/ano",r:"uk",w:"Reino Unido; o texto cita trabalho híbrido em Chester",src:"CV-Library",d:"08/06/2026",url:"https://www.cv-library.co.uk/remote-junior-data-analyst-jobs"},
-{co:"Uptrail",t:"Trainee AI Data Analyst",s:"£27.000 – 35.000/ano",u:"≈ US$ 36 – 47 mil/ano",r:"uk",w:"Reino Unido",src:"ITJobsWatch",d:"outubro de 2026",url:"https://www.itjobswatch.co.uk/search?q=Data+Analyst&r=1&s=date&start=0"}
+{co:"ClearCaptions",t:"Data Analyst (100% Remote), nível pleno",s:"US$ 100.000 – 115.000/ano",u:"",r:"us",w:"EUA; pede mais experiência que júnior",src:"Indeed",d:"12/10/2026",url:"https://to.indeed.com/aa74svhgxw8l"},
+{co:"Knock",t:"Business Analyst – REMOTE, nível pleno",s:"US$ 86.500 – 114.000/ano",u:"",r:"us",w:"EUA; pede mais experiência que júnior",src:"Indeed",d:"23/10/2026",url:"https://to.indeed.com/aapgydcdtzbl"}
 ];
 const R={br:["p-br","Aceita Brasil / América Latina"],chk:["p-chk","Confirmar país"],us:["p-us","Só EUA"],uk:["p-uk","Só Reino Unido"]};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
