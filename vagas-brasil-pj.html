@@ -1,0 +1,100 @@
+<title>Vagas Júnior PJ no Brasil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: título, aviso, três tabelas por grau de certeza (PJ com valor, PJ sem valor, a confirmar) */
+:root{
+  --bg:#f3f6f2; --surface:#ffffff; --fg:#17251b; --muted:#56665a; --line:#d7e0d8;
+  --accent:#1d6b43; --accent-soft:#dcefe2; --warn:#8a5a00; --warn-soft:#fbefd5; --info-soft:#e3ecf5;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1611; --surface:#17211a; --fg:#e3ede5; --muted:#9fb3a4; --line:#2a382e;
+  --accent:#7fd3a2; --accent-soft:#173323; --warn:#f0c46a; --warn-soft:#3a2e14; --info-soft:#1b2836; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1611; --surface:#17211a; --fg:#e3ede5; --muted:#9fb3a4; --line:#2a382e;
+  --accent:#7fd3a2; --accent-soft:#173323; --warn:#f0c46a; --warn-soft:#3a2e14; --info-soft:#1b2836; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:22px}
+h1{font-family:var(--display);font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;text-wrap:balance}
+.lede{color:var(--muted);max-width:72ch;margin:8px 0 0}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:90ch;display:grid;gap:6px}
+.note strong{color:var(--warn)}
+.pill{font-family:var(--body);font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent)}
+section{display:grid;gap:8px;min-width:0}
+section p{margin:0;color:var(--muted);font-size:14px;max-width:85ch}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td b{display:block}
+.pay{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mail{display:inline-block;margin-top:4px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;border-radius:4px;padding:1px 7px}
+.src{color:var(--muted);font-size:12.5px}
+a{color:var(--accent);font-weight:700}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{color:var(--muted);font-size:13px;max-width:90ch;display:grid;gap:6px}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Vagas júnior de analista em TI, PJ, no Brasil</h1>
+    <p class="lede">Vagas de nível júnior para analista em TI, dados e BI, remotas, com contrato PJ e valor acima de R$ 4.000 por mês. Levantamento de 29 de outubro de 2026.</p>
+  </header>
+  <div class="note">
+    <div><strong>O que encontrei:</strong> quase nenhuma vaga júnior informa o regime e o valor ao mesmo tempo. Separei em três grupos: as que confirmam PJ e valor acima de R$ 4.000, as que confirmam PJ mas não dizem o valor, e as remotas que não dizem nem o regime nem o valor.</div>
+    <div><strong>Sobre PJ:</strong> o valor PJ é o que você fatura, não o que cai na conta. Dele saem impostos (no Simples, em geral de 6% a 15,5%), contador e INSS, e não há férias, 13º nem FGTS.</div>
+  </div>
+
+  <section>
+    <h2>PJ confirmado e valor acima de R$ 4.000 <span class="pill">2 vagas</span></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Empresa e vaga</th><th>Valor</th><th>Detalhes</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td><b>Stefanini LATAM</b>Junior Data Analyst (PJ)</td><td class="pay">US$ 3.500 – 4.500/mês</td><td>Remoto. Aceita quem mora no Brasil, Colômbia, México ou Argentina. Pago em dólar, bem acima de R$ 4.000.</td><td class="src"><a href="https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/" target="_blank" rel="noopener">Remote Rocketship</a><br>data não confirmada</td></tr>
+        <tr><td><b>Interfusão TI</b>Analistas de Sistemas Júnior</td><td class="pay">Até R$ 5.000/mês</td><td>PJ, remoto. Pede Java, noções de SQL Server ou Oracle, inglês ou espanhol para falar com clientes e disponibilidade para viagens. Levantamento de requisitos, testes e treinamento de clientes.</td><td class="src"><a href="https://programathor.com.br/jobs/26145-analistas-de-sistemas-junior" target="_blank" rel="noopener">Programathor</a><br>confirme se ainda está aberta</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>PJ confirmado, valor não informado <span class="pill">6 vagas</span></h2>
+    <p>Vale se candidatar e perguntar o valor logo no primeiro contato.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Empresa e vaga</th><th>Valor</th><th>Detalhes</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td><b>MB</b>Analista Júnior de BI</td><td class="pay">A combinar</td><td>PJ, home office. Combina com seu Power BI e SQL.</td><td class="src"><a href="https://nerdin.com.br/vaga/92422" target="_blank" rel="noopener">Nerdin</a></td></tr>
+        <tr><td><b>Grupo BGB</b>Engenheiro de Dados Júnior</td><td class="pay">Fixo mensal, não informado</td><td>PJ, remoto. Mais técnico que análise de dados.</td><td class="src"><a href="https://radarhomeoffice.com/vaga/grupo-bgb-engenheiro-de-dados-junior-9eba25" target="_blank" rel="noopener">Radar Home Office</a><br>julho de 2026</td></tr>
+        <tr><td><b>BairesDev</b>Analista de BI Júnior</td><td class="pay">Em dólar ou real, não informado</td><td>100% remoto, contrato de prestação de serviço. Pede 1 ano de experiência em BI ou análise de dados, Power BI ou Tableau e SQL.</td><td class="src"><a href="https://remotar.com.br/job/159736/bairesdev/trabalhe-de-casa-analista-de-bi-junior-ref.-0078p" target="_blank" rel="noopener">Remotar</a><br>pode ter fechado</td></tr>
+        <tr><td><b>Digics</b>DBA SQL Server Júnior</td><td class="pay">Não informado</td><td>CLT ou PJ, home office. Administração de banco de dados SQL Server.</td><td class="src"><a href="https://www.nerdin.com.br/vagas-home-office.php" target="_blank" rel="noopener">Nerdin</a><br>outubro de 2026</td></tr>
+        <tr><td><b>Nextron Energia</b>Analista de QA</td><td class="pay">Não informado</td><td>PJ, 100% remoto para quem mora no Brasil. O nível não é informado; confirme se aceita júnior.</td><td class="src"><a href="https://radarhomeoffice.com/vaga/nextron-energia-analista-de-qa-abfe32" target="_blank" rel="noopener">Radar Home Office</a><br>28/09/2026</td></tr>
+        <tr><td><b>Agência Digi</b>Analista de BI</td><td class="pay">Não informado</td><td>PJ, remoto. SQL avançado e Power BI; pede mais experiência que júnior.</td><td class="src"><a href="https://remotar.com.br/job/137716/agencia-digi/analista-de-bi" target="_blank" rel="noopener">Remotar</a></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Remotas júnior, regime e valor a confirmar <span class="pill">9 vagas</span></h2>
+    <p>São vagas júnior de dados, BI ou sistemas que combinam com seu perfil, mas o anúncio não diz se é PJ nem quanto paga.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Empresa e vaga</th><th>Detalhes</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td><b>Ep Conexões &amp; Negócios</b>Analista de Dados Júnior (Telecomunicações)</td><td>100% remoto. Pede Power BI e Excel intermediário; SQL é diferencial; aceita quem está começando.<br><span class="mail">Rascunho criado no seu Gmail: contato@epconexoesenegocios.com</span></td><td class="src"><a href="https://www.grupodevagas.com.br/2026/10/analista-de-dados-junior.html" target="_blank" rel="noopener">Grupo de Vagas</a><br>outubro de 2026</td></tr>
+        <tr><td><b>nstech</b>Analista de Dados Jr</td><td>Logística (eFrete). SQL básico e manutenção de dashboards; Python é diferencial.</td><td class="src"><a href="https://remotar.com.br/job/161436/nstech/analista-de-dados-jr" target="_blank" rel="noopener">Remotar</a><br>02/09/2026</td></tr>
+        <tr><td><b>Digix</b>Analista de Inteligência de Dados Júnior</td><td>100% remoto. SQL, ETL e Power BI.</td><td class="src"><a href="https://radarhomeoffice.com/vaga/digix-analista-de-inteligencia-de-dados-junior-remoto-5a527a" target="_blank" rel="noopener">Radar Home Office</a></td></tr>
+        <tr><td><b>Quality Digital</b>Analista de Dados e IA Jr</td><td>Remoto. Dados e inteligência artificial.</td><td class="src"><a href="https://remotar.com.br/job/161896/quality-digital/12417713-analista-de-dados-e-ia-jr" target="_blank" rel="noopener">Remotar</a></td></tr>
+        <tr><td><b>BRQ</b>Pessoa Analista de Sistemas Júnior</td><td>Remoto.</td><td class="src"><a href="https://remotar.com.br/job/166726/brq/pessoa-analista-de-sistemas-junior" target="_blank" rel="noopener">Remotar</a><br>16/10/2026</td></tr>
+        <tr><td><b>alt.bank</b>Business Intelligence Analyst Jr</td><td>Remoto, empresa de São Paulo.</td><td class="src"><a href="https://br.linkedin.com/jobs/analista-de-bi-pj-vagas" target="_blank" rel="noopener">LinkedIn</a><br>outubro de 2026</td></tr>
+        <tr><td><b>Looqbox</b>Analista de Dados e BI (júnior ou pleno)</td><td>100% remoto. Python (pandas), SQL e inglês intermediário.</td><td class="src"><a href="https://to.indeed.com/aavf7k98trc6" target="_blank" rel="noopener">Indeed</a><br>05/10/2026</td></tr>
+        <tr><td><b>Digisystem</b>Analista de Arquitetura Corporativa Júnior</td><td>Remoto.</td><td class="src"><a href="https://to.indeed.com/aatx8zysqx64" target="_blank" rel="noopener">Indeed</a><br>23/10/2026</td></tr>
+        <tr><td><b>Afya</b>Analista de Dados Júnior</td><td>Remoto. Empresa grande, provavelmente CLT.</td><td class="src"><a href="https://to.indeed.com/aawbcftpbydh" target="_blank" rel="noopener">Indeed</a><br>28/09/2026</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer>
+    <div>Ficaram de fora por já estarem encerradas: Homem Máquina (Analista de Infraestrutura e DevOps Jr, PJ, até R$ 5.000), Finch Soluções (Back End Jr Java, PJ, até R$ 6.000) e Beside Media (Projetos e Operações, PJ, R$ 4.000). Também ficou de fora a Orbite Consulting (Dados ou BI Júnior, remoto, R$ 3.800 – 5.800), porque é CLT.</div>
+    <div>Os sites de vagas foram consultados por busca na web; o ambiente não abre essas páginas diretamente. Confira no link se a vaga ainda está aberta antes de se candidatar.</div>
+  </footer>
+</div>
