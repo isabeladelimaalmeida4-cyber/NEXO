@@ -25,7 +25,7 @@ h1{font-family:var(--display);font-size:clamp(26px,4.5vw,40px);line-height:1.05;
 .filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
 .filters button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;min-width:820px;font-size:14px}
+table{border-collapse:collapse;width:100%;min-width:1040px;font-size:14px}
 th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
 th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 tr:last-child td{border-bottom:0}
@@ -34,6 +34,8 @@ td b{display:block}
 .pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;background:var(--info-soft);color:var(--info)}
 .mail{display:inline-block;margin-top:4px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;border-radius:4px;padding:1px 7px}
 .src{color:var(--muted);font-size:12.5px}
+.chk{display:block;color:var(--warn);font-size:12px}
+.links{display:flex;flex-direction:column;gap:4px}
 a{color:var(--accent);font-weight:700}
 footer{color:var(--muted);font-size:13px;max-width:90ch}
 </style>
@@ -42,7 +44,7 @@ footer{color:var(--muted);font-size:13px;max-width:90ch}
     <h1>Vagas remotas no Brasil para o seu perfil</h1>
     <p class="lede">Vagas 100% remotas de empresas brasileiras (e duas estrangeiras que contratam no Brasil) que combinam com o seu currículo: dados e BI júnior, estágio em dados, administrativo e operações, e atendimento. Levantamento de 29 de outubro de 2026.</p>
   </header>
-  <div class="note"><strong>Sobre salário e e-mail:</strong> quase nenhum anúncio informa o salário, e quase todos pedem candidatura pelo link (Gupy, Greenhouse, Indeed). Só a vaga da Ep Conexões aceita currículo por e-mail, e o rascunho dela já está no seu Gmail.</div>
+  <div class="note"><strong>Sobre os links:</strong> "Site oficial" leva à página da empresa. Quando aparece "confirme o endereço", o domínio é o mais provável, mas não consegui abrir a página para conferir. "Inscrição" sempre traz o anúncio da vaga e, quando encontrei, também a página de vagas da empresa. Só a Ep Conexões publica e-mail para candidatura, e o rascunho dela já está no seu Gmail. As outras empresas recebem currículo só pelo link de inscrição.</div>
   <div class="filters" role="group" aria-label="Filtrar vagas">
     <button type="button" data-f="all" aria-pressed="true">Todas</button>
     <button type="button" data-f="dados" aria-pressed="false">Dados e BI</button>
@@ -51,55 +53,56 @@ footer{color:var(--muted);font-size:13px;max-width:90ch}
     <button type="button" data-f="cs" aria-pressed="false">Atendimento e suporte</button>
   </div>
   <div class="tbl"><table>
-    <thead><tr><th>#</th><th>Empresa e vaga</th><th>Detalhes</th><th>Publicada</th><th>Link</th></tr></thead>
+    <thead><tr><th>#</th><th>Empresa e vaga</th><th>Detalhes</th><th>Site oficial</th><th>E-mails publicados</th><th>Inscrição</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
   <footer>As datas são de publicação no site de origem. Confira no link se a vaga ainda está aberta antes de se candidatar. Fontes: Indeed, Grupo de Vagas, Remotar, Radar Home Office, Nerdin, LinkedIn, SimplyHired e GeekHunter.</footer>
 </div>
 <script>
 const V=[
-{a:"dados",co:"Nomus",t:"Analista de Dados/BI",w:"Tempo integral",d:"27/10/2026",u:"https://to.indeed.com/aayrc4dx6y2h"},
-{a:"dados",co:"Afya",t:"Analista de Dados Júnior",w:"Empresa grande de educação médica",d:"28/09/2026",u:"https://to.indeed.com/aap79kkz9cym"},
-{a:"dados",co:"Ep Conexões & Negócios",t:"Analista de Dados Júnior (Telecomunicações)",w:"Power BI e Excel intermediário; SQL é diferencial; aceita quem está começando",d:"11/10/2026",u:"https://www.grupodevagas.com.br/2026/10/analista-de-dados-junior.html",m:"contato@epconexoesenegocios.com"},
-{a:"dados",co:"nstech",t:"Analista de Dados Jr",w:"SQL básico e manutenção de dashboards; logística",d:"02/09/2026",u:"https://remotar.com.br/job/161436/nstech/analista-de-dados-jr"},
-{a:"dados",co:"Digix",t:"Analista de Inteligência de Dados Júnior",w:"SQL, ETL e Power BI",d:"não informada",u:"https://radarhomeoffice.com/vaga/digix-analista-de-inteligencia-de-dados-junior-remoto-5a527a"},
-{a:"dados",co:"Quality Digital",t:"Analista de Dados e IA Jr",w:"Dados e inteligência artificial",d:"não informada",u:"https://remotar.com.br/job/161896/quality-digital/12417713-analista-de-dados-e-ia-jr"},
-{a:"dados",co:"alt.bank",t:"Business Intelligence Analyst Jr",w:"Remoto; empresa de São Paulo",d:"outubro de 2026",u:"https://br.linkedin.com/jobs/analista-de-bi-pj-vagas"},
-{a:"dados",co:"MB",t:"Analista Júnior de BI",w:"PJ, salário a combinar",d:"não informada",u:"https://nerdin.com.br/vaga/92422"},
-{a:"dados",co:"Orbite Consulting",t:"Analista de Dados ou BI Júnior",w:"CLT, R$ 3.800 – 5.800/mês; SQL e Power BI",d:"outubro de 2026",u:"https://www.simplyhired.com.br/search?q=power+bi+remoto&l=brasil"},
-{a:"dados",co:"Looqbox",t:"Analista de Dados e BI (júnior ou pleno)",w:"Python (pandas), SQL e inglês intermediário",d:"05/10/2026",u:"https://to.indeed.com/aajpy2y2fyl7"},
-{a:"dados",co:"Stefanini LATAM",t:"Junior Data Analyst (PJ)",w:"PJ em dólar, US$ 3.500 – 4.500/mês; aceita quem mora no Brasil",d:"não confirmada",u:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/"},
-{a:"dados",co:"BairesDev",t:"Analista de BI Júnior",w:"Pago em dólar ou real; pede 1 ano de experiência",d:"pode ter fechado",u:"https://remotar.com.br/job/159736/bairesdev/trabalhe-de-casa-analista-de-bi-junior-ref.-0078p"},
-{a:"dados",co:"Funcional Health Tech",t:"Analista de Operações Júnior",w:"Operações em empresa de saúde",d:"20/10/2026",u:"https://to.indeed.com/aaz4ybfhsjqs"},
-{a:"dados",co:"BP – A Beneficência Portuguesa de São Paulo",t:"Especialista Inteligência de Mercado",w:"Tempo integral; ligado ao seu curso, mas o cargo de especialista costuma pedir mais experiência",d:"20/10/2026",u:"https://to.indeed.com/aaqsbhk9hmxp"},
-{a:"dados",co:"Afya",t:"Analista de Planejamento Comercial Júnior",w:"Remoto, mas só para quem mora em SP, RJ ou BH",d:"26/10/2026",u:"https://to.indeed.com/aabhv4mzg6by"},
-{a:"dados",co:"Bernoulli Educação",t:"Analista de Projetos",w:"Educação",d:"14/10/2026",u:"https://to.indeed.com/aaczhrcylpvr"},
-{a:"estagio",co:"LÍBER",t:"Estágio de BI",w:"Estágio remoto em BI",d:"11/09/2026",u:"https://to.indeed.com/aanzjp9yxjv4"},
-{a:"estagio",co:"Fóton Informática",t:"Analista de Métricas de CX (estágio)",w:"Indicadores de experiência do cliente",d:"26/10/2026",u:"https://to.indeed.com/aacbgrrwb6yn"},
-{a:"estagio",co:"Lima Consulting Group",t:"Web Analytics Jr (estágio)",w:"Análise de dados de sites",d:"06/10/2026",u:"https://to.indeed.com/aafh7x27lqsn"},
-{a:"estagio",co:"Avanti",t:"Estágio em CRO (dados de experiência do usuário)",w:"Comércio digital",d:"30/09/2026",u:"https://to.indeed.com/aaskg47xwmh2"},
-{a:"estagio",co:"Monks",t:"Estágio em CRO",w:"Meio período",d:"08/10/2026",u:"https://to.indeed.com/aaqmzll8mv8z"},
-{a:"estagio",co:"CCEE",t:"Estágio em Governança de TI",w:"Vaga afirmativa para pessoas pretas e pardas, LGBTIA+, PCD e gerações",d:"21/10/2026",u:"https://to.indeed.com/aarlcwd2nc2d"},
-{a:"ops",co:"BIP",t:"Assistente de Processos Logísticos",w:"Processos e controles",d:"08/10/2026",u:"https://to.indeed.com/aallmszj8mcp"},
-{a:"ops",co:"AlmapBBDO",t:"Assistente de Planejamento",w:"Agência de publicidade",d:"14/10/2026",u:"https://to.indeed.com/aa2x2d9ckrjm"},
-{a:"ops",co:"The Great Schools Platform",t:"Assistente Financeiro",w:"Financeiro",d:"10/10/2026",u:"https://to.indeed.com/aaskth8yprr7"},
-{a:"ops",co:"Teltec Solutions",t:"Assistente Jurídico e Gestão de Contratos",w:"Controle de contratos",d:"14/10/2026",u:"https://to.indeed.com/aaz7pgmkgdbk"},
-{a:"ops",co:"Fretadão",t:"Assistente Fiscal I",w:"Emissão e controle de notas, que você já fez na Bom Jesus",d:"16/10/2026",u:"https://to.indeed.com/aalkp2nxcqrm"},
-{a:"ops",co:"Acacia RH",t:"Assistente Administrativo – Home Office",w:"PJ, horário comercial; data e salário pouco claros",d:"não confirmada",u:"https://vagasremotas.com.br/vagas-administrativo-remoto-home-office/"},
-{a:"cs",co:"Contabilizei",t:"Assistente de Atendimento",w:"Atendimento ao cliente",d:"19/10/2026",u:"https://to.indeed.com/aak4zgsvpw94"},
-{a:"cs",co:"Arco Educação",t:"Analista de Atendimento (temporário, 4 meses)",w:"Pacote Office; Zendesk é diferencial",d:"outubro de 2026",u:"https://job-boards.greenhouse.io/arcoeducacao/jobs/6118909004"},
-{a:"cs",co:"Empresa de transporte (via Grupo de Vagas)",t:"Analista de Suporte Operacional (4 meses, pode efetivar)",w:"CLT, turno das 14h às 20h, escala 6x1",d:"12/10/2026",u:"https://www.grupodevagas.com.br/2026/10/analista-de-suporte-operacional-prazo.html"},
-{a:"cs",co:"Kartado Tecnologia",t:"Analista de Suporte N1",w:"Superior incompleto e Excel intermediário; computador próprio",d:"01/09/2026",u:"https://www.geekhunter.com/pt/kartado/jobs/analista-de-suporte-n1-4"},
-{a:"cs",co:"TOTVS",t:"Analista de Suporte Técnico Jr – Protheus",w:"Turno noturno",d:"14/10/2026",u:"https://to.indeed.com/aantsddt6fyw"},
-{a:"cs",co:"Nomus",t:"Analista de Sucesso do Cliente",w:"Tempo integral",d:"15/10/2026",u:"https://to.indeed.com/aalfxgpqqnpt"},
-{a:"cs",co:"Knewin",t:"Analista de Customer Success Júnior",w:"Atendimento a clientes",d:"09/10/2026",u:"https://to.indeed.com/aamfy9pcdyfn"},
-{a:"cs",co:"Animati",t:"Analista de Implantação Júnior",w:"Implantação de sistemas",d:"06/10/2026",u:"https://to.indeed.com/aazbqjy8lp8n"},
-{a:"cs",co:"Quality Digital",t:"Analista de Qualidade de Software (QA) Júnior",w:"Inscrições até 06/12/2026 pela Gupy",d:"09/10/2026",u:"https://to.indeed.com/aazpjgpq2p4c"}
+{a:"dados",co:"Nomus",t:"Analista de Dados/BI",w:"Tempo integral",d:"27/10/2026",u:"https://to.indeed.com/aayrc4dx6y2h",s:"https://www.nomus.com.br",ok:1,cl:"Página de carreiras citada pela empresa",cu:"https://www.nomus.com.br/carreiras"},
+{a:"dados",co:"Afya",t:"Analista de Dados Júnior",w:"Empresa grande de educação médica",d:"28/09/2026",u:"https://to.indeed.com/aap79kkz9cym",s:"https://www.afya.com.br",ok:1},
+{a:"dados",co:"Ep Conexões & Negócios",t:"Analista de Dados Júnior (Telecomunicações)",w:"Power BI e Excel intermediário; SQL é diferencial; aceita quem está começando",d:"11/10/2026",u:"https://www.grupodevagas.com.br/2026/10/analista-de-dados-junior.html",m:"contato@epconexoesenegocios.com",s:"https://epconexoesenegocios.com",ok:0},
+{a:"dados",co:"nstech",t:"Analista de Dados Jr",w:"SQL básico e manutenção de dashboards; logística",d:"02/09/2026",u:"https://remotar.com.br/job/161436/nstech/analista-de-dados-jr",s:"https://www.nstech.com.br",ok:1},
+{a:"dados",co:"Digix",t:"Analista de Inteligência de Dados Júnior",w:"SQL, ETL e Power BI",d:"não informada",u:"https://radarhomeoffice.com/vaga/digix-analista-de-inteligencia-de-dados-junior-remoto-5a527a",s:"https://www.digix.com.br",ok:0},
+{a:"dados",co:"Quality Digital",t:"Analista de Dados e IA Jr",w:"Dados e inteligência artificial",d:"não informada",u:"https://remotar.com.br/job/161896/quality-digital/12417713-analista-de-dados-e-ia-jr",s:"https://www.qualitydigital.global",ok:1,cl:"Página de vagas na Gupy",cu:"https://qualitydigital.gupy.io"},
+{a:"dados",co:"alt.bank",t:"Business Intelligence Analyst Jr",w:"Remoto; empresa de São Paulo",d:"outubro de 2026",u:"https://br.linkedin.com/jobs/analista-de-bi-pj-vagas",s:null,ok:0},
+{a:"dados",co:"MB",t:"Analista Júnior de BI",w:"PJ, salário a combinar",d:"não informada",u:"https://nerdin.com.br/vaga/92422",s:null,ok:0},
+{a:"dados",co:"Orbite Consulting",t:"Analista de Dados ou BI Júnior",w:"CLT, R$ 3.800 – 5.800/mês; SQL e Power BI",d:"outubro de 2026",u:"https://www.simplyhired.com.br/search?q=power+bi+remoto&l=brasil",s:null,ok:0,cl:"Perfil com vagas no Indeed",cu:"https://br.indeed.com/cmp/Orbite-Consulting/jobs"},
+{a:"dados",co:"Looqbox",t:"Analista de Dados e BI (júnior ou pleno)",w:"Python (pandas), SQL e inglês intermediário",d:"05/10/2026",u:"https://to.indeed.com/aajpy2y2fyl7",s:"https://www.looqbox.com",ok:1},
+{a:"dados",co:"Stefanini LATAM",t:"Junior Data Analyst (PJ)",w:"PJ em dólar, US$ 3.500 – 4.500/mês; aceita quem mora no Brasil",d:"não confirmada",u:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/",s:"https://stefanini.com",ok:1},
+{a:"dados",co:"BairesDev",t:"Analista de BI Júnior",w:"Pago em dólar ou real; pede 1 ano de experiência",d:"pode ter fechado",u:"https://remotar.com.br/job/159736/bairesdev/trabalhe-de-casa-analista-de-bi-junior-ref.-0078p",s:"https://www.bairesdev.com",ok:1},
+{a:"dados",co:"Funcional Health Tech",t:"Analista de Operações Júnior",w:"Operações em empresa de saúde",d:"20/10/2026",u:"https://to.indeed.com/aaz4ybfhsjqs",s:null,ok:0,cl:"Perfil com vagas no Indeed",cu:"https://br.indeed.com/cmp/Funcional-Health-Tech"},
+{a:"dados",co:"BP – A Beneficência Portuguesa de São Paulo",t:"Especialista Inteligência de Mercado",w:"Tempo integral; ligado ao seu curso, mas o cargo de especialista costuma pedir mais experiência",d:"20/10/2026",u:"https://to.indeed.com/aaqsbhk9hmxp",s:"https://www.bp.org.br",ok:1},
+{a:"dados",co:"Afya",t:"Analista de Planejamento Comercial Júnior",w:"Remoto, mas só para quem mora em SP, RJ ou BH",d:"26/10/2026",u:"https://to.indeed.com/aabhv4mzg6by",s:"https://www.afya.com.br",ok:1},
+{a:"dados",co:"Bernoulli Educação",t:"Analista de Projetos",w:"Educação",d:"14/10/2026",u:"https://to.indeed.com/aaczhrcylpvr",s:"https://www.bernoulli.com.br",ok:1},
+{a:"estagio",co:"LÍBER",t:"Estágio de BI",w:"Estágio remoto em BI",d:"11/09/2026",u:"https://to.indeed.com/aanzjp9yxjv4",s:null,ok:0},
+{a:"estagio",co:"Fóton Informática",t:"Analista de Métricas de CX (estágio)",w:"Indicadores de experiência do cliente",d:"26/10/2026",u:"https://to.indeed.com/aacbgrrwb6yn",s:null,ok:0},
+{a:"estagio",co:"Lima Consulting Group",t:"Web Analytics Jr (estágio)",w:"Análise de dados de sites",d:"06/10/2026",u:"https://to.indeed.com/aafh7x27lqsn",s:"https://www.limaconsulting.com",ok:0},
+{a:"estagio",co:"Avanti",t:"Estágio em CRO (dados de experiência do usuário)",w:"Comércio digital",d:"30/09/2026",u:"https://to.indeed.com/aaskg47xwmh2",s:"https://penseavanti.com.br",ok:1},
+{a:"estagio",co:"Monks",t:"Estágio em CRO",w:"Meio período",d:"08/10/2026",u:"https://to.indeed.com/aaqmzll8mv8z",s:"https://www.monks.com",ok:1,cl:"Página de carreiras",cu:"https://www.monks.com/careers"},
+{a:"estagio",co:"CCEE",t:"Estágio em Governança de TI",w:"Vaga afirmativa para pessoas pretas e pardas, LGBTIA+, PCD e gerações",d:"21/10/2026",u:"https://to.indeed.com/aarlcwd2nc2d",s:"https://www.ccee.org.br",ok:1},
+{a:"ops",co:"BIP",t:"Assistente de Processos Logísticos",w:"Processos e controles",d:"08/10/2026",u:"https://to.indeed.com/aallmszj8mcp",s:"https://www.bip-group.com",ok:1},
+{a:"ops",co:"AlmapBBDO",t:"Assistente de Planejamento",w:"Agência de publicidade",d:"14/10/2026",u:"https://to.indeed.com/aa2x2d9ckrjm",s:"https://www.almapbbdo.com.br",ok:1},
+{a:"ops",co:"The Great Schools Platform",t:"Assistente Financeiro",w:"Financeiro",d:"10/10/2026",u:"https://to.indeed.com/aaskth8yprr7",s:null,ok:0},
+{a:"ops",co:"Teltec Solutions",t:"Assistente Jurídico e Gestão de Contratos",w:"Controle de contratos",d:"14/10/2026",u:"https://to.indeed.com/aaz7pgmkgdbk",s:"https://www.teltecsolutions.com.br",ok:0},
+{a:"ops",co:"Fretadão",t:"Assistente Fiscal I",w:"Emissão e controle de notas, que você já fez na Bom Jesus",d:"16/10/2026",u:"https://to.indeed.com/aalkp2nxcqrm",s:"https://www.fretadao.com.br",ok:1},
+{a:"ops",co:"Acacia RH",t:"Assistente Administrativo – Home Office",w:"PJ, horário comercial; data e salário pouco claros",d:"não confirmada",u:"https://vagasremotas.com.br/vagas-administrativo-remoto-home-office/",s:null,ok:0},
+{a:"cs",co:"Contabilizei",t:"Assistente de Atendimento",w:"Atendimento ao cliente",d:"19/10/2026",u:"https://to.indeed.com/aak4zgsvpw94",s:"https://www.contabilizei.com.br",ok:1},
+{a:"cs",co:"Arco Educação",t:"Analista de Atendimento (temporário, 4 meses)",w:"Pacote Office; Zendesk é diferencial",d:"outubro de 2026",u:"https://job-boards.greenhouse.io/arcoeducacao/jobs/6118909004",s:"https://www.arcoeducacao.com.br",ok:1,cl:"Página de vagas no Greenhouse",cu:"https://job-boards.greenhouse.io/arcoeducacao"},
+{a:"cs",co:"Empresa de transporte (via Grupo de Vagas)",t:"Analista de Suporte Operacional (4 meses, pode efetivar)",w:"CLT, turno das 14h às 20h, escala 6x1",d:"12/10/2026",u:"https://www.grupodevagas.com.br/2026/10/analista-de-suporte-operacional-prazo.html",s:null,ok:0},
+{a:"cs",co:"Kartado Tecnologia",t:"Analista de Suporte N1",w:"Superior incompleto e Excel intermediário; computador próprio",d:"01/09/2026",u:"https://www.geekhunter.com/pt/kartado/jobs/analista-de-suporte-n1-4",s:"https://www.kartado.com.br",ok:0,cl:"Página de vagas na GeekHunter",cu:"https://www.geekhunter.com/pt/kartado"},
+{a:"cs",co:"TOTVS",t:"Analista de Suporte Técnico Jr – Protheus",w:"Turno noturno",d:"14/10/2026",u:"https://to.indeed.com/aantsddt6fyw",s:"https://www.totvs.com",ok:1},
+{a:"cs",co:"Nomus",t:"Analista de Sucesso do Cliente",w:"Tempo integral",d:"15/10/2026",u:"https://to.indeed.com/aalfxgpqqnpt",s:"https://www.nomus.com.br",ok:1,cl:"Página de carreiras citada pela empresa",cu:"https://www.nomus.com.br/carreiras"},
+{a:"cs",co:"Knewin",t:"Analista de Customer Success Júnior",w:"Atendimento a clientes",d:"09/10/2026",u:"https://to.indeed.com/aamfy9pcdyfn",s:"https://www.knewin.com",ok:0},
+{a:"cs",co:"Animati",t:"Analista de Implantação Júnior",w:"Implantação de sistemas",d:"06/10/2026",u:"https://to.indeed.com/aazbqjy8lp8n",s:"https://www.animati.com.br",ok:0},
+{a:"cs",co:"Quality Digital",t:"Analista de Qualidade de Software (QA) Júnior",w:"Inscrições até 06/12/2026 pela Gupy",d:"09/10/2026",u:"https://to.indeed.com/aazpjgpq2p4c",s:"https://www.qualitydigital.global",ok:1,cl:"Página de vagas na Gupy",cu:"https://qualitydigital.gupy.io"}
 ];
 const A={dados:"Dados e BI",estagio:"Estágio",ops:"Administrativo e operações",cs:"Atendimento e suporte"};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let f="all";
-function render(){document.getElementById("rows").innerHTML=V.map((v,i)=>({v,i})).filter(({v})=>f==="all"||v.a===f).map(({v,i})=>`<tr><td class="n">${i+1}</td><td><b>${esc(v.co)}</b>${esc(v.t)}<br><span class="pill">${A[v.a]}</span>${v.m?`<br><span class="mail">Rascunho no seu Gmail: ${esc(v.m)}</span>`:""}</td><td>${esc(v.w)}</td><td class="src">${esc(v.d)}</td><td><a href="${esc(v.u)}" target="_blank" rel="noopener">Ver vaga</a></td></tr>`).join("");}
+const L=(u,t)=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`;
+function render(){document.getElementById("rows").innerHTML=V.map((v,i)=>({v,i})).filter(({v})=>f==="all"||v.a===f).map(({v,i})=>`<tr><td class="n">${i+1}</td><td><b>${esc(v.co)}</b>${esc(v.t)}<br><span class="pill">${A[v.a]}</span></td><td>${esc(v.w)}<br><span class="src">Publicada: ${esc(v.d)}</span></td><td>${v.s?L(v.s,v.s.replace(/^https?:\/\//,""))+(v.ok?"":`<span class="chk">confirme o endereço</span>`):`<span class="src">Não encontrei o site oficial</span>`}</td><td>${v.m?`<span class="mail">${esc(v.m)}</span><br><span class="src">Rascunho já está no seu Gmail</span>`:`<span class="src">Nenhum e-mail publicado</span>`}</td><td><div class="links">${L(v.u,"Anúncio da vaga")}${v.cu?L(v.cu,v.cl):""}</div></td></tr>`).join("");}
 document.querySelector(".filters").addEventListener("click",e=>{const b=e.target.closest("button[data-f]");if(!b)return;f=b.dataset.f;document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));render();});
 render();
 </script>
