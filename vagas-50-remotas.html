@@ -1,0 +1,166 @@
+<title>50 Vagas Remotas em Dados</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: título + resumo por região, filtros em chips, tabela única com rolagem horizontal própria */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#162231; --muted:#56657a; --line:#d8dfe8;
+  --accent:#0d6a8a; --accent-soft:#dcedf3; --ok:#2c6b3f; --ok-soft:#dff1e4; --warn:#8a5a00; --warn-soft:#fbefd5; --bad:#9b2c2c; --bad-soft:#f8e1e1;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --accent-soft:#163543; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; --bad:#f19b9b; --bad-soft:#3d1c1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#17202a; --fg:#e4ebf2; --muted:#9db0c4; --line:#2a3644;
+  --accent:#6cc4e3; --accent-soft:#163543; --ok:#8fd6a5; --ok-soft:#173322; --warn:#f0c46a; --warn-soft:#3a2e14; --bad:#f19b9b; --bad-soft:#3d1c1c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 48px;display:grid;gap:20px}
+h1{font-family:var(--display);font-size:clamp(26px,4.5vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:75ch;margin:8px 0 0}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:14px;max-width:90ch;display:grid;gap:6px}
+.note strong{color:var(--warn)}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+.stat b{font-family:var(--display);font-size:20px;margin-right:6px;font-variant-numeric:tabular-nums}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.filters button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.filters label{font-size:14px;display:flex;gap:6px;align-items:center;margin-left:auto}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:980px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);position:sticky;top:0;background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td.n{color:var(--muted);font-variant-numeric:tabular-nums}
+td b{display:block}
+.pay{font-variant-numeric:tabular-nums;white-space:nowrap}
+.usd{color:var(--muted);font-size:12.5px;display:block}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;margin:2px 0}
+.p-br{background:var(--ok-soft);color:var(--ok)}.p-us{background:var(--accent-soft);color:var(--fg)}.p-uk{background:var(--accent-soft);color:var(--fg)}.p-chk{background:var(--warn-soft);color:var(--warn)}
+.warn{display:block;color:var(--bad);font-size:12.5px;margin-top:4px}
+.links{display:flex;flex-direction:column;gap:4px;white-space:nowrap}
+a{color:var(--accent);font-weight:700}
+.src{color:var(--muted);font-size:12.5px}
+tr.done td{opacity:.55}
+footer{color:var(--muted);font-size:13px;max-width:90ch;display:grid;gap:6px}
+</style>
+<div class="wrap">
+  <header>
+    <h1>50 vagas remotas em dados</h1>
+    <p class="lede">Vagas de nível júnior e de entrada em análise de dados, BI e análise de negócios, todas remotas e pagando, no mínimo, cerca de US$ 40 mil por ano (ou o equivalente em libra). Levantamento de 29 de outubro de 2026.</p>
+  </header>
+  <div class="note">
+    <div><strong>Sobre o LinkedIn:</strong> o ambiente onde trabalho bloqueia o site do LinkedIn e não tenho acesso à sua conta. Usei as vagas públicas do LinkedIn que aparecem em buscas e completei com Indeed, Himalayas, Remotive, Greenhouse, Lever e Ashby. Cada vaga tem um botão "Buscar no LinkedIn", que abre a mesma vaga na busca do LinkedIn, já logada na sua conta.</div>
+    <div><strong>Onde você pode se candidatar:</strong> só as vagas marcadas em verde aceitam quem mora no Brasil ou na América Latina. As marcadas "Confirmar" não dizem de quais países aceitam. As outras pedem que a pessoa more nos EUA ou no Reino Unido.</div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="filters" role="group" aria-label="Filtrar vagas">
+    <button type="button" data-f="all" aria-pressed="true">Todas</button>
+    <button type="button" data-f="br" aria-pressed="false">Aceita Brasil / América Latina</button>
+    <button type="button" data-f="chk" aria-pressed="false">Confirmar país</button>
+    <button type="button" data-f="us" aria-pressed="false">Só EUA</button>
+    <button type="button" data-f="uk" aria-pressed="false">Só Reino Unido</button>
+    <label><input type="checkbox" id="hideDone"> Esconder as que já me candidatei</label>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Empresa e vaga</th><th>Salário</th><th>Quem pode se candidatar</th><th>Fonte</th><th>Links</th><th>Me candidatei</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <footer>
+    <div>Valores em libra convertidos a cerca de US$ 1,33 por libra. Salários por hora convertidos considerando 2.080 horas por ano. Salários por mês multiplicados por 12. Os valores marcados "estimado" vêm do próprio site de vagas, não do anúncio.</div>
+    <div>Algumas vagas vieram de páginas que podem estar desatualizadas. Antes de se candidatar, confira no link se a vaga ainda está aberta. A marcação "Me candidatei" fica salva só neste navegador.</div>
+  </footer>
+</div>
+<script>
+// r: br = aceita Brasil/LATAM, chk = país não informado, us = só EUA, uk = só Reino Unido
+const V=[
+{co:"Stefanini",t:"Junior Data Analyst (PJ)",s:"US$ 3.500 – 4.500/mês",u:"≈ US$ 42 – 54 mil/ano",r:"br",w:"Brasil, Colômbia, México ou Argentina",src:"Remote Rocketship",d:"data não confirmada",url:"https://www.remoterocketship.com/country/latin-america/jobs/junior-data-analyst/"},
+{co:"Community Tax",t:"Business Intelligence and Marketing Data Analyst",s:"US$ 3.000 – 5.000/mês",u:"≈ US$ 36 – 60 mil/ano",r:"br",w:"Só América Latina",src:"Remote.com",d:"data não confirmada",url:"https://remote.com/jobs/all?page=186"},
+{co:"PadSplit",t:"MarTech Analyst (LATAM)",s:"US$ 55.000 – 64.000/ano",u:"",r:"br",w:"Só América Latina",src:"Remote.com",d:"data não confirmada",url:"https://remote.com/jobs/all?page=186"},
+{co:"Hey Support",t:"Data Analyst",s:"US$ 5.000 – 7.500/mês",u:"≈ US$ 60 – 90 mil/ano",r:"br",w:"Brasil está entre os países aceitos. O nível não é informado e pode exigir mais experiência",src:"Torre",d:"data não confirmada",url:"https://torre.ai/careers/HeySupport"},
+{co:"Careerswift",t:"Junior Data Analyst",s:"US$ 55.000 – 70.000/ano",u:"",r:"chk",w:"Remoto; o anúncio não diz os países",src:"Ashby",d:"09/09/2026",url:"https://jobs.ashbyhq.com/careerswift.ai/cdbf8d52-a9ea-44f8-bdf8-3880df97faf7",seen:"Já tem rascunho no seu Gmail"},
+{co:"Careerswift",t:"Data Analyst (júnior ou pleno)",s:"US$ 65.000 – 100.000/ano",u:"",r:"chk",w:"Remoto; o anúncio não diz os países",src:"Ashby",d:"data não confirmada",url:"https://jobs.ashbyhq.com/careerswift.ai/a3265022-3e44-4d64-bda3-537be8ab0dd9"},
+{co:"Careerswift",t:"Business Analyst (júnior ou pleno)",s:"US$ 65.000 – 95.000/ano",u:"",r:"chk",w:"Remoto; pede 1 a 3 anos de experiência",src:"Ashby",d:"data não confirmada",url:"https://jobs.ashbyhq.com/careerswift.ai/da4ff24a-e499-406b-9620-94b7743c9e89"},
+{co:"Careerswift / CerebriOS",t:"Business Analyst (júnior ou pleno)",s:"US$ 70.000 – 95.000/ano",u:"",r:"chk",w:"Remoto; pede pelo menos 1 ano de experiência",src:"Ashby",d:"data não confirmada",url:"https://jobs.ashbyhq.com/careerswift.ai/fdc944f8-e798-451c-8fe7-7579620dcf24"},
+{co:"Step Up For Students",t:"Analyst, Business Data (Remote)",s:"US$ 54.825 – 73.100/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"27/10/2026",url:"https://to.indeed.com/aaj7dnxnv2fw"},
+{co:"Step Up For Students",t:"Analyst, Business (Remote)",s:"US$ 60.375 – 80.500/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"27/10/2026",url:"https://to.indeed.com/aah69hhggf2k"},
+{co:"Goldbelt",t:"Data Analyst I",s:"US$ 80.000 – 90.000/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"08/09/2026",url:"https://to.indeed.com/aagdtyxhywnh"},
+{co:"arrivia",t:"Remote Fabric Data Analyst",s:"US$ 49.753 – 86.104/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"29/09/2026",url:"https://to.indeed.com/aartwbthvy8m"},
+{co:"Maximus",t:"Analyst – Reporting (Remote)",s:"US$ 44.800 – 69.400/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"27/10/2026",url:"https://to.indeed.com/aa4nsgdnkkpq",seen:"Já tem rascunho no seu Gmail"},
+{co:"Maximus",t:"Jr. IV&V Analyst",s:"US$ 50.000 – 65.000/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"13/10/2026",url:"https://to.indeed.com/aaxynbjkj28h"},
+{co:"Public Consulting Group",t:"Business Analyst (Remote)",s:"US$ 56.200 – 69.900/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"21/10/2026",url:"https://to.indeed.com/aab4hf6cvpdr"},
+{co:"MongoDB",t:"Entry-Level Data Analyst",s:"US$ 70.000 – 80.000/ano",u:"",r:"us",w:"Só EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote/jobs/data/entry-level-data-analyst-4258871"},
+{co:"Microflexinfra",t:"Junior Business Analyst",s:"US$ 68.000 – 75.000/ano",u:"",r:"us",w:"EUA",src:"SimplyHired",d:"outubro de 2026",url:"https://www.simplyhired.com/search?q=junior+business+analyst+microflexinfra"},
+{co:"HSAG",t:"Analyst I (Remote)",s:"US$ 70.000 – 75.000/ano",u:"",r:"us",w:"EUA",src:"Busca na web",d:"outubro de 2026",url:"https://www.google.com/search?q=HSAG+Analyst+I+remote+careers"},
+{co:"LMI",t:"Junior Power BI Developer",s:"US$ 77.000 – 110.000/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"02/10/2026",url:"https://to.indeed.com/aaxkrtkywps8",seen:"Já tem rascunho no seu Gmail"},
+{co:"Kaizen Analytix",t:"Jr. Business Analyst – Enterprise Data",s:"US$ 40 – 55/hora",u:"≈ US$ 83 – 114 mil/ano",r:"us",w:"EUA",src:"Indeed",d:"21/10/2026",url:"https://to.indeed.com/aaltyxqzlzjv",seen:"Já tem rascunho no seu Gmail"},
+{co:"Systems Planning and Analysis (SPA)",t:"Junior SAP Business Analyst",s:"US$ 89.000 – 113.000/ano",u:"",r:"us",w:"EUA. Usa SAP, que você já usou na Bom Jesus",src:"Indeed",d:"27/10/2026",url:"https://to.indeed.com/aarq6gv2njl6"},
+{co:"Calibrate",t:"Junior Data Analyst",s:"US$ 60.000 – 65.000/ano",u:"",r:"us",w:"Só EUA; aceita 0 a 2 anos de experiência. Inscrições até 04/11/2026",src:"Himalayas",d:"aberta",url:"https://himalayas.app/companies/calibrate/jobs/junior-data-analyst"},
+{co:"Recidiviz",t:"Data Analyst (Entry-Level)",s:"US$ 85.000/ano",u:"",r:"us",w:"EUA (remoto, Nova York ou Oakland)",src:"Greenhouse",d:"outubro de 2026",url:"https://job-boards.greenhouse.io/recidiviz/jobs/4717510006"},
+{co:"General Dynamics Information Technology (GDIT)",t:"Associate Data Analyst",s:"US$ 59.500 – 80.000/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote-jobs/o-associate-data-analyst"},
+{co:"Renaissance Learning",t:"Data Analyst I",s:"US$ 51.100 – 70.000/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote-jobs/o-associate-data-analyst"},
+{co:"EMC Insurance",t:"Statistical Analyst I",s:"US$ 47.000 – 65.000/ano",u:"",r:"us",w:"EUA",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/emc-insurance-companies/jobs/statistical-analyst-i"},
+{co:"First Advantage",t:"Strategic Customer Success Data Analyst",s:"US$ 55.000 – 70.000/ano",u:"",r:"us",w:"EUA",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/first-advantage/jobs/strategic-customer-success-data-analyst"},
+{co:"Wealth Enhancement Group",t:"Data Analyst (nível pleno)",s:"US$ 70.000 – 80.000/ano",u:"",r:"us",w:"EUA; pede mais experiência que júnior",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/wealth-enhancement/jobs/data-analyst"},
+{co:"Astrana Health",t:"Business Data Analyst (nível pleno)",s:"US$ 72.000 – 84.000/ano",u:"",r:"us",w:"EUA; pede mais experiência que júnior",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/astrana-health/jobs/business-data-analyst"},
+{co:"Coders Data",t:"Junior Data Analyst",s:"US$ 60.000 – 80.000/ano",u:"",r:"us",w:"EUA",src:"LinkedIn",d:"data não confirmada",url:"https://www.linkedin.com/jobs/view/junior-data-analyst-at-coders-data-3875346105"},
+{co:"Blue Water Thinking",t:"Jr. Data Analyst",s:"US$ 70.000 – 100.000/ano",u:"",r:"us",w:"EUA; exige liberação de segurança federal (Public Trust)",src:"Greenhouse",d:"data não confirmada",url:"https://job-boards.greenhouse.io/bluewaterthinking/jobs/4715460006"},
+{co:"TSTC (Totalsys Tech)",t:"Junior Data Analyst",s:"US$ 50.000 – 75.000/ano",u:"",r:"us",w:"Morar a até 200 milhas de Washington DC",src:"Lever",d:"29/04/2026",url:"https://jobs.lever.co/totalsystech/e96d1334-8c05-443a-a866-1c9b00bc9638"},
+{co:"Dane Street",t:"Junior Business Intelligence Analyst",s:"US$ 40.000 – 60.000/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote/jobs/data/junior-business-intelligence-analyst-5529066"},
+{co:"University of Arizona Global Campus",t:"Data Analyst, Level I",s:"US$ 53.039 – 66.299/ano",u:"",r:"us",w:"EUA",src:"Remotive",d:"data não confirmada",url:"https://remotive.com/remote/jobs/data/data-analyst-level-i-5427657"},
+{co:"Peraton",t:"Junior Business Analyst (Data & Integration)",s:"US$ 51.000 – 82.000/ano",u:"",r:"us",w:"EUA",src:"Himalayas",d:"21/10/2026",url:"https://himalayas.app/companies/peraton/jobs/junior-business-analyst-data-integration-213420654"},
+{co:"Peraton",t:"Junior Business Analyst – Fish & Wildlife",s:"US$ 51.000 – 82.000/ano",u:"",r:"us",w:"Só cidadãos dos EUA",src:"Himalayas",d:"data não confirmada",url:"https://himalayas.app/companies/peraton/jobs/junior-business-analyst-fish-wildlife-ecological-services"},
+{co:"SOSi",t:"Jr. Geospatial Research Analyst",s:"US$ 49.218 – 102.223/ano",u:"",r:"us",w:"EUA",src:"Indeed",d:"18/03/2026",url:"https://to.indeed.com/aahyk2nf778p"},
+{co:"Decisive Point Consulting",t:"Junior Data Analyst",s:"US$ 25 – 28/hora",u:"≈ US$ 52 – 58 mil/ano",r:"us",w:"Só EUA",src:"Remotive",d:"cerca de 6 meses",url:"https://remotive.com/remote/jobs/data/junior-data-analyst-4574854"},
+{co:"pureIntegration",t:"Junior Data Analyst (contrato de 6 a 9 meses)",s:"US$ 30 – 40/hora",u:"≈ US$ 62 – 83 mil/ano",r:"us",w:"Só EUA (contrato W-2)",src:"Remotive",d:"cerca de 7 meses",url:"https://remotive.com/remote/jobs/data/junior-data-analyst-4285075"},
+{co:"Nova Infotek",t:"Junior Data Analyst",s:"US$ 45.000 – 65.000/ano (estimado)",u:"",r:"us",w:"EUA",src:"Remote IT Jobs",d:"outubro de 2026",url:"https://www.remoteitjobs.app/job/nova-infotek-junior-data-analyst"},
+{co:"ADF Medical",t:"Data Analyst (nível de entrada)",s:"US$ 45.000 – 65.000/ano (estimado)",u:"",r:"us",w:"EUA",src:"Remote-Work.app",d:"outubro de 2026",url:"https://www.remote-work.app/job/adf-medical-data-analyst-part-time"},
+{co:"Upgrade",t:"Junior Business & Data Analyst",s:"US$ 75.000 – 95.000/ano",u:"",r:"us",w:"Só EUA; pede 2 anos de experiência. O prazo era 31/08/2026, então pode ter fechado",src:"Himalayas",d:"julho de 2026",url:"https://himalayas.app/companies/upgrade/jobs/junior-business-data-analyst"},
+{co:"Patterned Learning Career",t:"Junior Data Analyst",s:"US$ 65.000 – 75.000/ano",u:"",r:"us",w:"EUA; exige autorização de trabalho",src:"LinkedIn",d:"data não confirmada",url:"https://www.linkedin.com/jobs/view/junior-data-analyst-at-patterned-learning-career-3818289816",risk:"Cuidado: empresa que anuncia vagas ligadas a programas de treinamento. Nunca pague nada para ser contratada."},
+{co:"SynergisticIT",t:"Junior Data Analyst / Java Developer",s:"US$ 78.000 – 120.000/ano",u:"",r:"us",w:"EUA",src:"LinkedIn",d:"data não confirmada",url:"https://www.linkedin.com/jobs/view/junior-data-analyst-java-developer-remote-at-synergisticit-3793880324",risk:"Cuidado: empresa conhecida por exigir um programa de treinamento pago antes de colocar a pessoa numa vaga."},
+{co:"Fanatics",t:"Data Analyst I",s:"£41.800 – 52.800/ano",u:"≈ US$ 56 – 70 mil/ano",r:"uk",w:"Reino Unido",src:"Remote Rocketship",d:"data não confirmada",url:"https://www.remoterocketship.com/gb/jobs/junior-data-analyst/"},
+{co:"Tenth Revolution Group",t:"Junior Power BI Consultant",s:"£30.000 – 35.000/ano",u:"≈ US$ 40 – 47 mil/ano",r:"uk",w:"Reino Unido",src:"ITJobsWatch",d:"outubro de 2026",url:"https://www.itjobswatch.co.uk/jv/Tenth-Revolution-Group/Junior-Power-Bi-Consultant-Job-Birmingham-West-Midlands-West-Midlands-County-UK-4sgype?jr=8n6-mav-0",seen:"Já tem rascunho no seu Gmail"},
+{co:"Datasource",t:"Junior Power BI Data Analyst",s:"£30.000 – 35.000/ano",u:"≈ US$ 40 – 47 mil/ano",r:"uk",w:"Exige morar no Reino Unido há pelo menos 5 anos",src:"Busca na web",d:"outubro de 2026",url:"https://www.google.com/search?q=Datasource+%22Junior+Power+BI+Data+Analyst%22+remote"},
+{co:"Qualify Nation Recruitment",t:"Junior Data Analyst (várias vagas)",s:"£28.000 – 38.000/ano",u:"≈ US$ 37 – 51 mil/ano",r:"uk",w:"Reino Unido",src:"Reed",d:"data não confirmada",url:"https://www.reed.co.uk/jobs/work-from-home-junior-data-analyst-jobs"},
+{co:"Money Expert",t:"Junior Data Analyst",s:"£30.000/ano",u:"≈ US$ 40 mil/ano",r:"uk",w:"Reino Unido; o texto cita trabalho híbrido em Chester",src:"CV-Library",d:"08/06/2026",url:"https://www.cv-library.co.uk/remote-junior-data-analyst-jobs"},
+{co:"Uptrail",t:"Trainee AI Data Analyst",s:"£27.000 – 35.000/ano",u:"≈ US$ 36 – 47 mil/ano",r:"uk",w:"Reino Unido",src:"ITJobsWatch",d:"outubro de 2026",url:"https://www.itjobswatch.co.uk/search?q=Data+Analyst&r=1&s=date&start=0"}
+];
+const R={br:["p-br","Aceita Brasil / América Latina"],chk:["p-chk","Confirmar país"],us:["p-us","Só EUA"],uk:["p-uk","Só Reino Unido"]};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KEY="vagas50-candidatei";
+let done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){done={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+const id=v=>v.co+"|"+v.t;
+let f="all";
+const li=v=>"https://www.linkedin.com/jobs/search/?f_WT=2&keywords="+encodeURIComponent(v.t.replace(/\(.*?\)/g,"")+" "+v.co.split(" / ")[0]);
+function stats(){
+  const c=k=>V.filter(v=>v.r===k).length;
+  document.getElementById("stats").innerHTML=
+    `<span class="stat"><b>${V.length}</b>vagas</span><span class="stat"><b>${c("br")}</b>aceitam Brasil / América Latina</span><span class="stat"><b>${c("chk")}</b>país a confirmar</span><span class="stat"><b>${c("us")}</b>só EUA</span><span class="stat"><b>${c("uk")}</b>só Reino Unido</span><span class="stat"><b>${Object.keys(done).length}</b>marcadas como candidatei</span>`;
+}
+function render(){
+  const hide=document.getElementById("hideDone").checked;
+  document.getElementById("rows").innerHTML=V.map((v,i)=>({v,i})).filter(({v})=>(f==="all"||v.r===f)&&!(hide&&done[id(v)])).map(({v,i})=>`<tr class="${done[id(v)]?"done":""}">
+    <td class="n">${i+1}</td>
+    <td><b>${esc(v.co)}</b>${esc(v.t)}${v.seen?`<span class="src"><br>${esc(v.seen)}</span>`:""}${v.risk?`<span class="warn">${esc(v.risk)}</span>`:""}</td>
+    <td class="pay">${esc(v.s)}${v.u?`<span class="usd">${esc(v.u)}</span>`:""}</td>
+    <td><span class="pill ${R[v.r][0]}">${R[v.r][1]}</span><br>${esc(v.w)}</td>
+    <td class="src">${esc(v.src)}<br>${esc(v.d)}</td>
+    <td><div class="links"><a href="${esc(v.url)}" target="_blank" rel="noopener">Ver vaga</a><a href="${esc(li(v))}" target="_blank" rel="noopener">Buscar no LinkedIn</a></div></td>
+    <td><input type="checkbox" id="c${i}" aria-label="Me candidatei: ${esc(v.co)}" ${done[id(v)]?"checked":""} data-i="${i}"></td>
+  </tr>`).join("");
+  stats();
+}
+document.querySelector(".filters").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-f]");if(!b)return;
+  f=b.dataset.f;document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));render();
+});
+document.getElementById("hideDone").addEventListener("change",render);
+document.getElementById("rows").addEventListener("change",e=>{
+  const i=e.target.dataset.i;if(i===undefined)return;const k=id(V[i]);
+  if(e.target.checked)done[k]=1;else delete done[k];save();render();
+});
+render();
+</script>
