@@ -81,3 +81,97 @@ footer{color:var(--muted);font-size:13px;max-width:85ch}
 
   <footer>Os e-mails usados são os publicados pelas empresas; nenhum foi adivinhado. Os rascunhos não têm links no texto (o Gmail troca links por endereços que expiram); o LinkedIn vai no currículo anexado.</footer>
 </div>
+<style>
+/* Marcação "Já enviei": coluna de caixa de seleção em cada tabela, barra com contagem e opção de esconder */
+.mk-bar{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+.mk-bar b{font-variant-numeric:tabular-nums}
+.mk-bar label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.mk-bar .mk-st{color:var(--muted);font-size:13px}
+th.mk-col{width:1%;white-space:nowrap}
+td.mk-cell{width:1%;white-space:nowrap}
+td.mk-cell label{display:inline-flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:12px;color:var(--muted);min-width:44px}
+td.mk-cell input,.mk-bar input{width:20px;height:20px;accent-color:var(--accent);margin:0;cursor:pointer}
+td.mk-cell input:focus-visible,.mk-bar input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+tr.mk-on td:not(.mk-cell){opacity:.5}
+tr.mk-on td.mk-cell label{color:var(--accent);font-weight:700}
+body.mk-hide tr.mk-on{display:none}
+</style>
+<script>
+(()=>{
+  const LS="marcas-enviei:"+location.pathname;
+  let marks={};try{marks=JSON.parse(localStorage.getItem(LS)||"{}")||{}}catch(e){marks={}}
+  const cache=()=>{try{localStorage.setItem(LS,JSON.stringify(marks))}catch(e){}};
+  let ref=null,queue=Promise.resolve(),mode="local";
+  const hash=s=>{let h=5381;for(const c of s)h=(h*33^c.codePointAt(0))>>>0;return "v"+h.toString(36)};
+  const fmt=d=>d?d.slice(8,10)+"/"+d.slice(5,7):"";
+  const tables=[...document.querySelectorAll("table")].filter(t=>t.tBodies.length);
+  if(!tables.length)return;
+
+  const bar=document.createElement("div");bar.className="mk-bar";
+  bar.innerHTML='<span><b id="mk-n">0</b> de <b id="mk-t">0</b> vagas marcadas como enviadas</span><label><input type="checkbox" id="mk-hide"> Esconder as que já enviei</label><span class="mk-st" id="mk-st">Marcações salvas neste navegador</span>';
+  const first=tables[0].closest(".tbl")||tables[0];
+  first.parentNode.insertBefore(bar,first);
+  bar.querySelector("#mk-hide").addEventListener("change",e=>document.body.classList.toggle("mk-hide",e.target.checked));
+
+  const keyOf=tr=>{const td=[...tr.cells].find(c=>c.querySelector("b"));return td?hash(td.textContent.replace(/\s+/g," ").trim()):null};
+  function paint(tr){
+    const k=tr.dataset.mk,on=!!marks[k],cb=tr.querySelector(".mk-cell input"),tx=tr.querySelector(".mk-cell span");
+    tr.classList.toggle("mk-on",on);if(cb)cb.checked=on;if(tx)tx.textContent=on?"Enviei "+fmt(marks[k]):"Enviei";
+  }
+  function count(){
+    const rows=[...document.querySelectorAll("tr[data-mk]")];
+    document.getElementById("mk-t").textContent=rows.length;
+    document.getElementById("mk-n").textContent=rows.filter(r=>marks[r.dataset.mk]).length;
+  }
+  function decorate(){
+    for(const t of tables){
+      for(const r of t.tHead?t.tHead.rows:[])if(!r.querySelector(".mk-col")){const th=document.createElement("th");th.className="mk-col";th.textContent="Enviei";r.insertBefore(th,r.firstChild)}
+      for(const b of t.tBodies)for(const tr of b.rows){
+        if(tr.querySelector(".mk-cell"))continue;
+        const k=keyOf(tr);if(!k)continue;
+        tr.dataset.mk=k;
+        const td=document.createElement("td");td.className="mk-cell";
+        const name=(tr.querySelector("b")||{}).textContent||"esta vaga";
+        td.innerHTML='<label><input type="checkbox"><span>Enviei</span></label>';
+        td.querySelector("input").setAttribute("aria-label","Já enviei para "+name);
+        tr.insertBefore(td,tr.firstChild);paint(tr);
+      }
+    }
+    count();
+  }
+  function repaint(){document.querySelectorAll("tr[data-mk]").forEach(paint);count()}
+  function persist(){
+    cache();if(!ref)return;
+    const snap={...marks};
+    queue=queue.then(()=>ref.set({marcas:snap})).catch(()=>{document.getElementById("mk-st").textContent="Não consegui salvar na sua conta agora; ficou salvo neste navegador"});
+  }
+  document.addEventListener("change",e=>{
+    const cb=e.target.closest(".mk-cell input");if(!cb)return;
+    const tr=cb.closest("tr"),k=tr.dataset.mk;
+    if(cb.checked)marks[k]=new Date().toISOString().slice(0,10);else delete marks[k];
+    document.querySelectorAll('tr[data-mk="'+k+'"]').forEach(paint);count();persist();
+  });
+  decorate();
+  for(const t of tables)for(const b of t.tBodies)new MutationObserver(decorate).observe(b,{childList:true});
+
+  (async()=>{
+    try{
+      if(!window.claude||!claude.use)return;
+      const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+      const uid=user&&await user.id();
+      if(!db||!uid)return;
+      ref=db.doc("data/users/"+uid+"/marcas");
+      let firstSnap=true;
+      ref.onSnapshot(s=>{
+        const remote=s.exists?(s.data().marcas||{}):{};
+        if(firstSnap){firstSnap=false;
+          const merged={...remote,...marks};
+          if(Object.keys(merged).length!==Object.keys(remote).length){marks=merged;repaint();persist()}
+          else{marks={...remote};cache();repaint()}
+        }else if(!s.metadata.hasPendingWrites){marks={...remote};cache();repaint()}
+        document.getElementById("mk-st").textContent="Marcações salvas na sua conta (aparecem em qualquer aparelho)";
+      },()=>{ref=null});
+    }catch(e){}
+  })();
+})();
+</script>
