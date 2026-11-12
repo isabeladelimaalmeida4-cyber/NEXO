@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Base de Empresas · NEXO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f2ee;--paper:#fff;--paper2:#f1eee8;--ink:#17201b;--muted:#69716c;--line:#e3dfd6;
+  --brand:#1d4d3a;--brand-ink:#1d4d3a;--brand-soft:#e2ede6;--accent:#e0663f;--accent-h:#c9552f;--accent-soft:#fbe7de;
+  --gold:#b98710;--gold-soft:#fbf1d6;--wa:#1fa855;--wa-h:#178f47;--danger:#b93b3b;
+  --btn:#17201b;--btn-fg:#fff;--radius:14px;--shadow:0 1px 2px rgba(23,32,27,.05),0 8px 26px rgba(23,32,27,.07);
+}
+[data-theme=dark]{
+  --bg:#101512;--paper:#171e1a;--paper2:#1f2823;--ink:#e9efeb;--muted:#93a198;--line:#29332d;
+  --brand:#2f7a57;--brand-ink:#8fd6b0;--brand-soft:#1c3026;--accent:#ea7550;--accent-h:#f2875f;--accent-soft:#3a241b;
+  --gold:#f0c05a;--gold-soft:#3a3016;--btn:#e9efeb;--btn-fg:#101512;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit}
+.hidden{display:none!important}
+.mono{font-family:'DM Mono',monospace}
+.muted{color:var(--muted)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:32px;width:100%;max-width:400px;display:grid;gap:14px}
+.login-card h1{font-family:'Fraunces',serif;font-size:1.8rem;line-height:1.1}
+.login-card p{color:var(--muted);font-size:.92rem}
+.err{color:var(--danger);font-size:.88rem;min-height:1.2em}
+
+/* header */
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:18px;height:60px}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo i{width:11px;height:11px;border-radius:3px;background:var(--accent);transform:rotate(45deg)}
+.logo small{font-family:'DM Mono',monospace;font-size:.62rem;padding:2px 6px;border-radius:5px;background:var(--btn);color:var(--btn-fg)}
+.tabs{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{padding:8px 13px;border-radius:10px;text-decoration:none;font-weight:500;font-size:.92rem;color:var(--muted);white-space:nowrap}
+.tabs a.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.icon-btn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--paper);flex-shrink:0}
+
+/* comum */
+main{padding:24px 0 60px}
+h2.t{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.02em;line-height:1.1}
+.sub{color:var(--muted);margin-top:4px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:18px}
+.btn-accent{background:var(--accent);color:#fff;font-weight:700;padding:11px 20px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-accent:hover:not(:disabled){background:var(--accent-h)}
+.btn-dark{background:var(--btn);color:var(--btn-fg);font-weight:500;padding:9px 14px;border-radius:11px;font-size:.88rem;display:inline-flex;align-items:center;gap:6px}
+.btn-line{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--paper);padding:8px 12px;border-radius:11px;font-weight:500;font-size:.86rem;white-space:nowrap}
+.btn-line:hover{border-color:var(--ink)}
+.link{color:var(--accent);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.inp{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);outline:none;font-size:.92rem}
+.inp:focus{border-color:var(--brand)}
+.lbl{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;background:var(--paper2);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;min-width:0;padding:7px 4px;border-radius:8px;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 5px 4px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand-ink);font-size:.8rem;font-weight:500;max-width:100%}
+.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip button{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.9rem;opacity:.7;flex-shrink:0}
+.chip button:hover{opacity:1;background:rgba(0,0,0,.08)}
+.toggle{display:flex;align-items:center;gap:9px;font-size:.88rem;cursor:pointer;padding:3px 0}
+.switch{position:relative;width:34px;height:20px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--line);border-radius:999px;transition:.2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:var(--brand)}
+.switch input:checked+.slider:before{transform:translateX(14px)}
+.hint{font-size:.8rem;color:var(--muted)}
+.note{background:var(--gold-soft);color:var(--gold);border-radius:12px;padding:10px 12px;font-size:.84rem}
+.banner{border-radius:12px;padding:12px 14px;font-size:.9rem;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.banner.err{background:#fbe2e2;color:var(--danger)}
+.banner.ok{background:var(--brand-soft);color:var(--brand-ink)}
+[data-theme=dark] .banner.err{background:#3a1d1d}
+.banner .x{margin-left:auto;opacity:.7;font-size:1.1rem}
+
+/* painel */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat b{display:block;font-family:'Fraunces',serif;font-size:2rem;line-height:1.05}
+.stat small{color:var(--muted);font-size:.82rem}
+.segs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.segc{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:4px;transition:.15s}
+.segc:hover{border-color:var(--brand);transform:translateY(-2px)}
+.segc .ic{font-size:1.4rem}
+.segc b{font-size:.92rem}
+.segc small{color:var(--muted);font-size:.76rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.ufbar{display:grid;grid-template-columns:34px 1fr 60px;gap:8px;align-items:center;font-size:.84rem;padding:3px 0}
+.ufbar .tr{height:8px;background:var(--paper2);border-radius:99px;overflow:hidden}
+.ufbar .tr i{display:block;height:100%;background:var(--brand);border-radius:99px}
+.hist{display:grid;gap:8px}
+.hist div{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;border-bottom:1px solid var(--line);padding-bottom:6px}
+
+/* busca */
+.layout{display:grid;grid-template-columns:300px 1fr;gap:20px;margin-top:18px;align-items:start}
+.filters{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow-y:auto;display:grid;gap:14px;scrollbar-width:thin}
+.fgroup{display:grid;gap:7px;min-width:0}
+.filters>*{min-width:0}
+.row2>*{min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.factions{display:grid;gap:8px;position:sticky;bottom:-18px;background:var(--paper);padding:12px 0 2px;border-top:1px solid var(--line)}
+.rtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.rtop .count{font-size:.95rem;color:var(--muted)}
+.rtop .count b{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--ink)}
+.rtools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rtools select{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-size:.85rem}
+.tbl-wrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;padding:11px 12px;border-bottom:1px solid var(--line);background:var(--paper2);position:sticky;top:0;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--paper2)}
+tbody tr{cursor:pointer}
+.c-name{font-weight:700;line-height:1.25}
+.c-sub{font-size:.78rem;color:var(--muted)}
+.tag{display:inline-block;font-size:.66rem;padding:1px 7px;border-radius:999px;font-weight:700;background:var(--paper2);color:var(--muted);margin-left:4px;vertical-align:middle}
+.tag.mei{background:var(--gold-soft);color:var(--gold)}
+.tag.new{background:var(--accent-soft);color:var(--accent)}
+.tel{white-space:nowrap;display:flex;flex-direction:column;gap:4px}
+.wa{display:inline-flex;align-items:center;gap:4px;background:var(--wa);color:#fff!important;font-weight:700;font-size:.74rem;padding:3px 9px;border-radius:999px;text-decoration:none;width:max-content}
+.wa:hover{background:var(--wa-h)}
+.pager{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:14px;font-size:.88rem}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty h4{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--ink);margin:6px 0}
+.prog{display:grid;gap:8px;margin-bottom:14px}
+.bar{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:99px;transition:width .3s}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.cards{display:none}
+
+/* modal / drawer */
+.ov{position:fixed;inset:0;background:rgba(10,15,12,.45);backdrop-filter:blur(3px);z-index:50;display:none}
+.ov.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--paper);z-index:51;transform:translateX(100%);transition:transform .28s ease;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.d-head{display:flex;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.d-head h3{font-family:'Fraunces',serif;font-size:1.25rem;line-height:1.15;flex:1}
+.d-head small{display:block;font-family:'DM Sans';font-size:.8rem;color:var(--muted);font-weight:400}
+.d-body{padding:16px 18px;overflow-y:auto;flex:1}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dl .full{grid-column:1/-1}
+.dl dt{font-size:.74rem;color:var(--muted)}
+.dl dd{font-weight:500;font-size:.92rem;word-break:break-word}
+.d-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100% - 20px));max-height:86vh;background:var(--paper);border-radius:20px;z-index:52;display:none;flex-direction:column;overflow:hidden}
+.modal.open{display:flex}
+.cn-item{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:9px;cursor:pointer;font-size:.9rem}
+.cn-item:hover{background:var(--paper2)}
+.cn-item input{accent-color:var(--brand);width:16px;height:16px;flex-shrink:0}
+.cn-item small{margin-left:auto;font-family:'DM Mono',monospace;color:var(--muted);font-size:.72rem}
+.cn-group h5{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 4px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,140px);background:var(--btn);color:var(--btn-fg);padding:12px 18px;border-radius:12px;font-size:.9rem;z-index:80;transition:transform .3s;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.bubble{background:#dcf8c6;color:#1b1b1b;border-radius:14px 14px 4px 14px;padding:12px 14px;font-size:.92rem;white-space:pre-wrap;word-break:break-word}
+
+@media (max-width:1000px){
+  .segs{grid-template-columns:repeat(3,1fr)}
+  .layout{grid-template-columns:1fr}
+  .filters{position:static;max-height:none}
+  .factions{position:static}
+}
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr}
+  .segs{grid-template-columns:repeat(2,1fr)}
+  .tbl-wrap{display:none}
+  .cards{display:grid;gap:10px}
+  .nav{gap:10px}
+  .logo small,.logo .lt{display:none}
+}
+.mcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:grid;gap:6px;cursor:pointer}
+.mcard .ln{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:.85rem}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginView">
+  <form class="login-card" id="loginForm">
+    <div class="logo"><i></i>Base de Empresas <small>NEXO</small></div>
+    <h1>Entrar</h1>
+    <p>Ferramenta interna de prospecção. Digite a senha de acesso definida no Supabase.</p>
+    <input class="inp" type="password" id="pass" placeholder="Senha de acesso" autocomplete="current-password" required>
+    <label class="toggle"><span class="switch"><input type="checkbox" id="remember" checked><span class="slider"></span></span>Lembrar neste aparelho</label>
+    <div class="err" id="loginErr"></div>
+    <button class="btn-accent" type="submit" id="loginBtn">Entrar</button>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+<header>
+  <div class="wrap nav">
+    <div class="logo"><i></i><span class="lt">Base de Empresas</span> <small>NEXO</small></div>
+    <nav class="tabs">
+      <a href="#painel" data-r="painel">Painel</a>
+      <a href="#buscar" data-r="buscar">Buscar</a>
+      <a href="#base" data-r="base">Minha base</a>
+      <a href="#ajustes" data-r="ajustes">Ajustes</a>
+    </nav>
+    <button class="icon-btn" data-act="theme" id="themeBtn" aria-label="Alternar tema"></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- PAINEL -->
+  <section id="v-painel" class="view">
+    <h2 class="t">Painel</h2>
+    <p class="sub">Tudo o que você já pesquisou fica salvo na sua base. Comece por um segmento ou faça uma busca.</p>
+    <div class="stats">
+      <div class="stat"><b id="sTotal">–</b><small>empresas na sua base</small></div>
+      <div class="stat"><b id="sTel">–</b><small>com telefone</small></div>
+      <div class="stat"><b id="sCel">–</b><small>com celular / WhatsApp</small></div>
+      <div class="stat"><b id="sUf">–</b><small>estados cobertos</small></div>
+    </div>
+    <h3 style="margin-top:26px;font-size:1rem">Buscar por segmento</h3>
+    <div class="segs" id="segs"></div>
+    <div class="two">
+      <div class="card"><h3 style="font-size:1rem;margin-bottom:10px">Base por estado</h3><div id="ufBars"></div></div>
+      <div class="card"><h3 style="font-size:1rem;margin-bottom:10px">Últimas buscas</h3><div class="hist" id="hist"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:1rem;margin-bottom:8px">Consultar um CNPJ</h3>
+      <form id="cnpjForm" style="display:flex;gap:8px;flex-wrap:wrap">
+        <input class="inp mono" id="cnpjIn" placeholder="00.000.000/0000-00" inputmode="numeric" style="max-width:260px">
+        <button class="btn-dark" type="submit">Consultar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- BUSCAR / BASE (mesma estrutura) -->
+  <section id="v-busca" class="view hidden">
+    <h2 class="t" id="bTitle">Buscar empresas</h2>
+    <p class="sub" id="bSub"></p>
+    <div class="layout">
+      <aside class="card filters" id="filters"></aside>
+      <div>
+        <div id="bBanner"></div>
+        <div class="prog hidden" id="prog">
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem;flex-wrap:wrap"><span id="progTxt"></span><button class="btn-line" data-act="stop">Parar</button></div>
+          <div class="bar"><i id="progBar" style="width:0"></i></div>
+        </div>
+        <div class="rtop">
+          <div class="count" id="count"></div>
+          <div class="rtools">
+            <select id="ordem" aria-label="Ordenar" class="hidden">
+              <option value="recentes">Adicionadas recentemente</option>
+              <option value="nome">Nome (A–Z)</option>
+              <option value="cidade">Estado e cidade</option>
+              <option value="abertura">Abertas mais recentemente</option>
+              <option value="antigas">Mais antigas</option>
+              <option value="capital">Maior capital social</option>
+            </select>
+            <button class="btn-line" data-act="export" data-f="xlsx">⬇ Excel</button>
+            <button class="btn-line" data-act="export" data-f="csv">CSV</button>
+            <button class="btn-line" data-act="export" data-f="json">JSON</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>Empresa</th><th>Atividade</th><th>Local</th><th>Contato</th><th>Abertura</th><th>Porte</th></tr></thead><tbody id="tbody"></tbody></table></div>
+        <div class="cards" id="mcards"></div>
+        <div class="pager hidden" id="pager"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AJUSTES -->
+  <section id="v-ajustes" class="view hidden">
+    <h2 class="t">Ajustes</h2>
+    <div class="two">
+      <div class="card" style="display:grid;gap:10px">
+        <h3 style="font-size:1rem">Mensagem do WhatsApp</h3>
+        <p class="hint">Usada no botão WhatsApp de cada empresa. Variáveis: <span class="mono">{empresa} {cidade} {uf} {atividade}</span></p>
+        <textarea class="inp" id="tpl" rows="8"></textarea>
+        <div class="bubble" id="tplPv"></div>
+      </div>
+      <div class="card" style="display:grid;gap:12px;align-content:start">
+        <h3 style="font-size:1rem">Sobre os dados</h3>
+        <p class="hint">Fonte: dados abertos do CNPJ da Receita Federal (pesquisa via Casa dos Dados; contatos via BrasilAPI e Minha Receita). A pesquisa pública traz até 20 empresas por filtro; use “Varrer cidades” para cobrir um estado inteiro. MEIs não têm telefone nos dados públicos, e e-mails raramente aparecem.</p>
+        <p class="hint">Uso responsável (LGPD): faça contato comercial pertinente, identifique-se e respeite quem pedir para não ser contatado.</p>
+        <button class="btn-line" data-act="logout" style="justify-self:start">Sair desta conta</button>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div class="ov" id="ov" data-act="close"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true"></aside>
+<div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ======================= CONFIG ======================= */
+const FN='https://lgffswhzrvnasvzqkvgt.supabase.co/functions/v1/busca-cnpj';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmZzd2h6cnZuYXN2enFrdmd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzOTg3NzYsImV4cCI6MjEwMzk3NDc3Nn0.Y0TRrPcyBNywblc0mkNmroQAc8I51wG9SSqOlcvB9kQ';
+const IBGE_MUN=uf=>`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`;
+const IBGE_CNAE='https://servicodados.ibge.gov.br/api/v2/cnae/subclasses';
+const UFS=[['AC','Acre'],['AL','Alagoas'],['AP','Amapá'],['AM','Amazonas'],['BA','Bahia'],['CE','Ceará'],['DF','Distrito Federal'],['ES','Espírito Santo'],['GO','Goiás'],['MA','Maranhão'],['MT','Mato Grosso'],['MS','Mato Grosso do Sul'],['MG','Minas Gerais'],['PA','Pará'],['PB','Paraíba'],['PR','Paraná'],['PE','Pernambuco'],['PI','Piauí'],['RJ','Rio de Janeiro'],['RN','Rio Grande do Norte'],['RS','Rio Grande do Sul'],['RO','Rondônia'],['RR','Roraima'],['SC','Santa Catarina'],['SP','São Paulo'],['SE','Sergipe'],['TO','Tocantins']];
+const SEGMENTS=[
+  {ic:'🛍️',n:'Comércio varejista',d:'Roupas, calçados, cosméticos, presentes',c:[['4781400','Comércio de vestuário'],['4782201','Comércio de calçados'],['4772500','Cosméticos e perfumaria'],['4789099','Outros produtos']]},
+  {ic:'🍽️',n:'Restaurantes',d:'Restaurantes, lanchonetes, bares',c:[['5611201','Restaurantes'],['5611203','Lanchonetes'],['5611204','Bares']]},
+  {ic:'💻',n:'Tecnologia',d:'Software, TI, suporte',c:[['6201501','Software sob encomenda'],['6204000','Consultoria em TI'],['6209100','Suporte técnico em TI']]},
+  {ic:'🩺',n:'Saúde',d:'Clínicas, consultórios, odontologia',c:[['8630503','Consultórios médicos'],['8630504','Odontologia'],['8650004','Fisioterapia'],['8650003','Psicologia']]},
+  {ic:'🏗️',n:'Construção',d:'Obras, reformas, instalações',c:[['4120400','Construção de edifícios'],['4330404','Pintura'],['4321500','Instalação elétrica'],['4399103','Alvenaria']]},
+  {ic:'🎓',n:'Educação',d:'Escolas, cursos, idiomas',c:[['8513900','Ensino fundamental'],['8593700','Ensino de idiomas'],['8599699','Outros cursos']]},
+  {ic:'💇',n:'Beleza e estética',d:'Salões, estética, barbearias',c:[['9602501','Cabeleireiros e manicure'],['9602502','Estética']]},
+  {ic:'🚗',n:'Automotivo',d:'Oficinas, autopeças, lava-jato',c:[['4520001','Mecânica de veículos'],['4530703','Comércio de autopeças'],['4520005','Lavagem de veículos']]},
+  {ic:'🏠',n:'Imobiliário',d:'Imobiliárias e corretores',c:[['6821801','Corretagem de imóveis'],['6822600','Gestão de imóveis']]},
+  {ic:'📊',n:'Serviços profissionais',d:'Contabilidade, advocacia, marketing',c:[['6920601','Contabilidade'],['6911701','Advocacia'],['7319004','Consultoria em publicidade'],['7020400','Consultoria empresarial']]}
+];
+const DEFAULT_TPL=`Olá! Tudo bem? Falo com a {empresa}?
+
+Sou [SEU NOME], da NEXO. Vi que vocês atuam com {atividade} em {cidade}/{uf} e queria apresentar [O QUE VOCÊ OFERECE].
+
+Posso te mandar mais detalhes por aqui?`;
+
+/* ======================= ESTADO ======================= */
+function load(k,d){try{const v=localStorage.getItem('nexobase_'+k);return v!=null?JSON.parse(v):d;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem('nexobase_'+k,JSON.stringify(v));}catch(e){}}
+let PASS=load('pass','')||(()=>{try{return sessionStorage.getItem('nexobase_pass')||'';}catch(e){return '';}})();
+let TPL=load('tpl',DEFAULT_TPL);
+const newFilters=()=>({cnae:new Map(),uf:[],municipio:[],mei:'nao',simples:'',abertura_de:'',abertura_ate:'',capital_min:'',capital_max:'',com_telefone:true,somente_celular:false,com_email:false,somente_matriz:false,texto:'',porte:''});
+const F=newFilters();
+const V={route:'painel',rows:[],total:0,page:1,per:50,ordem:'recentes',mode:'busca',busy:false,run:null,newSet:new Set()};
+const MUN={};let CNAE_ALL=null,CNAE_P=null;
+
+/* ======================= UTIL ======================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const digits=s=>String(s??'').replace(/\D/g,'');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const nf=n=>Number(n||0).toLocaleString('pt-BR');
+const fmtCNPJ=c=>{c=digits(c).padStart(14,'0');return `${c.slice(0,2)}.${c.slice(2,5)}.${c.slice(5,8)}/${c.slice(8,12)}-${c.slice(12)}`;};
+const fmtCNAE=c=>{c=digits(c);return c.length===7?`${c.slice(0,4)}-${c[4]}/${c.slice(5)}`:c;};
+const SMALL=new Set(['de','da','do','das','dos','e','em']);
+const tc=s=>String(s||'').toLowerCase().split(/\s+/).map((w,i)=>!w?w:/^(me|epp|ltda|eireli|s\/a|sa|mei)$/.test(w)?w.toUpperCase():(i&&SMALL.has(w))?w:w[0].toUpperCase()+w.slice(1)).join(' ');
+const cleanName=s=>String(s||'').replace(/^\d{2}\.?\d{3}\.?\d{3}\s+/,'').replace(/\*{3}\d+\*{3}/g,'').replace(/\b\d{11}\b/g,'').replace(/\s{2,}/g,' ').trim();
+const name=r=>tc(cleanName(r.fantasia||r.razao))||fmtCNPJ(r.cnpj);
+const fmtDate=d=>{if(!d)return '';const x=new Date(d+'T12:00:00');return isNaN(x)?d:x.toLocaleDateString('pt-BR');};
+const brl=v=>v==null||v===''?'':Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+function tel(t){
+  const d=digits(t);if(d.length<10)return null;
+  const ddd=d.slice(0,2);let n=d.slice(2);
+  let cel=n.length===9&&n[0]==='9';
+  if(n.length===8&&'6789'.includes(n[0])){cel=true;n='9'+n;}
+  return {txt:`(${ddd}) ${n.length===9?n.slice(0,5)+'-'+n.slice(5):n.slice(0,4)+'-'+n.slice(4)}`,wa:cel?'55'+ddd+n:null,raw:d};
+}
+function msgFor(r){
+  return TPL.replace(/\{empresa\}/g,name(r)).replace(/\{cidade\}/g,tc(r.municipio)||'sua cidade').replace(/\{uf\}/g,r.uf||'').replace(/\{atividade\}/g,(r.cnae_desc||'').toLowerCase()||'o seu ramo');
+}
+let toastT;function toast(m,ms=2800){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
+
+async function api(action,payload={}){
+  let r;
+  try{
+    r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON,'apikey':ANON,'x-acesso':PASS},body:JSON.stringify({action,...payload})});
+  }catch(e){throw new Error('Sem conexão com o servidor. Verifique sua internet.');}
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401){logout('Senha incorreta ou alterada. Entre de novo.');throw new Error('Senha incorreta');}
+  if(!r.ok)throw new Error(d.error||('Erro '+r.status));
+  return d;
+}
+function payload(){
+  return {cnae:[...F.cnae.keys()],uf:F.uf,municipio:F.municipio,mei:F.mei,simples:F.simples,abertura_de:F.abertura_de||undefined,abertura_ate:F.abertura_ate||undefined,
+    capital_min:F.capital_min||undefined,capital_max:F.capital_max||undefined,com_telefone:F.com_telefone,somente_celular:F.somente_celular,com_email:F.com_email,
+    somente_matriz:F.somente_matriz,texto:F.texto,porte:F.porte?[F.porte]:[]};
+}
+
+/* ======================= LOGIN ======================= */
+$('#loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  PASS=$('#pass').value;$('#loginErr').textContent='';$('#loginBtn').disabled=true;$('#loginBtn').innerHTML='<span class="spin"></span>';
+  try{
+    await api('ping');
+    if($('#remember').checked)save('pass',PASS);else{save('pass','');try{sessionStorage.setItem('nexobase_pass',PASS);}catch(e){}}
+    startApp();
+  }catch(err){$('#loginErr').textContent=err.message==='Senha incorreta'?'Senha incorreta.':err.message;}
+  $('#loginBtn').disabled=false;$('#loginBtn').textContent='Entrar';
+});
+function logout(msg){
+  PASS='';save('pass','');try{sessionStorage.removeItem('nexobase_pass');}catch(e){}
+  $('#app').classList.add('hidden');$('#loginView').classList.remove('hidden');
+  if(msg)$('#loginErr').textContent=msg;
+}
+function startApp(){
+  $('#loginView').classList.add('hidden');$('#app').classList.remove('hidden');
+  route();
+}
+
+/* ======================= ROTAS ======================= */
+function route(){
+  const h=(location.hash||'#painel').slice(1);
+  V.route=['painel','buscar','base','ajustes'].includes(h)?h:'painel';
+  document.querySelectorAll('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.r===V.route));
+  $('#v-painel').classList.toggle('hidden',V.route!=='painel');
+  $('#v-busca').classList.toggle('hidden',!(V.route==='buscar'||V.route==='base'));
+  $('#v-ajustes').classList.toggle('hidden',V.route!=='ajustes');
+  if(V.route==='painel')loadPainel();
+  if(V.route==='buscar'||V.route==='base'){
+    const changed=V.mode!==V.route;V.mode=V.route;
+    $('#bTitle').textContent=V.mode==='base'?'Minha base':'Buscar empresas';
+    $('#bSub').textContent=V.mode==='base'?'Tudo o que já foi encontrado nas suas buscas e varreduras, sem limite de resultados.':'Pesquisa na base da Receita Federal (até 20 empresas por busca). Cada resultado fica salvo na sua base.';
+    $('#ordem').classList.toggle('hidden',V.mode!=='base');
+    renderFilters();
+    if(changed){V.rows=[];V.total=0;V.page=1;renderRows();if(V.mode==='base')queryBase();}
+  }
+  if(V.route==='ajustes'){$('#tpl').value=TPL;tplPreview();}
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ======================= PAINEL ======================= */
+async function loadPainel(){
+  $('#segs').innerHTML=SEGMENTS.map((s,i)=>`<button class="segc" data-act="seg" data-i="${i}"><span class="ic">${s.ic}</span><b>${s.n}</b><small>${s.d}</small></button>`).join('');
+  try{
+    const s=await api('stats');
+    $('#sTotal').textContent=nf(s.total);$('#sTel').textContent=nf(s.com_telefone);$('#sCel').textContent=nf(s.celular);$('#sUf').textContent=s.por_uf.length;
+    const max=Math.max(1,...s.por_uf.map(u=>u.total));
+    $('#ufBars').innerHTML=s.por_uf.length?s.por_uf.slice(0,12).map(u=>`<div class="ufbar"><b>${u.uf||'—'}</b><span class="tr"><i style="width:${u.total/max*100}%"></i></span><span class="muted" style="text-align:right">${nf(u.total)}</span></div>`).join(''):'<p class="hint">Sua base ainda está vazia. Faça a primeira busca.</p>';
+    $('#hist').innerHTML=s.ultimas.length?s.ultimas.map(h=>`<div><span>${esc([h.municipio&&tc(h.municipio),h.uf].filter(Boolean).join('/')||'Brasil')} · ${esc((h.filtros?.cnae||[]).map(fmtCNAE).join(', ')||h.filtros?.texto||'')}</span><span class="muted">${h.novos} novas</span></div>`).join(''):'<p class="hint">Nenhuma busca ainda.</p>';
+  }catch(e){toast(e.message);}
+}
+
+/* ======================= FILTROS ======================= */
+function renderFilters(){
+  const ufOpts=UFS.map(([s,n])=>`<option value="${s}">${n}</option>`).join('');
+  const munList=F.uf.flatMap(u=>(MUN[u]||[]).map(m=>`<option value="${esc(m)}">${esc(m)} - ${u}</option>`)).join('');
+  $('#filters').innerHTML=`
+    <div class="fgroup"><span class="lbl">Atividade (CNAE)</span>
+      <div class="chips">${[...F.cnae].map(([c,n])=>`<span class="chip" title="${fmtCNAE(c)}"><span>${esc(n)}</span><button data-act="rm-cnae" data-v="${c}" aria-label="Remover">×</button></span>`).join('')}</div>
+      <button class="btn-line" data-act="cnae-pick">+ ${F.cnae.size?'Adicionar atividade':'Escolher atividade'}</button></div>
+    <div class="fgroup"><span class="lbl">Estado</span>
+      <div class="chips">${F.uf.map(u=>`<span class="chip"><span>${u}</span><button data-act="rm-uf" data-v="${u}" aria-label="Remover">×</button></span>`).join('')}</div>
+      <select class="inp" id="fUf"><option value="">${F.uf.length?'+ Adicionar estado':'Todos os estados'}</option>${ufOpts}</select></div>
+    <div class="fgroup"><span class="lbl">Cidade</span>
+      <div class="chips">${F.municipio.map(m=>`<span class="chip"><span>${esc(m)}</span><button data-act="rm-mun" data-v="${esc(m)}" aria-label="Remover">×</button></span>`).join('')}</div>
+      <input class="inp" id="fMun" list="munDl" placeholder="${F.uf.length?'Digite e escolha a cidade':'Escolha um estado antes'}" ${F.uf.length?'':'disabled'} autocomplete="off">
+      <datalist id="munDl">${munList}</datalist></div>
+    <div class="fgroup"><span class="lbl">MEI</span>
+      <div class="seg">${[['nao','Excluir MEI'],['','Todos'],['sim','Só MEI']].map(([v,l])=>`<button class="${F.mei===v?'on':''}" data-act="mei" data-v="${v}">${l}</button>`).join('')}</div>
+      ${F.mei!=='nao'?'<p class="hint">MEIs não trazem telefone nos dados públicos.</p>':''}</div>
+    <div class="fgroup"><span class="lbl">Contato</span>
+      <label class="toggle"><span class="switch"><input type="checkbox" data-f="com_telefone" ${F.com_telefone?'checked':''}><span class="slider"></span></span>Só com telefone</label>
+      <label class="toggle"><span class="switch"><input type="checkbox" data-f="somente_celular" ${F.somente_celular?'checked':''}><span class="slider"></span></span>Só com celular (WhatsApp)</label>
+      <label class="toggle"><span class="switch"><input type="checkbox" data-f="com_email" ${F.com_email?'checked':''}><span class="slider"></span></span>Só com e-mail</label></div>
+    <div class="fgroup"><span class="lbl">Data de abertura</span>
+      <div class="row2"><input class="inp" type="date" data-v="abertura_de" value="${F.abertura_de}" aria-label="De"><input class="inp" type="date" data-v="abertura_ate" value="${F.abertura_ate}" aria-label="Até"></div></div>
+    <div class="fgroup"><span class="lbl">Capital social (R$)</span>
+      <div class="row2"><input class="inp" type="number" min="0" data-v="capital_min" value="${F.capital_min}" placeholder="Mínimo"><input class="inp" type="number" min="0" data-v="capital_max" value="${F.capital_max}" placeholder="Máximo"></div></div>
+    <div class="fgroup"><span class="lbl">Simples Nacional</span>
+      <div class="seg">${[['','Todos'],['sim','Optante'],['nao','Não optante']].map(([v,l])=>`<button class="${F.simples===v?'on':''}" data-act="simples" data-v="${v}">${l}</button>`).join('')}</div></div>
+    ${V.mode==='base'?`<div class="fgroup"><span class="lbl">Porte</span><select class="inp" data-v="porte"><option value="">Todos</option>${['MICRO EMPRESA','EMPRESA DE PEQUENO PORTE','DEMAIS'].map(p=>`<option ${F.porte===p?'selected':''}>${p}</option>`).join('')}</select></div>`:''}
+    <div class="fgroup"><span class="lbl">Nome ou CNPJ contém</span><input class="inp" data-v="texto" value="${esc(F.texto)}" placeholder="Ex.: pizzaria"></div>
+    <label class="toggle"><span class="switch"><input type="checkbox" data-f="somente_matriz" ${F.somente_matriz?'checked':''}><span class="slider"></span></span>Só matriz</label>
+    <div class="factions">
+      ${V.mode==='base'
+        ?`<button class="btn-accent" data-act="run-base">Filtrar minha base</button>`
+        :`<button class="btn-accent" data-act="run-search">🔎 Buscar na Receita</button>
+          <button class="btn-line" data-act="run-sweep" style="justify-content:center">🗺 Varrer ${F.municipio.length?F.municipio.length+' cidade(s)':F.uf.length?'cidades de '+F.uf.join(', '):'todas as cidades do Brasil'}</button>`}
+      <button class="link" data-act="clear" style="justify-self:center;font-size:.84rem">Limpar filtros</button>
+    </div>`;
+  $('#fUf').addEventListener('change',async e=>{const u=e.target.value;if(u&&!F.uf.includes(u)){F.uf.push(u);renderFilters();await loadMun(u);renderFilters();}});
+  const mi=$('#fMun');
+  if(mi)mi.addEventListener('change',e=>{
+    const v=e.target.value.trim();if(!v)return;
+    const all=F.uf.flatMap(u=>MUN[u]||[]);const m=all.find(x=>norm(x)===norm(v));
+    if(!m&&all.length){toast('Escolha uma cidade da lista');return;}
+    const city=m||v;if(!F.municipio.some(x=>norm(x)===norm(city)))F.municipio.push(city);renderFilters();
+  });
+}
+async function loadMun(uf){
+  if(MUN[uf])return;
+  try{const r=await fetch(IBGE_MUN(uf));const d=await r.json();MUN[uf]=d.map(m=>m.nome);}catch(e){MUN[uf]=[];}
+}
+
+/* ======================= CNAE PICKER ======================= */
+function loadCnaes(){
+  if(CNAE_ALL)return Promise.resolve(CNAE_ALL);
+  if(!CNAE_P)CNAE_P=fetch(IBGE_CNAE).then(r=>r.json()).then(d=>CNAE_ALL=d.map(x=>({c:digits(x.id),n:tc(x.descricao)}))).catch(()=>{CNAE_P=null;return null;});
+  return CNAE_P;
+}
+let PICK_Q='';
+function openPicker(){
+  PICK_Q='';loadCnaes().then(()=>renderPicker());
+  $('#modal').innerHTML=`<div class="d-head"><h3>Escolher atividades<small>Segmentos prontos ou qualquer atividade do IBGE</small></h3><button class="icon-btn" data-act="close" aria-label="Fechar">×</button></div>
+    <div style="padding:12px 18px 0"><input class="inp" id="pickQ" placeholder="Buscar: restaurante, contabilidade, 6201501…" autocomplete="off"></div>
+    <div class="d-body" id="pickBody"></div>
+    <div style="padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><span class="hint" id="pickN"></span><button class="btn-accent" data-act="close">Pronto</button></div>`;
+  $('#modal').classList.add('open');$('#ov').classList.add('open');
+  $('#pickQ').addEventListener('input',e=>{PICK_Q=e.target.value;renderPicker();});
+  renderPicker();setTimeout(()=>$('#pickQ')?.focus(),50);
+}
+function renderPicker(){
+  const body=$('#pickBody');if(!body)return;
+  const q=norm(PICK_Q),qd=digits(PICK_Q);
+  const item=(c,n)=>`<label class="cn-item"><input type="checkbox" data-cn="${c}" data-n="${esc(n)}" ${F.cnae.has(c)?'checked':''}><span>${esc(n)}</span><small>${fmtCNAE(c)}</small></label>`;
+  let html='';
+  if(!q){
+    html=SEGMENTS.map(s=>`<div class="cn-group"><h5>${s.ic} ${s.n}</h5>${s.c.map(([c,n])=>item(c,n)).join('')}</div>`).join('');
+  }else{
+    const list=(CNAE_ALL||[]).filter(x=>norm(x.n).includes(q)||(qd.length>=3&&x.c.startsWith(qd))).slice(0,80);
+    html=list.length?list.map(x=>item(x.c,x.n)).join(''):(CNAE_ALL?`<p class="hint">Nada encontrado para “${esc(PICK_Q)}”.</p>`:'<p class="hint">Carregando a lista de atividades do IBGE…</p>');
+    if(qd.length===7&&!list.some(x=>x.c===qd))html=item(qd,'CNAE '+fmtCNAE(qd))+html;
+  }
+  body.innerHTML=html;$('#pickN').textContent=`${F.cnae.size} selecionada(s)`;
+}
+
+/* ======================= BUSCA / BASE ======================= */
+function banner(kind,html){$('#bBanner').innerHTML=html?`<div class="banner ${kind}"><div>${html}</div><button class="x" data-act="banner-x">×</button></div>`:'';}
+async function runSearch(){
+  if(!F.cnae.size&&!F.texto&&!F.uf.length){toast('Escolha ao menos uma atividade ou um estado');return;}
+  setBusy(true,'Pesquisando na Receita e buscando contatos…');banner('');
+  try{
+    const d=await api('search',{filtros:payload()});
+    V.rows=d.rows;V.total=d.rows.length;V.page=1;V.newSet=new Set();
+    banner('ok',`<b>${d.rows.length} empresas</b> encontradas${d.novos?` · ${d.novos} novas salvas na sua base`:''}. ${d.rows.length>=20?'A busca pública traz até 20 por vez: use <b>Varrer cidades</b> para cobrir mais.':''}`);
+  }catch(e){banner('err',esc(e.message));}
+  setBusy(false);renderRows();
+}
+async function queryBase(page=1){
+  setBusy(true,'Carregando sua base…');
+  try{
+    const d=await api('base',{filtros:payload(),pagina:page,por_pagina:V.per,ordem:V.ordem});
+    V.rows=d.rows;V.total=d.total;V.page=page;
+  }catch(e){banner('err',esc(e.message));}
+  setBusy(false);renderRows();
+}
+async function runSweep(){
+  let tasks=[];
+  if(F.municipio.length){
+    for(const m of F.municipio){const uf=F.uf.find(u=>(MUN[u]||[]).some(x=>norm(x)===norm(m)))||F.uf[0];tasks.push({uf,municipio:m});}
+  }else{
+    const ufs=F.uf.length?F.uf:UFS.map(u=>u[0]);
+    setBusy(true,'Carregando a lista de cidades…');
+    for(const u of ufs){await loadMun(u);(MUN[u]||[]).forEach(m=>tasks.push({uf:u,municipio:m}));}
+    setBusy(false);
+  }
+  if(!F.cnae.size&&!F.texto){toast('Escolha ao menos uma atividade antes de varrer');return;}
+  if(!tasks.length){toast('Nenhuma cidade para varrer');return;}
+  const est=Math.ceil(tasks.length/8*25/60);
+  if(tasks.length>60&&!confirmBox(`Varredura em ${nf(tasks.length)} cidades (cerca de ${est<60?est+' min':(est/60).toFixed(1).replace('.',',')+' h'}). Deixe esta aba aberta; você pode parar quando quiser.`))return;
+  const run=V.run={stop:false,done:0,total:tasks.length,novos:0,found:0,errors:0};
+  $('#prog').classList.remove('hidden');banner('');V.rows=[];V.total=0;renderRows();
+  const batches=[];for(let i=0;i<tasks.length;i+=4)batches.push(tasks.slice(i,i+4));
+  let bi=0;
+  const upd=()=>{$('#progBar').style.width=(run.done/run.total*100).toFixed(1)+'%';$('#progTxt').innerHTML=`<span class="spin"></span> Varrendo ${nf(run.done)} de ${nf(run.total)} cidades · <b>${nf(run.novos)}</b> novas empresas${run.errors?` · ${run.errors} falhas`:''}`;};
+  upd();
+  const worker=async()=>{
+    while(!run.stop&&bi<batches.length){
+      const b=batches[bi++];
+      try{const d=await api('sweep',{filtros:payload(),tasks:b});d.results.forEach(r=>{run.novos+=r.novos||0;run.found+=r.encontrados||0;if(r.status!==200)run.errors++;});}
+      catch(e){run.errors+=b.length;if(e.message==='Senha incorreta')run.stop=true;}
+      run.done+=b.length;upd();
+    }
+  };
+  await Promise.all([worker(),worker()]);
+  $('#prog').classList.add('hidden');V.run=null;
+  banner('ok',`Varredura ${run.stop?'interrompida':'concluída'}: ${nf(run.done)} cidades, <b>${nf(run.novos)}</b> empresas novas na sua base. <a class="link" href="#base">Ver na minha base</a>`);
+}
+function confirmBox(msg){return window.confirm?window.confirm(msg):true;}
+function setBusy(b,txt){
+  V.busy=b;document.querySelectorAll('[data-act=run-search],[data-act=run-base],[data-act=run-sweep]').forEach(x=>x.disabled=b);
+  if(b)$('#count').innerHTML=`<span class="spin"></span> ${txt||''}`;
+}
+function rowHtml(r){
+  const t=[r.tel1,r.tel2].map(tel).filter(Boolean);
+  const wa=t.find(x=>x.wa);
+  return `<tr data-act="detail" data-c="${r.cnpj}">
+    <td><div class="c-name">${esc(name(r))}${r.mei?'<span class="tag mei">MEI</span>':''}</div><div class="c-sub mono">${fmtCNPJ(r.cnpj)}</div></td>
+    <td><div style="max-width:240px">${esc(tc(r.cnae_desc)||'—')}</div></td>
+    <td>${esc(tc(r.municipio)||'—')}/${esc(r.uf||'')}<div class="c-sub">${esc(tc(r.bairro))}</div></td>
+    <td><div class="tel">${t.length?t.map(x=>`<span>${x.txt}</span>`).join(''):'<span class="muted">—</span>'}${wa?`<a class="wa" href="https://wa.me/${wa.wa}?text=${encodeURIComponent(msgFor(r))}" target="_blank" rel="noopener" data-stop="1">WhatsApp</a>`:''}${r.email?`<span class="c-sub">${esc(r.email)}</span>`:''}</div></td>
+    <td style="white-space:nowrap">${fmtDate(r.abertura)}</td>
+    <td>${esc(tc(r.porte)||'')}${r.capital?`<div class="c-sub">${brl(r.capital)}</div>`:''}</td>
+  </tr>`;
+}
+function cardHtml(r){
+  const t=[r.tel1,r.tel2].map(tel).filter(Boolean);const wa=t.find(x=>x.wa);
+  return `<div class="mcard" data-act="detail" data-c="${r.cnpj}">
+    <div class="c-name">${esc(name(r))}${r.mei?'<span class="tag mei">MEI</span>':''}</div>
+    <div class="c-sub">${esc(tc(r.cnae_desc)||'')}</div>
+    <div class="ln"><span>📍 ${esc(tc(r.municipio)||'—')}/${esc(r.uf||'')}</span><span class="muted">${fmtDate(r.abertura)}</span></div>
+    <div class="ln"><span>${t.length?'📞 '+t.map(x=>x.txt).join(' · '):'<span class="muted">Sem telefone</span>'}</span>${wa?`<a class="wa" href="https://wa.me/${wa.wa}?text=${encodeURIComponent(msgFor(r))}" target="_blank" rel="noopener" data-stop="1">WhatsApp</a>`:''}</div>
+  </div>`;
+}
+function renderRows(){
+  const n=V.rows.length;
+  if(!V.busy)$('#count').innerHTML=V.mode==='base'?(V.total?`<b>${nf(V.total)}</b> empresas na base com esses filtros`:''):(n?`<b>${n}</b> empresas encontradas`:'');
+  if(!n){
+    const msg=V.mode==='base'?'<h4>Nada na sua base com esses filtros</h4><p>Faça buscas ou varreduras em “Buscar” para alimentar a base.</p>':'<h4>Escolha os filtros e busque</h4><p>Ex.: <b>Restaurantes</b> em <b>Cuiabá/MT</b>, só com celular.</p>';
+    $('#tbody').innerHTML=`<tr><td colspan="6"><div class="empty">${msg}</div></td></tr>`;$('#mcards').innerHTML=`<div class="empty card">${msg}</div>`;
+  }else{
+    $('#tbody').innerHTML=V.rows.map(rowHtml).join('');$('#mcards').innerHTML=V.rows.map(cardHtml).join('');
+  }
+  const pages=Math.ceil(V.total/V.per);
+  $('#pager').classList.toggle('hidden',!(V.mode==='base'&&pages>1));
+  $('#pager').innerHTML=`<button class="btn-line" data-act="page" data-p="${V.page-1}" ${V.page<=1?'disabled':''}>← Anterior</button><span>Página ${V.page} de ${nf(pages)}</span><button class="btn-line" data-act="page" data-p="${V.page+1}" ${V.page>=pages?'disabled':''}>Próxima →</button>`;
+}
+
+/* ======================= DETALHE ======================= */
+async function openDetail(c){
+  let r=V.rows.find(x=>x.cnpj===c)||{cnpj:c};
+  const dr=$('#drawer');
+  const paint=(r,extra)=>{
+    const t=[r.tel1,r.tel2].map(tel).filter(Boolean);const wa=t.find(x=>x.wa);
+    const addr=[tc(r.logradouro),r.numero,tc(r.complemento)].filter(Boolean).join(', ');
+    const full=[addr,tc(r.bairro),r.municipio&&`${tc(r.municipio)}/${r.uf}`,r.cep&&`CEP ${digits(r.cep).replace(/(\d{5})(\d{3})/,'$1-$2')}`].filter(Boolean).join(' · ');
+    const dd=(l,v,cls='')=>v?`<div class="${cls}"><dt>${l}</dt><dd>${v}</dd></div>`:'';
+    const q=encodeURIComponent(`${cleanName(r.fantasia||r.razao)} ${r.municipio||''} ${r.uf||''}`);
+    dr.innerHTML=`<div class="d-head"><h3>${esc(name(r))}<small>${esc(tc(r.cnae_desc)||'')}</small></h3><button class="icon-btn" data-act="close" aria-label="Fechar">×</button></div>
+      <div class="d-body">
+        ${extra===null?'<p class="hint" style="margin-bottom:10px"><span class="spin"></span> Atualizando dados…</p>':''}
+        <dl class="dl">
+          ${dd('CNPJ',`<span class="mono">${fmtCNPJ(r.cnpj)}</span>`)}${dd('Situação',tc(r.situacao))}
+          ${dd('Razão social',esc(tc(cleanName(r.razao))),'full')}${r.fantasia?dd('Nome fantasia',esc(tc(r.fantasia)),'full'):''}
+          ${dd('Atividade principal',r.cnae_desc&&`${esc(tc(r.cnae_desc))} <span class="muted mono">(${fmtCNAE(r.cnae)})</span>`,'full')}
+          ${extra&&extra.secundarias?.length?dd('Atividades secundárias',extra.secundarias.slice(0,8).map(x=>esc(tc(x.descricao))).join(' · '),'full'):''}
+          ${dd('Telefone',t.map(x=>x.txt).join('<br>'))}${dd('E-mail',r.email&&`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`)}
+          ${dd('Endereço',esc(full),'full')}
+          ${dd('Abertura',fmtDate(r.abertura))}${dd('Porte',tc(r.porte))}
+          ${dd('MEI',r.mei===true?'Sim':r.mei===false?'Não':'')}${dd('Simples',r.simples===true?'Sim':r.simples===false?'Não':'')}
+          ${dd('Natureza jurídica',esc(r.natureza))}${dd('Capital social',brl(r.capital))}
+          ${dd('Matriz/filial',r.matriz===true?'Matriz':r.matriz===false?'Filial':'')}
+          ${extra&&extra.socios?.length?dd('Sócios',extra.socios.map(s=>`${esc(tc(s.nome))} <span class="muted">· ${esc(s.qualificacao||'')}</span>`).join('<br>'),'full'):''}
+        </dl>
+        <div class="d-acts">
+          ${wa?`<a class="wa" style="font-size:.9rem;padding:9px 14px;border-radius:11px" href="https://wa.me/${wa.wa}?text=${encodeURIComponent(msgFor(r))}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}
+          <a class="btn-line" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🔎 Google</a>
+          ${addr?`<a class="btn-line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(full)}" target="_blank" rel="noopener">🗺 Mapa</a>`:''}
+          <button class="btn-line" data-act="copy" data-v="${esc([name(r),fmtCNPJ(r.cnpj),t.map(x=>x.txt).join(' / '),r.email,full].filter(Boolean).join('\n'))}">📋 Copiar</button>
+        </div>
+      </div>`;
+  };
+  paint(r,null);dr.classList.add('open');$('#ov').classList.add('open');
+  try{const d=await api('cnpj',{cnpj:c});r={...r,...d.row};const i=V.rows.findIndex(x=>x.cnpj===c);if(i>=0)V.rows[i]=r;paint(r,d);}
+  catch(e){paint(r,{});toast(e.message);}
+}
+function closeAll(){$('#drawer').classList.remove('open');$('#modal').classList.remove('open');$('#ov').classList.remove('open');if(V.route==='buscar'||V.route==='base')renderFilters();}
+
+/* ======================= EXPORTAR ======================= */
+async function exportRows(fmt){
+  let rows=V.rows;
+  if(V.mode==='base'&&V.total>V.rows.length){
+    const max=Math.min(V.total,20000);toast(`Preparando ${nf(max)} empresas…`,60000);
+    rows=[];
+    for(let p=1;rows.length<max;p++){
+      const d=await api('base',{filtros:payload(),pagina:p,por_pagina:500,ordem:V.ordem});rows.push(...d.rows);if(!d.rows.length)break;
+    }
+    rows=rows.slice(0,max);
+  }
+  if(!rows.length){toast('Nada para exportar');return;}
+  const data=rows.map(r=>{const t=[r.tel1,r.tel2].map(tel).filter(Boolean);const wa=t.find(x=>x.wa);return {
+    'Nome':name(r),'Razão social':tc(cleanName(r.razao)),'CNPJ':fmtCNPJ(r.cnpj),'Atividade':tc(r.cnae_desc),'CNAE':fmtCNAE(r.cnae),
+    'Telefone 1':t[0]?.txt||'','Telefone 2':t[1]?.txt||'','WhatsApp':wa?`https://wa.me/${wa.wa}`:'','E-mail':r.email||'',
+    'Endereço':[tc(r.logradouro),r.numero,tc(r.complemento)].filter(Boolean).join(', '),'Bairro':tc(r.bairro),'Cidade':tc(r.municipio),'UF':r.uf||'','CEP':r.cep||'',
+    'Abertura':fmtDate(r.abertura),'Porte':tc(r.porte),'MEI':r.mei===true?'Sim':r.mei===false?'Não':'','Simples':r.simples===true?'Sim':r.simples===false?'Não':'','Capital social':r.capital??'','Natureza jurídica':r.natureza||''};});
+  const stamp=new Date().toISOString().slice(0,10);
+  let blob,fname=`empresas-${stamp}.${fmt}`;
+  if(fmt==='json')blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  else if(fmt==='csv'){const cols=Object.keys(data[0]);const q=s=>`"${String(s??'').replace(/"/g,'""')}"`;blob=new Blob(['\ufeff'+[cols.map(q).join(';'),...data.map(o=>cols.map(c=>q(o[c])).join(';'))].join('\r\n')],{type:'text/csv;charset=utf-8'});}
+  else{
+    if(!window.XLSX){toast('Excel ainda carregando, tente em instantes');return;}
+    const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Empresas');
+    blob=new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;document.body.appendChild(a);a.click();a.remove();
+  toast(`${nf(data.length)} empresas exportadas`);
+}
+
+/* ======================= AJUSTES ======================= */
+function tplPreview(){$('#tplPv').textContent=msgFor({fantasia:'Pizzaria Exemplo',municipio:'CUIABA',uf:'MT',cnae_desc:'Restaurantes e similares',cnpj:'0'});}
+$('#tpl').addEventListener('input',e=>{TPL=e.target.value;save('tpl',TPL);tplPreview();});
+
+/* ======================= EVENTOS ======================= */
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-stop]'))return; // links de WhatsApp dentro de linhas
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const a=t.dataset.act,v=t.dataset.v;
+  switch(a){
+    case 'theme':setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');break;
+    case 'seg':{const s=SEGMENTS[+t.dataset.i];Object.assign(F,newFilters());s.c.forEach(([c,n])=>F.cnae.set(c,n));location.hash='#buscar';setTimeout(renderFilters,0);toast(`Segmento: ${s.n}. Escolha o estado e busque.`);break;}
+    case 'cnae-pick':openPicker();break;
+    case 'rm-cnae':F.cnae.delete(v);renderFilters();break;
+    case 'rm-uf':F.uf=F.uf.filter(x=>x!==v);F.municipio=F.municipio.filter(m=>F.uf.some(u=>(MUN[u]||[]).includes(m)));renderFilters();break;
+    case 'rm-mun':F.municipio=F.municipio.filter(x=>x!==v);renderFilters();break;
+    case 'mei':F.mei=v;renderFilters();break;
+    case 'simples':F.simples=v;renderFilters();break;
+    case 'clear':Object.assign(F,newFilters());renderFilters();break;
+    case 'run-search':runSearch();break;
+    case 'run-base':queryBase(1);break;
+    case 'run-sweep':runSweep();break;
+    case 'stop':if(V.run){V.run.stop=true;$('#progTxt').textContent='Parando…';}break;
+    case 'page':queryBase(+t.dataset.p);window.scrollTo({top:0,behavior:'smooth'});break;
+    case 'detail':openDetail(t.dataset.c);break;
+    case 'close':closeAll();break;
+    case 'copy':navigator.clipboard?.writeText(v).then(()=>toast('Copiado!'),()=>toast('Não consegui copiar'));break;
+    case 'export':exportRows(t.dataset.f).catch(err=>toast(err.message));break;
+    case 'banner-x':banner('');break;
+    case 'logout':logout();break;
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.cn){if(t.checked)F.cnae.set(t.dataset.cn,t.dataset.n);else F.cnae.delete(t.dataset.cn);$('#pickN').textContent=`${F.cnae.size} selecionada(s)`;}
+  else if(t.dataset.f){F[t.dataset.f]=t.checked;}
+  else if(t.dataset.v&&t.closest('#filters')){F[t.dataset.v]=t.value;}
+  if(t.id==='ordem'){V.ordem=t.value;queryBase(1);}
+});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.v&&t.closest('#filters')&&t.tagName==='INPUT')F[t.dataset.v]=t.value;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
+$('#cnpjForm').addEventListener('submit',e=>{e.preventDefault();const c=digits($('#cnpjIn').value);if(c.length!==14){toast('Digite os 14 dígitos do CNPJ');return;}openDetail(c);});
+
+function setTheme(t){document.documentElement.dataset.theme=t;$('#themeBtn').textContent=t==='dark'?'☀':'☾';save('theme',t);}
+setTheme(load('theme',window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+if(PASS){api('ping').then(startApp).catch(()=>{});}
+</script>
+</body>
+</html>
