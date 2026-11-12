@@ -225,9 +225,17 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Use POST" }, 405);
   const key = Deno.env.get("ACCESS_KEY");
   const hdr = req.headers.get("x-acesso") || "";
-  const ok = !!key && hdr === key;
+  let ok = !!key && hdr === key;
+  if (!ok && hdr) {
+    // senha guardada no banco como hash SHA-256 (config_interna.senha_hash)
+    const { data } = await sb.from("config_interna").select("valor").eq("chave", "senha_hash").maybeSingle();
+    if (data?.valor) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(hdr));
+      const hex = Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+      ok = hex === data.valor;
+    }
+  }
   if (!ok) {
-    if (!key) return json({ error: "A senha de acesso ainda não foi configurada no Supabase (segredo ACCESS_KEY)." }, 503);
     await sleep(600);
     return json({ error: "Senha incorreta" }, 401);
   }
