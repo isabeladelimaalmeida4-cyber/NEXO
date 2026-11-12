@@ -158,6 +158,16 @@ tbody tr{cursor:pointer}
 .dl dt{font-size:.74rem;color:var(--muted)}
 .dl dd{font-weight:500;font-size:.92rem;word-break:break-word}
 .d-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.contact-box{background:var(--brand-soft);border-radius:14px;padding:14px;margin-bottom:16px;display:grid;gap:10px}
+.contact-box h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--brand-ink)}
+.phone-line{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--paper);border-radius:11px;padding:10px 12px}
+.phone-line b{font-family:'DM Mono',monospace;font-size:1.12rem;letter-spacing:.01em}
+.phone-line small{display:block;color:var(--muted);font-size:.74rem;font-family:'DM Sans'}
+.phone-acts{display:flex;gap:6px;flex-wrap:wrap}
+.phone-acts a,.phone-acts button{font-size:.8rem;padding:6px 10px}
+.no-phone{background:var(--paper);border-radius:11px;padding:12px;font-size:.88rem;display:grid;gap:8px}
+.c-name.lk{cursor:pointer}
+tbody tr:hover .c-name,.mcard:hover .c-name{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100% - 20px));max-height:86vh;background:var(--paper);border-radius:20px;z-index:52;display:none;flex-direction:column;overflow:hidden}
 .modal.open{display:flex}
 .cn-item{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:9px;cursor:pointer;font-size:.9rem}
@@ -625,15 +635,30 @@ async function openDetail(c){
     const full=[addr,tc(r.bairro),r.municipio&&`${tc(r.municipio)}/${r.uf}`,r.cep&&`CEP ${digits(r.cep).replace(/(\d{5})(\d{3})/,'$1-$2')}`].filter(Boolean).join(' · ');
     const dd=(l,v,cls='')=>v?`<div class="${cls}"><dt>${l}</dt><dd>${v}</dd></div>`:'';
     const q=encodeURIComponent(`${cleanName(r.fantasia||r.razao)} ${r.municipio||''} ${r.uf||''}`);
+    const loading=extra===null;
+    const phones=t.map((x,i)=>`<div class="phone-line">
+        <div><b>${x.txt}</b><small>${x.wa?'Celular · WhatsApp':'Telefone fixo'}${i?' · secundário':''}</small></div>
+        <div class="phone-acts">
+          <a class="btn-line" href="tel:+55${x.raw}">📞 Ligar</a>
+          ${x.wa?`<a class="wa" href="https://wa.me/${x.wa}?text=${encodeURIComponent(msgFor(r))}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}
+          <button class="btn-line" data-act="copy" data-v="${x.txt}">Copiar</button>
+        </div></div>`).join('');
+    const gTel=encodeURIComponent(`${cleanName(r.fantasia||r.razao)} ${tc(r.municipio)||''} ${r.uf||''} telefone`);
+    const contact=`<div class="contact-box"><h4>Contato</h4>
+      ${phones||(loading?'<div class="no-phone"><span><span class="spin"></span> Buscando telefone no cadastro…</span></div>'
+        :`<div class="no-phone"><span><b>Sem telefone no cadastro público.</b> ${r.mei?'MEIs não têm o contato publicado pela Receita.':'A empresa não informou telefone à Receita.'}</span>
+          <div class="phone-acts"><a class="btn-line" href="https://www.google.com/search?q=${gTel}" target="_blank" rel="noopener">🔎 Procurar telefone no Google</a>
+          <a class="btn-line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${cleanName(r.fantasia||r.razao)} ${tc(r.municipio)||''} ${r.uf||''}`)}" target="_blank" rel="noopener">🗺 Google Maps</a></div></div>`)}
+      ${r.email?`<div class="phone-line"><div><b style="font-size:.95rem">${esc(r.email)}</b><small>E-mail</small></div><div class="phone-acts"><a class="btn-line" href="mailto:${esc(r.email)}">✉️ Enviar</a></div></div>`:''}
+    </div>`;
     dr.innerHTML=`<div class="d-head"><h3>${esc(name(r))}<small>${esc(tc(r.cnae_desc)||'')}</small></h3><button class="icon-btn" data-act="close" aria-label="Fechar">×</button></div>
       <div class="d-body">
-        ${extra===null?'<p class="hint" style="margin-bottom:10px"><span class="spin"></span> Atualizando dados…</p>':''}
+        ${contact}
         <dl class="dl">
           ${dd('CNPJ',`<span class="mono">${fmtCNPJ(r.cnpj)}</span>`)}${dd('Situação',tc(r.situacao))}
           ${dd('Razão social',esc(tc(cleanName(r.razao))),'full')}${r.fantasia?dd('Nome fantasia',esc(tc(r.fantasia)),'full'):''}
           ${dd('Atividade principal',r.cnae_desc&&`${esc(tc(r.cnae_desc))} <span class="muted mono">(${fmtCNAE(r.cnae)})</span>`,'full')}
           ${extra&&extra.secundarias?.length?dd('Atividades secundárias',extra.secundarias.slice(0,8).map(x=>esc(tc(x.descricao))).join(' · '),'full'):''}
-          ${dd('Telefone',t.map(x=>x.txt).join('<br>'))}${dd('E-mail',r.email&&`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`)}
           ${dd('Endereço',esc(full),'full')}
           ${dd('Abertura',fmtDate(r.abertura))}${dd('Porte',tc(r.porte))}
           ${dd('MEI',r.mei===true?'Sim':r.mei===false?'Não':'')}${dd('Simples',r.simples===true?'Sim':r.simples===false?'Não':'')}
@@ -642,7 +667,6 @@ async function openDetail(c){
           ${extra&&extra.socios?.length?dd('Sócios',extra.socios.map(s=>`${esc(tc(s.nome))} <span class="muted">· ${esc(s.qualificacao||'')}</span>`).join('<br>'),'full'):''}
         </dl>
         <div class="d-acts">
-          ${wa?`<a class="wa" style="font-size:.9rem;padding:9px 14px;border-radius:11px" href="https://wa.me/${wa.wa}?text=${encodeURIComponent(msgFor(r))}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}
           <a class="btn-line" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🔎 Google</a>
           ${addr?`<a class="btn-line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(full)}" target="_blank" rel="noopener">🗺 Mapa</a>`:''}
           <button class="btn-line" data-act="copy" data-v="${esc([name(r),fmtCNPJ(r.cnpj),t.map(x=>x.txt).join(' / '),r.email,full].filter(Boolean).join('\n'))}">📋 Copiar</button>
