@@ -225,12 +225,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Use POST" }, 405);
   const key = Deno.env.get("ACCESS_KEY");
   const hdr = req.headers.get("x-acesso") || "";
-  let ok = !!key && hdr === key;
-  if (!ok && hdr.length >= 32) {
-    // chave interna temporária (carga inicial feita pelo próprio banco)
-    const { data } = await sb.from("config_interna").select("valor").eq("chave", "chave_servidor").maybeSingle();
-    ok = !!data && data.valor === hdr;
-  }
+  const ok = !!key && hdr === key;
   if (!ok) {
     if (!key) return json({ error: "A senha de acesso ainda não foi configurada no Supabase (segredo ACCESS_KEY)." }, 503);
     await sleep(600);
