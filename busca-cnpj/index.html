@@ -61,6 +61,7 @@ h2.t{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);letter-spacin
 .btn-dark{background:var(--btn);color:var(--btn-fg);font-weight:500;padding:9px 14px;border-radius:11px;font-size:.88rem;display:inline-flex;align-items:center;gap:6px}
 .btn-line{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--paper);padding:8px 12px;border-radius:11px;font-weight:500;font-size:.86rem;white-space:nowrap}
 .btn-line:hover{border-color:var(--ink)}
+a.btn-line,a.btn-dark,a.btn-accent{text-decoration:none}
 .link{color:var(--accent);font-weight:500;text-decoration:underline;text-underline-offset:3px}
 .inp{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);outline:none;font-size:.92rem}
 .inp:focus{border-color:var(--brand)}
@@ -166,6 +167,14 @@ tbody tr{cursor:pointer}
 .phone-acts{display:flex;gap:6px;flex-wrap:wrap}
 .phone-acts a,.phone-acts button{font-size:.8rem;padding:6px 10px}
 .no-phone{background:var(--paper);border-radius:11px;padding:12px;font-size:.88rem;display:grid;gap:8px}
+.social{display:grid;gap:8px;margin-bottom:16px}
+.social h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.social-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.social-btns a{justify-content:center;font-size:.82rem}
+.ig{background:linear-gradient(45deg,#f9a03f,#d62976 55%,#962fbf);color:#fff!important;border:none!important}
+.li{background:#0a66c2;color:#fff!important;border:none!important}
+.fb{background:#1877f2;color:#fff!important;border:none!important}
+@media (max-width:400px){.social-btns{grid-template-columns:1fr}}
 .c-name.lk{cursor:pointer}
 tbody tr:hover .c-name,.mcard:hover .c-name{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100% - 20px));max-height:86vh;background:var(--paper);border-radius:20px;z-index:52;display:none;flex-direction:column;overflow:hidden}
@@ -654,6 +663,7 @@ async function openDetail(c){
     dr.innerHTML=`<div class="d-head"><h3>${esc(name(r))}<small>${esc(tc(r.cnae_desc)||'')}</small></h3><button class="icon-btn" data-act="close" aria-label="Fechar">×</button></div>
       <div class="d-body">
         ${contact}
+        ${social(r)}
         <dl class="dl">
           ${dd('CNPJ',`<span class="mono">${fmtCNPJ(r.cnpj)}</span>`)}${dd('Situação',tc(r.situacao))}
           ${dd('Razão social',esc(tc(cleanName(r.razao))),'full')}${r.fantasia?dd('Nome fantasia',esc(tc(r.fantasia)),'full'):''}
@@ -676,6 +686,18 @@ async function openDetail(c){
   paint(r,null);dr.classList.add('open');$('#ov').classList.add('open');
   try{const d=await api('cnpj',{cnpj:c});r={...r,...d.row};const i=V.rows.findIndex(x=>x.cnpj===c);if(i>=0)V.rows[i]=r;paint(r,d);}
   catch(e){paint(r,{});toast(e.message);}
+}
+function social(r){
+  const nm=cleanName(r.fantasia||r.razao);
+  const city=tc(r.municipio)||'';
+  const g=site=>`https://www.google.com/search?q=${encodeURIComponent(`site:${site} "${nm}" ${city}`)}`;
+  return `<div class="social"><h4>Redes sociais</h4>
+    <div class="social-btns">
+      <a class="btn-line ig" href="${g('instagram.com')}" target="_blank" rel="noopener">Instagram</a>
+      <a class="btn-line li" href="https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(nm)}" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn-line fb" href="${g('facebook.com')}" target="_blank" rel="noopener">Facebook</a>
+    </div>
+    <p class="hint">Abre a busca do perfil da empresa. Confira se é a mesma empresa (nome e cidade) antes de entrar em contato.</p></div>`;
 }
 function closeAll(){$('#drawer').classList.remove('open');$('#modal').classList.remove('open');$('#ov').classList.remove('open');if(V.route==='buscar'||V.route==='base')renderFilters();}
 
