@@ -1,4 +1,4 @@
-# Busca de Empresas — servidor
+# Busca de Empresas (Atlantica Natural 3) — servidor
 
 Código da Edge Function `busca-cnpj` do Supabase (projeto "isabeladelimaalmeida4-cyber's Project").
 O site fica em `busca-cnpj/index.html` e é publicado no Render a partir desta ramificação.
