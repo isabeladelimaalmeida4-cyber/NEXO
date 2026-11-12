@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Base de Empresas · Atlantica Natural 3</title>
+<title>Base de Empresas · Atlantica Natural</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -214,7 +214,7 @@ tbody tr:hover .c-name,.mcard:hover .c-name{color:var(--accent);text-decoration:
 <!-- LOGIN -->
 <div class="login" id="loginView">
   <form class="login-card" id="loginForm">
-    <div class="logo"><i></i>Atlantica Natural 3 <small>BASE DE EMPRESAS</small></div>
+    <div class="logo"><i></i>Atlantica Natural <small>BASE DE EMPRESAS</small></div>
     <h1>Entrar</h1>
     <p>Ferramenta interna de prospecção. Digite a sua senha de acesso.</p>
     <input class="inp" type="password" id="pass" placeholder="Senha de acesso" autocomplete="current-password" required>
@@ -228,7 +228,7 @@ tbody tr:hover .c-name,.mcard:hover .c-name{color:var(--accent);text-decoration:
 <div id="app" class="hidden">
 <header>
   <div class="wrap nav">
-    <div class="logo"><i></i><span class="lt">Atlantica Natural 3</span> <small>BASE DE EMPRESAS</small></div>
+    <div class="logo"><i></i><span class="lt">Atlantica Natural</span> <small>BASE DE EMPRESAS</small></div>
     <nav class="tabs">
       <a href="#painel" data-r="painel">Painel</a>
       <a href="#buscar" data-r="buscar">Buscar</a>
@@ -347,7 +347,7 @@ const SEGMENTS=[
 ];
 const DEFAULT_TPL=`Olá! Tudo bem? Falo com a {empresa}?
 
-Sou [SEU NOME], da Atlantica Natural 3. Vi que vocês atuam com {atividade} em {cidade}/{uf} e queria apresentar [O QUE VOCÊ OFERECE].
+Sou [SEU NOME], da Atlantica Natural. Vi que vocês atuam com {atividade} em {cidade}/{uf} e queria apresentar [O QUE VOCÊ OFERECE].
 
 Posso te mandar mais detalhes por aqui?`;
 
@@ -355,7 +355,7 @@ Posso te mandar mais detalhes por aqui?`;
 function load(k,d){try{const v=localStorage.getItem('nexobase_'+k);return v!=null?JSON.parse(v):d;}catch(e){return d;}}
 function save(k,v){try{localStorage.setItem('nexobase_'+k,JSON.stringify(v));}catch(e){}}
 let PASS=load('pass','')||(()=>{try{return sessionStorage.getItem('nexobase_pass')||'';}catch(e){return '';}})();
-let TPL=String(load('tpl',DEFAULT_TPL)).replace(/\bda NEXO\b/g,'da Atlantica Natural 3');
+let TPL=String(load('tpl',DEFAULT_TPL)).replace(/\bda (NEXO|Atlantica Natural 3)(?=[\s.,!?]|$)/g,'da Atlantica Natural');
 const newFilters=()=>({cnae:new Map(),uf:[],municipio:[],mei:'nao',simples:'',abertura_de:'',abertura_ate:'',capital_min:'',capital_max:'',com_telefone:true,somente_celular:false,com_email:false,somente_matriz:false,texto:'',porte:''});
 const F=newFilters();
 const V={route:'painel',rows:[],total:0,page:1,per:50,ordem:'recentes',mode:'busca',busy:false,run:null,newSet:new Set()};
