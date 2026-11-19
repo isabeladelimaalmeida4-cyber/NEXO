@@ -211,6 +211,13 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 .mono{font-variant-numeric:tabular-nums}
 .right{text-align:right}
 .mt0{margin-top:0}.mb0{margin-bottom:0}
+.rtree{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px;margin:8px 0}
+.rroot{display:flex;align-items:center;gap:8px;font-size:14px}
+.rkids{margin-left:16px;padding-left:12px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.rnode{position:relative}
+.rnode:before{content:"";position:absolute;left:-14px;top:26px;width:12px;border-top:2px solid var(--line)}
+.rcard{margin:0}
+.rtoggle{display:block;margin:6px 0 0 4px;font-size:12.5px}
 .hide{display:none!important}
 </style>
 </head>
@@ -712,6 +719,7 @@ function viewInicio(){
   const recentes=arr('empresas').sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0)).slice(0,4);
   const nome=c.vendedor?', '+esc(c.vendedor.split(' ')[0]):'';
   return`
+  ${Store.perfil&&PLACEHOLDER_NOME.test(Store.perfil.nome||'')?`<div class="note">${ic('users',18)}<div>Complete seu <b>nome completo</b> para entrar na rede da sua líder. <button class="link" data-a="go" data-r="ajustes">Completar agora</button></div></div>`:''}
   <section class="hero">
     <div class="eyebrow">Olá${nome} · ${MESES_L[d.getMonth()]} ${d.getFullYear()}</div>
     <h1>Seu mês em vendas</h1>
@@ -1082,7 +1090,7 @@ function viewMais(){
    ${t('carreira','star','Plano de carreira',(()=>{const c=carreiraCalc();return c.preenchido?(c.idx>=0?NIVEIS[c.idx].n:'Rumo ao Bronze')+(c.ativo?' · ativa':' · ativação pendente'):'Graduação, VP e bônus viagem'})())}
    ${t('scripts','wa','Scripts de abordagem',`${SCRIPTS.length} mensagens prontas`)}
    ${t('manual','leaf','Manual da consultora','Públicos, canais, automações e regras')}
-   ${t('rede','network','Minha rede',`${arr('rede').filter(r=>r.tipo==='downline').length} na equipe`)}
+   ${t('rede','network','Minha rede',S.rede?`${(S.rede.rede||[]).length} pessoa(s) conectada(s)`:'Sua equipe conectada')}
    ${t('notificacoes','bell','Notificações',`${notificacoes().length} pendente(s)`)}
    ${t('ajustes','gear','Ajustes','Mensagens, senha e backup')}
   </div>`;
@@ -1217,13 +1225,104 @@ function viewFabricas(){
   <p class="small muted">Organize com quais fábricas você trabalha. Cada produto pode ser ligado a uma delas, e o app avisa quando o seu preço fugir do sugerido.</p>
   ${l.length?`<div class="list">${l.map(f=>{const n=arr('produtos').filter(p=>p.fabricaId===f.id).length;return`<div class="item" data-a="formFabrica" data-id="${f.id}"><div class="hd"><div class="av">${ic('factory',20)}</div><div class="grow"><div class="t">${esc(f.nome)}</div><div class="s">${n} produto${n===1?'':'s'}${f.contato?' · '+esc(f.contato):''}${f.prazo?' · entrega '+esc(f.prazo):''}</div></div>${f.telefone?`<a class="btn sm wa" href="${esc(waLink(f.telefone,''))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',15)}</a>`:''}</div></div>`}).join('')}</div>`:`<div class="empty">Nenhuma fábrica cadastrada.</div>`}`;
 }
+/* ---- rede conectada (logins das consultoras) ---- */
+const PLACEHOLDER_NOME=/^Consultora \d+$/;
+async function carregarRede(forcar){
+  if(S.redeLoading)return;if(!forcar&&S.rede&&Date.now()-S.rede._t<120000)return;if(!forcar&&S.redeErro&&!S.rede)return;
+  S.redeLoading=true;S.redeErro='';schedule();
+  try{const{data,error}=await sbc.rpc('app_minha_rede');if(error)throw error;S.rede={...data,_t:Date.now()}}
+  catch(e){if(S.rede)S.rede._t=Date.now();S.redeErro=/fetch|network/i.test(String(e.message))?'Sem conexão: não consegui carregar sua rede.':(e.message||'Não consegui carregar sua rede.')}
+  S.redeLoading=false;render();
+}
+const gradNome=i=>i>=0&&NIVEIS[i]?NIVEIS[i].n:'Sem graduação';
+const gradCor=i=>i>=0&&NIVEIS[i]?NIVEIS[i].c:'#b9c3bf';
+function redeFilhos(id){return((S.rede&&S.rede.rede)||[]).filter(p=>p.patrocinador_id===id)}
+function redeAbaixo(id){let n=0;const st=[id];while(st.length){const k=st.pop();redeFilhos(k).forEach(c=>{n++;st.push(c.user_id)})}return n}
+function redeNo(p){
+  const filhos=redeFilhos(p.user_id),aberto=!(S.redeFechados||{})[p.user_id],pct=p.meta_pct;
+  const at=p.ativa===true?'<span class="pill ok">Ativa</span>':p.ativa===false?'<span class="pill warn">Ativação pendente</span>':'';
+  return`<div class="rnode"><div class="item rcard" data-a="redePessoa" data-id="${p.user_id}" style="border-left:5px solid ${gradCor(p.grad_idx)}">
+    <div class="hd"><div class="av" style="background:${gradCor(p.grad_idx)}22;color:${p.grad_idx>=0?gradCor(p.grad_idx):'var(--deep)'}">${esc(initials(p.nome))}</div>
+     <div class="grow"><div class="t">${esc(p.nome)}</div><div class="row" style="gap:5px;margin-top:4px"><span class="pill" style="background:${gradCor(p.grad_idx)}22;color:var(--ink)">${esc(gradNome(p.grad_idx))}</span>${at}</div></div>
+     <span class="tiny muted" style="white-space:nowrap">${p.nivel}ª linha</span></div>
+    ${pct!=null?`<div class="row nowrap small" style="margin-top:10px;gap:8px"><span class="muted" style="white-space:nowrap">Meta do mês</span><div class="bar ${pct>=100?'ok':''}" style="flex:1"><i style="width:${Math.min(100,pct)}%"></i></div><b class="mono" style="white-space:nowrap">~${pct}%</b></div>`:''}
+    <div class="s" style="margin-top:6px">${esc(p.vendas_faixa)} · ${esc(p.atividade)}</div>
+  </div>
+  ${filhos.length?`<button class="link rtoggle" data-a="redeToggle" data-id="${p.user_id}">${aberto?'▾':'▸'} ${filhos.length} pessoa${filhos.length>1?'s':''} conectada${filhos.length>1?'s':''} por ${esc(p.nome.split(' ')[0])}</button>
+   ${aberto?`<div class="rkids">${filhos.map(redeNo).join('')}</div>`:''}`:''}</div>`;
+}
 function viewRede(){
-  const l=arr('rede'),up=l.filter(r=>r.tipo==='upline'),down=l.filter(r=>r.tipo!=='upline').sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
-  const card=r=>`<div class="item" data-a="formRede" data-id="${r.id}"><div class="hd"><div class="av">${esc(initials(r.nome))}</div><div class="grow"><div class="t">${esc(r.nome)}</div><div class="s">${esc([r.nivel,r.desde?'desde '+fmtDate(r.desde):'',r.cidade].filter(Boolean).join(' · ')||'—')}</div></div>${r.telefone?`<a class="btn sm wa" href="${esc(waLink(r.telefone,''))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',15)}</a>`:''}</div></div>`;
-  return`<div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formRede">${ic('plus',17)} Adicionar pessoa</button></div>
-  <p class="small muted">Para quem vende em rede: quem está acima de você (upline) e a sua equipe (downlines), tudo em uma tela.</p>
-  <div class="sec"><h3>Upline</h3><span class="small muted">${up.length}</span></div>${up.length?`<div class="list">${up.map(card).join('')}</div>`:'<div class="empty" style="padding:18px">Ninguém cadastrado acima de você.</div>'}
-  <div class="sec"><h3>Minha equipe</h3><span class="small muted">${down.length}</span></div>${down.length?`<div class="list">${down.map(card).join('')}</div>`:'<div class="empty" style="padding:18px">Sua equipe aparece aqui.</div>'}`;
+  carregarRede(false);
+  const R=S.rede,manual=arr('rede').sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+  const nomeProvisorio=Store.perfil&&PLACEHOLDER_NOME.test(Store.perfil.nome||'');
+  if(!R)return`<div class="empty">${S.redeErro?esc(S.redeErro)+`<br><button class="btn" data-a="redeAtualizar">Tentar de novo</button>`:'<div class="spin"></div>Carregando sua rede…'}</div>`;
+  const rede=R.rede||[],eu=R.eu||{},diretas=rede.filter(p=>p.nivel===1);
+  const conhec=rede.filter(p=>p.ativa!==null&&p.ativa!==undefined),ativas=conhec.filter(p=>p.ativa).length;
+  const pcts=rede.map(p=>p.meta_pct).filter(x=>x!=null),media=pcts.length?Math.round(sum(pcts)/pcts.length/10)*10:null;
+  const grads={};rede.forEach(p=>{grads[p.grad_idx]=(grads[p.grad_idx]||0)+1});
+  const fx={};rede.forEach(p=>{fx[p.vendas_ordem]=(fx[p.vendas_ordem]||0)+1});
+  const fxTop=Object.entries(fx).sort((a,b)=>b[1]-a[1]||b[0]-a[0])[0];const fxNome=fxTop?(rede.find(p=>String(p.vendas_ordem)===fxTop[0])||{}).vendas_faixa:'';
+  const usaram=rede.filter(p=>p.atividade==='Hoje'||p.atividade==='Nesta semana').length;
+  return`
+  ${nomeProvisorio?`<div class="note">${ic('alert',18)}<div>Seu cadastro ainda está como “${esc(Store.perfil.nome)}”. Coloque seu <b>nome completo</b> em Ajustes para sua líder te encontrar e te conectar. <button class="link" data-a="go" data-r="ajustes">Ir para Ajustes</button></div></div>`:''}
+  <div class="hero" style="margin-top:4px">
+    <div class="eyebrow">${R.patrocinadora?`Na rede de ${esc(R.patrocinadora.nome)}`:(rede.length?'Você é a líder desta rede':'Sua rede')}</div>
+    <h1 style="font-size:23px;margin:4px 0 10px">${esc(eu.nome||'')}</h1>
+    <div class="row" style="gap:6px"><span class="pill" style="background:${gradCor(eu.grad_idx)};color:${eu.grad_idx>=0?'#fff':'var(--ink)'}">${esc(gradNome(eu.grad_idx))}</span><span class="pill" style="background:rgba(255,255,255,.16);color:#fff">${rede.length} pessoa${rede.length===1?'':'s'} na rede</span><span class="pill" style="background:rgba(255,255,255,.16);color:#fff">${diretas.length} direta${diretas.length===1?'':'s'}</span></div>
+  </div>
+  <div class="row" style="margin:12px 0 4px"><button class="btn pri" data-a="redeAdicionar">${ic('plus',17)} Adicionar pessoa à rede</button><button class="btn" data-a="redeAtualizar" ${S.redeLoading?'disabled':''}>${S.redeLoading?'Atualizando…':'Atualizar'}</button></div>
+  ${S.redeErro?`<div class="note warn">${ic('alert',18)}<div>${esc(S.redeErro)}</div></div>`:''}
+  ${rede.length?`
+  <div class="sec"><h3>Resumo da equipe</h3><span class="tiny muted">valores aproximados</span></div>
+  <div class="grid4" style="margin-top:6px">
+    <div class="stat"><div class="l">Média da meta do mês</div><div class="v">${media!=null?'~'+media+'%':'—'}</div></div>
+    <div class="stat"><div class="l">Ativas no ciclo</div><div class="v">${conhec.length?`${ativas}/${conhec.length}`:'—'}</div></div>
+    <div class="stat"><div class="l">Usaram o app na semana</div><div class="v">${usaram}/${rede.length}</div></div>
+    <div class="stat"><div class="l">Vendas mais comuns</div><div class="v" style="font-size:14px;margin-top:6px">${esc(fxNome||'—')}</div></div>
+  </div>
+  <div class="card flat" style="margin-top:0"><div class="lbl" style="margin-bottom:8px">Graduações na rede</div><div class="row" style="gap:6px">${Object.entries(grads).sort((a,b)=>b[0]-a[0]).map(([g,n])=>`<span class="pill" style="background:${gradCor(+g)}22;color:var(--ink)"><i style="width:8px;height:8px;border-radius:50%;background:${gradCor(+g)};display:inline-block"></i>${esc(gradNome(+g))} · ${n}</span>`).join('')}</div></div>
+  <div class="sec"><h3>Como sua rede está conectada</h3></div>
+  <div class="rtree"><div class="rroot"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--deep);color:#fff">${esc(initials(eu.nome))}</div><b>Você</b><span class="tiny muted">conectou ${diretas.length}</span></div>
+   <div class="rkids">${diretas.map(redeNo).join('')}</div></div>`
+  :`<div class="empty"><h3>Sua rede começa aqui</h3>Adicione as pessoas que você cadastrou, pelo nome completo. Quem já tem login no app aparece conectada, com nível, progresso e atividade.<br><button class="btn pri" data-a="redeAdicionar">${ic('plus',16)} Adicionar pessoa</button></div>`}
+  <p class="tiny muted">Para preservar a privacidade, você vê faixas e médias (vendas, meta, clientes), não os valores exatos. Graduação e ativação aparecem quando cada pessoa atualiza o Plano de carreira no app.</p>
+  <div class="sec"><h3>Contatos sem login</h3><button class="link" data-a="formRede">+ Adicionar</button></div>
+  ${manual.length?`<div class="list">${manual.map(r=>`<div class="item" data-a="formRede" data-id="${r.id}"><div class="hd"><div class="av">${esc(initials(r.nome))}</div><div class="grow"><div class="t">${esc(r.nome)}</div><div class="s">${esc([r.tipo==='upline'?'Acima de mim':'Minha equipe',r.nivel,r.desde?'desde '+fmtDate(r.desde):''].filter(Boolean).join(' · '))}</div></div>${r.telefone?`<a class="btn sm wa" href="${esc(waLink(r.telefone,''))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',15)}</a>`:''}</div></div>`).join('')}</div>`:'<p class="small muted">Pessoas que ainda não têm login no app (por exemplo, recém-cadastradas na Atlântica) podem ficar anotadas aqui.</p>'}`;
+}
+function redePessoa(id){
+  const p=((S.rede&&S.rede.rede)||[]).find(x=>x.user_id===id);if(!p)return;
+  const pat=p.nivel===1?'Você':(((S.rede.rede||[]).find(x=>x.user_id===p.patrocinador_id))||{}).nome||'—';
+  const abaixo=redeAbaixo(p.user_id);
+  openSheet(p.nome,`<div class="row" style="gap:6px;margin-bottom:12px"><span class="pill" style="background:${gradCor(p.grad_idx)};color:${p.grad_idx>=0?'#fff':'var(--ink)'}">${esc(gradNome(p.grad_idx))}</span>${p.ativa===true?'<span class="pill ok">Ativa no ciclo</span>':p.ativa===false?'<span class="pill warn">Ativação pendente</span>':'<span class="pill">Ativação não informada</span>'}</div>
+   ${p.meta_pct!=null?`<div class="small muted">Meta de faturamento do mês</div><div class="row nowrap" style="gap:8px;margin:4px 0 12px"><div class="bar ${p.meta_pct>=100?'ok':''}" style="flex:1;height:10px"><i style="width:${Math.min(100,p.meta_pct)}%"></i></div><b class="mono">~${p.meta_pct}%</b></div>`:''}
+   <dl class="kv">
+    <dt>Vendas no mês</dt><dd>${esc(p.vendas_faixa)}</dd>
+    <dt>Clientes</dt><dd>${esc(p.clientes_faixa)}</dd>
+    <dt>Prospecção</dt><dd>${esc(p.contatos_faixa)}</dd>
+    <dt>Uso do app</dt><dd>${esc(p.atividade)}</dd>
+    <dt>Posição</dt><dd>${p.nivel}ª linha · conectada por ${esc(pat)}</dd>
+    <dt>Rede dela</dt><dd>${abaixo} pessoa${abaixo===1?'':'s'} abaixo</dd>
+    ${p.desde?`<dt>Na rede desde</dt><dd>${fmtDate(String(p.desde).slice(0,10))}</dd>`:''}
+    <dt>Login</dt><dd>${esc(p.usuario)}</dd>
+   </dl>
+   ${p.carreira_mes?`<p class="tiny muted">Plano de carreira atualizado em ${MESES_L[+p.carreira_mes.slice(5)-1]}.</p>`:''}
+   <div class="row" style="margin-top:12px">${p.telefone?`<a class="btn wa" href="${esc(waLink(p.telefone,''))}" target="_blank" rel="noopener">${ic('wa',16)} WhatsApp</a>`:''}${p.nivel===1?`<button type="button" class="btn danger" data-a="redeDesconectar" data-id="${p.user_id}">Tirar da minha rede</button>`:''}</div>`,{});
+}
+function redeAdicionar(){
+  openSheet('Adicionar pessoa à rede',`<p class="small muted mt0">Digite o nome completo, como ela colocou no cadastro dela. Se ela já tiver login no app, aparece aqui para conectar.</p>
+   <div class="row nowrap"><input class="inp" id="redeQ" placeholder="Nome completo" autocomplete="off"><button type="button" class="btn pri" data-a="redeBuscar">Buscar</button></div>
+   <div id="redeRes" style="margin-top:12px"></div>`,{noFooter:false});
+  const q=$('#redeQ');if(q)q.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();A.redeBuscar()}});
+}
+const SITU={disponivel:['Pode conectar','ok'],na_sua_rede:['Já está na sua rede','sea'],em_outra_rede:['Já está na rede de outra pessoa','warn'],sua_upline:['Está acima de você','gold'],voce:['É você','']};
+async function redeBuscar(){
+  const q=($('#redeQ')||{}).value||'';const box=$('#redeRes');if(!box)return;
+  if(q.trim().length<4){box.innerHTML='<p class="small" style="color:var(--coral)">Digite pelo menos 4 letras do nome.</p>';return}
+  box.innerHTML='<p class="small muted">Procurando…</p>';
+  const{data,error}=await sbc.rpc('app_buscar_consultora',{p_nome:q});
+  if(error){box.innerHTML=`<p class="small" style="color:var(--coral)">${esc(/fetch|network/i.test(error.message)?'Sem conexão.':error.message)}</p>`;return}
+  box.innerHTML=(data||[]).length?`<div class="list">${data.map(c=>`<div class="item" style="cursor:default"><div class="hd"><div class="av">${esc(initials(c.nome))}</div><div class="grow"><div class="t">${esc(c.nome)}</div><div class="s">Login: ${esc(c.usuario)}</div><span class="pill ${SITU[c.situacao][1]}" style="margin-top:6px">${SITU[c.situacao][0]}</span></div>${c.situacao==='disponivel'?`<button type="button" class="btn sm sea" data-a="redeConectar" data-id="${c.user_id}" data-nome="${esc(c.nome)}">Conectar</button>`:''}</div></div>`).join('')}</div>`
+   :`<div class="note sea">${ic('users',18)}<div>Ninguém com esse nome tem login no app ainda. Confira se o nome está igual ao cadastro dela ou anote como contato sem login.<div style="margin-top:8px"><button type="button" class="btn sm" data-a="redeManual">Anotar como contato sem login</button></div></div></div>`;
 }
 function regrasHtml(){return`<div class="card"><h3>${ic('alert',18)} Regras do contrato e comunicação</h3>
    <ul class="small" style="padding-left:18px;margin:0 0 4px">
@@ -1298,7 +1397,10 @@ function viewAjustes(){
   const vars=a=>`<div class="vars">${a.map(v=>`<code data-a="insVar" data-t="${v[0]}" data-v="{${v[1]}}">{${v[1]}}</code>`).join('')}</div>`;
   const ex={empresa:'Padaria Sol',cidade:'Campo Grande',uf:'MS',atividade:'padaria e confeitaria',seunome:c.vendedor||'Você',negocio:c.negocio,cliente:'Ana',valor:brl(120),vencimento:fmtDate(today())};
   return`
-  <form id="cfgForm" class="card mt0" style="margin-top:4px"><h3>Seu negócio</h3>
+  <div class="card mt0" style="margin-top:4px"><h3>${ic('users',18)} Seu nome completo</h3>
+   <p class="small muted mt0">É por ele que sua líder te encontra para conectar você à rede dela.</p>
+   <div class="row nowrap"><input class="inp" id="cNomeComp" value="${esc(Store.perfil&&!PLACEHOLDER_NOME.test(Store.perfil.nome||'')?Store.perfil.nome:'')}" placeholder="Ex.: Maria Aparecida da Silva"><button class="btn pri" data-a="salvarNomeCompleto">Salvar</button></div></div>
+  <form id="cfgForm" class="card" ><h3>Seu negócio</h3>
    <div class="field"><label for="cNeg">Nome do negócio</label><input class="inp" id="cNeg" name="negocio" value="${esc(c.negocio)}"></div>
    <div class="field"><label for="cVend">Seu nome</label><input class="inp" id="cVend" name="vendedor" value="${esc(c.vendedor)}" placeholder="Aparece nas mensagens e comprovantes"></div>
    <div class="field"><label for="cWa">Seu WhatsApp</label><input class="inp" id="cWa" name="whatsapp" inputmode="tel" value="${esc(c.whatsapp)}" placeholder="(67) 99999-0000"></div>
@@ -1592,6 +1694,18 @@ const A={
   buscaAdd:el=>{const src=[...((S.busca&&S.busca.rows)||[]),...(S.cnpj&&S.cnpj.receita?[S.cnpj.receita]:[])];const r=src.find(x=>digits(x.cnpj)===el.dataset.cnpj);if(r){addDaBusca([r]);toast('Adicionada à sua base ✓');render()}},
   buscaAddTodas:()=>{const n=addDaBusca(S.busca.rows);toast(`${n} empresa(s) adicionada(s) à sua base ✓`);render()},
   cnpjReceita:async el=>{const c=el.dataset.cnpj;S.cnpj={cnpj:c,carregando:true};render();try{const d=await chamarBusca({action:'cnpj',cnpj:c});S.cnpj={cnpj:c,receita:d.row}}catch(e){S.cnpj={cnpj:c,erro:e.message}}render()},
+  redeAtualizar:()=>carregarRede(true),
+  redeToggle:el=>{S.redeFechados=S.redeFechados||{};S.redeFechados[el.dataset.id]=!S.redeFechados[el.dataset.id];render()},
+  redePessoa:el=>redePessoa(el.dataset.id),
+  redeAdicionar:()=>redeAdicionar(),
+  redeBuscar:()=>redeBuscar(),
+  redeManual:()=>{const n=($('#redeQ')||{}).value||'';closeSheet();formRede(null);setTimeout(()=>{const f=$('#f_nome');if(f)f.value=n},20)},
+  redeConectar:async el=>{el.disabled=true;el.textContent='Conectando…';const{error}=await sbc.rpc('app_conectar',{p_alvo:el.dataset.id});
+    if(error){el.disabled=false;el.textContent='Conectar';return toast(/fetch|network/i.test(error.message)?'Sem conexão.':error.message)}
+    closeSheet();toast(`${el.dataset.nome} agora está na sua rede ✓`);carregarRede(true)},
+  redeDesconectar:el=>confirmSheet('Tirar esta pessoa da sua rede? Ela e quem ela conectou deixam de aparecer para você.',async()=>{const{error}=await sbc.rpc('app_desconectar',{p_alvo:el.dataset.id});if(error)return toast(error.message);toast('Pessoa removida da sua rede');carregarRede(true)},'Tirar da rede'),
+  salvarNomeCompleto:async()=>{const v=($('#cNomeComp')||{}).value||'';const{data,error}=await sbc.rpc('app_definir_nome',{p_nome:v});if(error)return toast(/fetch|network/i.test(error.message)?'Sem conexão.':error.message);
+    Store.perfil={...Store.perfil,nome:data};if(!S.config.vendedor)Store.setConfig({vendedor:String(data).split(' ')[0]});if(S.rede)S.rede._t=0;toast('Nome completo salvo ✓');render()},
   moreProd:()=>{S.ui.prodLimit+=150;render()},
   moreCat:()=>{S.ui.catLimit+=60;render()},
   copyScript:el=>copy(scriptFill(SCRIPTS[+el.dataset.i][1],{}),'Mensagem copiada ✓'),
