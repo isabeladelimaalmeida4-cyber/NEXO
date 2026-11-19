@@ -224,6 +224,36 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 .qval.on{background:#0d1b2a;color:#fff}
 .qnome{font-size:12.5px;font-weight:700;color:#a7afac;line-height:1.2}
 .demo-strip{background:#0d1b2a;color:#f6e7b8;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:5px 8px;margin:calc(-8px - env(safe-area-inset-top)) 0 8px;padding-top:calc(5px + env(safe-area-inset-top))}
+.plist{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.prow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prank{width:34px;height:34px;border-radius:10px;background:var(--sand);display:grid;place-items:center;font-weight:800;font-size:12.5px;color:var(--muted);flex:none}
+.prank.top1{background:#e8c770;color:#4d3a07}.prank.top2{background:#d5dade;color:#39434a}.prank.top3{background:#e2b48f;color:#5a3215}
+.pinfo{flex:1;min-width:0}.pinfo b{font-size:14px;line-height:1.25;display:block}
+.orgwrap{overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 8px 22px;margin:6px 0;-webkit-overflow-scrolling:touch;max-height:70vh}
+.org{display:inline-block;min-width:100%;text-align:center}
+.org ul{display:flex;justify-content:center;padding:20px 0 0;margin:0;position:relative}
+.org li{list-style:none;position:relative;padding:20px 5px 0;display:flex;flex-direction:column;align-items:center}
+.org li::before,.org li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:20px;border-top:2px solid #cdc3ae}
+.org li::after{right:auto;left:50%;border-left:2px solid #cdc3ae}
+.org li:only-child::before,.org li:only-child::after{display:none}
+.org li:only-child{padding-top:0}
+.org li:first-child::before,.org li:last-child::after{border:0 none}
+.org li:last-child::before{border-right:2px solid #cdc3ae;border-radius:0 10px 0 0}
+.org li:first-child::after{border-radius:10px 0 0 0}
+.org ul ul::before{content:"";position:absolute;top:0;left:50%;height:20px;border-left:2px solid #cdc3ae}
+.org>ul{padding-top:0}.org>ul>li{padding-top:0}.org>ul>li::before,.org>ul>li::after{display:none}
+.onode{position:relative;z-index:3;width:98px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--g);border-radius:14px;padding:9px 6px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;box-shadow:0 2px 8px rgba(16,40,43,.07)}
+.onode:active{transform:scale(.97)}
+.onode.root{width:118px;background:var(--deep);color:#fff;border-color:var(--deep);border-top-color:var(--g);cursor:default}
+.oav{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:color-mix(in srgb,var(--g) 16%,white);color:var(--ink);border:2px solid var(--g)}
+.odot{position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+.odot.ok{background:#2c7a4b}.odot.warn{background:#bf5530}
+.onome{font-size:12px;font-weight:800;line-height:1.15;margin-top:2px}
+.ograd{font-size:10.5px;color:var(--muted);font-weight:700}
+.obar{width:72px;height:5px;background:var(--sand);border-radius:4px;overflow:hidden;margin-top:4px}.obar i{display:block;height:100%;background:var(--sea)}
+.opct{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.otog{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);min-width:26px;height:22px;padding:0 7px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:11.5px;font-weight:800;color:var(--deep);cursor:pointer;z-index:2}
 .hide{display:none!important}
 </style>
 </head>
@@ -324,7 +354,7 @@ const DEF_CONFIG={
   msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!',
   categorias:['Cliente final','Recompra mensal','Salão / parceiro','Empresa','VIP'],
   metaMensal:3000,metaClientes:25,metaContatos:40,carreira:null,
-  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com'
+  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br'
 };
 /* ===== dados do Manual de operação da consultora (catálogo jul/2026, plano de carreira, scripts) ===== */
 const NIVEIS=[
@@ -468,7 +498,7 @@ const S={route:'inicio',params:{},stack:[],data:Object.fromEntries(KINDS.map(k=>
   ready:false,offline:false,unlocked:false,cnpj:null,draft:null,cart:{},
   ui:{baseQ:'',baseUf:'',baseStatus:'',baseContato:'',baseSort:'recentes',baseLimit:60,
       vendQ:'',vendPer:'mes',vendStatus:'',vendMin:'',vendMax:'',vendSort:'data',
-      cliQ:'',cliCat:'',cliSort:'nome',prodQ:'',prodCat:'',prodAlert:'',cobTab:'vencidas',catCat:'',catQ:'',catLimit:40,prodLimit:80,cnpjQ:''}};
+      cliQ:'',cliCat:'',cliSort:'nome',prodQ:'',prodCat:'',prodAlert:'',cobTab:'vencidas',catCat:'',catQ:'',catLimit:40,catOrdem:'vendidos',prodLimit:80,cnpjQ:''}};
 /* catálogo Atlântica embutido: aparece sempre; o que você editar é salvo por cima, e o que excluir fica oculto */
 let _builtin=null;
 function builtin(k){if(!_builtin){const ps={};montarCatalogo().forEach(p=>{ps[p.id]=p});_builtin={produtos:ps,fabricas:{f_atlantica:{id:'f_atlantica',nome:'Atlântica Natural',contato:'contato@atlanticanatural.com.br',prazo:'Entrega pela empresa',notas:'Loja: loja.atlanticanatural.com.br · Escritório Virtual: ev.atlanticanatural.com.br'}}}}return _builtin[k]}
@@ -699,6 +729,7 @@ function schedule(){if(rq)return;rq=requestAnimationFrame(()=>{rq=null;render()}
 function render(){
   const app=$('#app');
   const ae=document.activeElement;let fid=null,ss=null,se=null;
+  {const ow=document.getElementById('orgWrap');if(ow)S.orgScroll=ow.scrollLeft}
   if(ae&&ae.id&&app.contains(ae)){fid=ae.id;try{ss=ae.selectionStart;se=ae.selectionEnd}catch(e){}}
   if(!S.ready){app.innerHTML=`<div class="splash"><div><div class="spin"></div>Carregando seus dados…</div></div>`;return}
   if(S.needLogin){app.innerHTML=viewLock();return}
@@ -716,6 +747,7 @@ function render(){
   <main class="wrap">${body}</main>
   ${S.route==='catalogo'?cartBar():''}
   <nav class="nav"><div class="nav-in">${TABS.map(([k,l,i])=>`<button class="${active===k?'on':''} ${k==='vendas'?'mid':''}" data-a="tab" data-r="${k}"><span class="ic">${ic(i,22)}</span>${l}</button>`).join('')}</div></nav>`;
+  if(S.route==='rede')ajustarOrg();
   if(fid){const el=document.getElementById(fid);if(el){el.focus({preventScroll:true});try{if(ss!=null)el.setSelectionRange(ss,se)}catch(e){}}}
 }
 
@@ -1139,12 +1171,12 @@ function viewProdutos(){
   l.sort(ordCat);
   const vend={};const lim=addDays(today(),-90);arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(i.produtoId)vend[i.produtoId]=(vend[i.produtoId]||0)+num(i.qtd)}));
   return`
-  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
+  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button><a class="btn" href="${esc(S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">${ic('store',16)} Loja Atlântica</a></div>
   <div class="scrollx"><button class="chip ${!u.prodAlert&&!u.prodCat?'on':''}" data-a="prodAll">Todos</button><button class="chip ${u.prodAlert==='estoque'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='estoque'?'':'estoque'}">Estoque baixo</button><button class="chip ${u.prodAlert==='preco'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='preco'?'':'preco'}">Preço ≠ catálogo</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="prodQ" data-ui="prodQ" value="${esc(u.prodQ)}" placeholder="Nome, código, categoria ou fábrica"></div>
   <div class="note sea" style="margin-top:4px">${ic('leaf',18)}<div>Catálogo Essencial Atlântica Natural (jul/2026) já incluído: preço de catálogo, preço de consultora (50%) e ciclo de recompra. Toque num produto para ajustar preço, foto ou estoque.</div></div>
   <div class="small muted" style="margin:10px 2px 0"><b>${nf(l.length)}</b> produto${l.length===1?'':'s'}</div>
-  ${l.length?`<div class="list">${l.slice(0,u.prodLimit).map(p=>{const f=get('fabricas',p.fabricaId);return`<div class="item" data-a="formProduto" data-id="${p.id}"><div class="hd"><div class="thumb" style="${p.foto?`background-image:url('${p.foto}')`:''}">${p.foto?'':ic('box',22)}</div><div class="grow"><div class="t">${esc(p.nome)}</div><div class="s">${esc([p.sku,p.categoria,f&&f.nome].filter(Boolean).join(' · ')||'—')}</div>
+  ${l.length?`<div class="list">${l.slice(0,u.prodLimit).map(p=>{const f=get('fabricas',p.fabricaId);return`<div class="item" data-a="formProduto" data-id="${p.id}"><div class="hd">${p.foto?`<div class="thumb" style="background-image:url('${p.foto}')"></div>`:''}<div class="grow"><div class="t">${esc(p.nome)}</div><div class="s">${esc([p.sku,p.categoria,f&&f.nome].filter(Boolean).join(' · ')||'—')}</div>
    <div class="row" style="margin-top:6px;gap:5px">${p.controlaEstoque?`<span class="pill ${estoqueBaixo(p)?'warn':''}">Estoque ${nf(num(p.estoque))}</span>`:''}${precoDiverge(p)?`<span class="pill gold">Catálogo ${brl(p.precoSugerido)}</span>`:''}${p.custo?`<span class="pill">custo ${brl(p.custo)}</span>`:''}${vend[p.id]?`<span class="pill sea">${nf(vend[p.id])} vend. 90d</span>`:''}${p.noCatalogo===false?'<span class="pill">fora do catálogo</span>':''}</div></div><div class="amt">${brl(p.preco)}</div></div></div>`}).join('')}</div>${l.length>u.prodLimit?`<button class="btn block" data-a="moreProd">Mostrar mais (${nf(l.length-u.prodLimit)})</button>`:''}`
    :`<div class="empty">${arr('produtos').length?'Nenhum produto com esses filtros.':'<h3>Nenhum produto</h3>Cadastre seus produtos.'}</div>`}`;
 }
@@ -1165,23 +1197,54 @@ function viewCobranca(){
 function cartItems(){return Object.entries(S.cart).map(([id,q])=>({p:get('produtos',id),q})).filter(x=>x.p&&x.q>0)}
 function cartBar(){const it=cartItems();if(!it.length)return'';const tot=sum(it,x=>x.q*x.p.preco);
   return`<div class="cartbar"><div style="flex:1"><div class="tiny" style="opacity:.7">${sum(it,x=>x.q)} item(ns) no pedido</div><b class="mono" style="font-size:18px">${brl(tot)}</b></div><button class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.3)" data-a="cartClear">Limpar</button><button class="btn sm sea" data-a="cartFechar">Fechar pedido</button></div>`}
+/* ranking: mais vendidos no app (equipe toda; na falta de conexão, só as suas vendas) */
+async function carregarRanking(forcar){
+  if(S.rankLoading)return;if(!forcar&&S.ranking&&Date.now()-S.ranking._t<300000)return;
+  S.rankLoading=true;
+  try{
+    let rows;
+    if(DEMO){rows=demoRanking()}
+    else{const{data,error}=await sbc.rpc('app_ranking_produtos',{p_dias:90});if(error)throw error;rows=data||[]}
+    const m={};rows.forEach(x=>{m[x.produto_id]={qtd:num(x.qtd),vendas:+x.vendas||0,consultoras:+x.consultoras||0}});
+    S.ranking={m,equipe:true,_t:Date.now()};
+  }catch(e){S.ranking={m:rankingLocal(),equipe:false,_t:Date.now()}}
+  S.rankLoading=false;schedule();
+}
+function rankingLocal(){const lim=addDays(today(),-90),m={};arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(!i.produtoId)return;const o=m[i.produtoId]||(m[i.produtoId]={qtd:0,vendas:0,consultoras:1});o.qtd+=num(i.qtd);o.vendas++}));return m}
+function rankingDe(id){return(S.ranking&&S.ranking.m[id])||null}
+function posicoesRanking(){const m=(S.ranking&&S.ranking.m)||{};const ids=Object.keys(m).filter(id=>get('produtos',id)&&m[id].qtd>0).sort((a,b)=>m[b].qtd-m[a].qtd||m[b].vendas-m[a].vendas);const pos={};ids.forEach((id,i)=>pos[id]=i+1);return pos}
 function viewCatalogo(){
+  carregarRanking(false);
   const u=S.ui,c=S.config;const cats=ordLinhas([...new Set(arr('produtos').filter(p=>p.noCatalogo!==false).map(p=>p.categoria).filter(Boolean))]);
-  const l=catalogoFiltrado();
+  const l=catalogoFiltrado(),pos=posicoesRanking();
+  const maxQ=Math.max(1,...l.map(p=>(rankingDe(p.id)||{}).qtd||0));
+  const R=S.ranking;
   return`
-  <div class="hero" style="margin-top:4px;padding:16px"><div class="eyebrow">Loja virtual</div><h1 style="font-size:22px;margin:4px 0 6px">${esc(c.negocio)}</h1><div class="small" style="color:#cfe7df">Mostre a vitrine para o cliente, monte o pedido tocando nos produtos e feche pelo WhatsApp — ou envie o catálogo em texto.</div>
-   <div class="row" style="margin-top:12px"><button class="btn sm" data-a="copyCatalogo">${ic('copy',15)} Copiar ${u.catCat||u.catQ?'esta seleção':'catálogo'}</button>${l.length&&l.length<=80?`<a class="btn sm wa" href="${esc(waLink('',textoCatalogo()))}" target="_blank" rel="noopener">${ic('wa',15)} Enviar ${u.catCat||u.catQ?'seleção':'catálogo'}</a>`:''}</div>${l.length>80?'<div class="tiny" style="color:#cfe7df;margin-top:8px">Para enviar pelo WhatsApp, escolha uma linha ou busque — o catálogo inteiro é grande demais para uma mensagem.</div>':''}${c.lojaUrl?`<div class="tiny" style="color:#cfe7df;margin-top:8px">Sua loja virtual: ${esc(c.lojaUrl)}</div>`:''}</div>
-  <div class="search" style="margin-top:12px">${ic('search',18)}<input class="inp" id="catQ" data-ui="catQ" value="${esc(u.catQ)}" placeholder="Buscar produto ou fragrância (ex.: sérum, creatina, Zeus)"></div>
-  ${cats.length?`<div class="scrollx" style="margin-top:12px"><button class="chip ${!u.catCat?'on':''}" data-a="ui" data-k="catCat" data-v="">Tudo</button>${cats.map(x=>`<button class="chip ${u.catCat===x?'on':''}" data-a="ui" data-k="catCat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
-  ${l.length?`<div class="prod-grid" style="margin-top:12px">${l.slice(0,u.catLimit).map(p=>{const q=S.cart[p.id]||0;const sem=p.controlaEstoque&&num(p.estoque)<=0;return`<div class="pcard"><div class="ph" style="${p.foto?`background-image:url('${p.foto}')`:''}">${p.foto?'':ic('leaf',30,1.4)}</div><div class="bd"><b>${esc(p.nome)}</b>${p.descricao?`<span class="tiny muted">${esc(p.descricao.slice(0,60))}</span>`:''}<span class="sp"></span><div class="row" style="justify-content:space-between;margin-top:4px;flex-wrap:nowrap"><span class="pr">${brl(p.preco)}</span>${sem?'<span class="pill warn">esgotado</span>':q?`<div class="stepper"><button data-a="cart" data-id="${p.id}" data-v="-1">−</button><input value="${q}" readonly aria-label="Quantidade"><button data-a="cart" data-id="${p.id}" data-v="1">+</button></div>`:`<button class="btn sm sea" data-a="cart" data-id="${p.id}" data-v="1">${ic('plus',15)}</button>`}</div></div></div>`}).join('')}</div>${l.length>u.catLimit?`<button class="btn block" style="margin-top:12px" data-a="moreCat">Mostrar mais (${nf(l.length-u.catLimit)})</button>`:''}`
-   :`<div class="empty">${arr('produtos').length?'Nenhum produto encontrado.':'<h3>Vitrine vazia</h3>Cadastre seus produtos.'}</div>`}
+  <div class="hero" style="margin-top:4px;padding:16px"><div class="eyebrow">Catálogo e loja</div><h1 style="font-size:22px;margin:4px 0 6px">Atlântica Natural</h1>
+   <div class="small" style="color:#cfe7df">Compre os produtos que você precisa direto na loja oficial. A lista abaixo se ordena sozinha pelo que mais sai nas vendas registradas no app.</div>
+   <div class="row" style="margin-top:12px"><a class="btn sm" style="background:#fff;border-color:#fff;color:var(--deep)" href="${esc(c.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">${ic('store',15)} Comprar na loja Atlântica</a>${c.lojaUrl?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
+   <div class="row" style="margin-top:8px"><button class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" data-a="copyCatalogo">${ic('copy',15)} Copiar ${u.catCat||u.catQ?'seleção':'catálogo'}</button>${l.length&&l.length<=80?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(waLink('',textoCatalogo()))}" target="_blank" rel="noopener">${ic('wa',15)} Enviar no WhatsApp</a>`:''}</div></div>
+  <div class="scrollx" style="margin-top:12px">${[['vendidos','Mais vendidos'],['linha','Por linha'],['az','A–Z']].map(([k,t])=>`<button class="chip ${u.catOrdem===k?'on':''}" data-a="ui" data-k="catOrdem" data-v="${k}">${t}</button>`).join('')}</div>
+  <div class="search">${ic('search',18)}<input class="inp" id="catQ" data-ui="catQ" value="${esc(u.catQ)}" placeholder="Buscar produto (ex.: sérum, creatina, Zeus)"></div>
+  ${cats.length?`<div class="scrollx" style="margin-top:10px"><button class="chip ${!u.catCat?'on':''}" data-a="ui" data-k="catCat" data-v="">Todas as linhas</button>${cats.map(x=>`<button class="chip ${u.catCat===x?'on':''}" data-a="ui" data-k="catCat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
+  <div class="tiny muted" style="margin:4px 2px 8px">${R?(R.equipe?'Ranking dos últimos 90 dias com as vendas registradas por toda a equipe no app.':'Sem conexão: ranking só com as suas vendas.'):'Carregando ranking…'} ${l.length} produto${l.length===1?'':'s'}.</div>
+  ${l.length?`<div class="plist">${l.slice(0,u.catLimit).map(p=>{const q=S.cart[p.id]||0,rk=rankingDe(p.id),po=pos[p.id];
+    return`<div class="prow"><div class="prank ${po&&po<=3?'top'+po:''}">${po?po+'º':'—'}</div>
+     <div class="pinfo"><b>${esc(p.nome)}</b><div class="tiny muted">${esc(p.categoria||'')} · ${brl(p.preco)}</div>
+      ${rk&&rk.qtd>0?`<div class="row nowrap" style="gap:8px;margin-top:5px"><div class="bar" style="flex:1;height:6px"><i style="width:${Math.max(4,rk.qtd/maxQ*100)}%;background:var(--gold)"></i></div><span class="tiny mono" style="white-space:nowrap">${nf(rk.qtd)} vendido${rk.qtd===1?'':'s'}</span></div>`:'<div class="tiny" style="color:var(--faint);margin-top:4px">Ainda sem vendas no app</div>'}</div>
+     <div>${q?`<div class="stepper"><button data-a="cart" data-id="${p.id}" data-v="-1">−</button><input value="${q}" readonly aria-label="Quantidade"><button data-a="cart" data-id="${p.id}" data-v="1">+</button></div>`:`<button class="btn sm sea" data-a="cart" data-id="${p.id}" data-v="1" aria-label="Adicionar ao pedido">${ic('plus',15)}</button>`}</div></div>`}).join('')}</div>
+   ${l.length>u.catLimit?`<button class="btn block" style="margin-top:12px" data-a="moreCat">Mostrar mais (${nf(l.length-u.catLimit)})</button>`:''}`
+   :`<div class="empty">${arr('produtos').length?'Nenhum produto encontrado.':'<h3>Catálogo vazio</h3>Cadastre seus produtos.'}</div>`}
   <div style="height:${cartItems().length?70:0}px"></div>`;
 }
 const catIdx=c=>{const i=ATL_CAT.findIndex(g=>g.l===c);return i<0?99:i};
 const ordCat=(a,b)=>catIdx(a.categoria)-catIdx(b.categoria)||(a.ordem??9999)-(b.ordem??9999)||(a.nome||'').localeCompare(b.nome||'','pt');
 const ordLinhas=l=>l.sort((a,b)=>catIdx(a)-catIdx(b)||a.localeCompare(b,'pt'));
-function catalogoFiltrado(){const u=S.ui;let l=arr('produtos').filter(p=>p.noCatalogo!==false);if(u.catCat)l=l.filter(p=>p.categoria===u.catCat);if(u.catQ){const q=norm(u.catQ);l=l.filter(p=>norm([p.nome,p.categoria,p.descricao].join(' ')).includes(q))}return l.sort(ordCat)}
-function textoCatalogo(){const c=S.config,l=catalogoFiltrado();
+function catalogoFiltrado(){const u=S.ui;let l=arr('produtos').filter(p=>p.noCatalogo!==false);if(u.catCat)l=l.filter(p=>p.categoria===u.catCat);if(u.catQ){const q=norm(u.catQ);l=l.filter(p=>norm([p.nome,p.categoria,p.descricao].join(' ')).includes(q))}
+  if(u.catOrdem==='az')return l.sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt'));
+  if(u.catOrdem==='vendidos'){const pos=posicoesRanking(),q=id=>pos[id]||1e9;return l.sort((a,b)=>q(a.id)-q(b.id)||ordCat(a,b))}
+  return l.sort(ordCat)}
+function textoCatalogo(){const c=S.config,l=catalogoFiltrado().slice().sort(ordCat);
   let t=`*${c.negocio} — Catálogo*\n`;let cat=null;
   l.forEach(p=>{if((p.categoria||'')!==cat){cat=p.categoria||'';t+=`\n*${cat||'Produtos'}*\n`}t+=`• ${p.nome} — ${brl(p.preco)}\n`});
   return t+`\nPara pedir, é só responder esta mensagem${c.vendedor?` (${c.vendedor}, consultora independente)`:''}.${c.lojaUrl?`\nOu compre direto na minha loja: ${c.lojaUrl}`:''}`}
@@ -1285,6 +1348,26 @@ function redeNo(p){
   ${filhos.length?`<button class="link rtoggle" data-a="redeToggle" data-id="${p.user_id}">${aberto?'▾':'▸'} ${filhos.length} pessoa${filhos.length>1?'s':''} conectada${filhos.length>1?'s':''} por ${esc(p.nome.split(' ')[0])}</button>
    ${aberto?`<div class="rkids">${filhos.map(redeNo).join('')}</div>`:''}`:''}</div>`;
 }
+const nomeCurto=n=>{const w=String(n||'').trim().split(/\s+/);return w.length>1?w[0]+' '+w[w.length-1]:w[0]||''};
+function orgNo(p){const filhos=redeFilhos(p.user_id),fech=(S.redeFechados||{})[p.user_id];
+  return`<li><div class="onode" data-a="redePessoa" data-id="${p.user_id}" style="--g:${gradCor(p.grad_idx)}" role="button" tabindex="0">
+    <span class="oav">${esc(initials(p.nome))}${p.ativa===true?'<i class="odot ok"></i>':p.ativa===false?'<i class="odot warn"></i>':''}</span>
+    <span class="onome">${esc(nomeCurto(p.nome))}</span><span class="ograd">${esc(gradNome(p.grad_idx))}</span>
+    ${p.meta_pct!=null?`<span class="obar"><i style="width:${Math.min(100,p.meta_pct)}%"></i></span><span class="opct">meta ~${p.meta_pct}%</span>`:'<span class="opct">sem meta</span>'}
+    ${filhos.length?`<button class="otog" data-a="redeToggle" data-id="${p.user_id}" aria-label="${fech?'Mostrar':'Esconder'} equipe">${fech?'+'+filhos.length:'−'}</button>`:''}
+   </div>${filhos.length&&!fech?`<ul>${filhos.map(orgNo).join('')}</ul>`:''}</li>`}
+function organograma(eu,diretas){
+  return`<div class="row" style="justify-content:space-between;margin:2px 0 6px"><span class="tiny muted">Toque em uma pessoa para ver o avanço dela. Arraste para os lados para ver a rede toda.</span>
+   <div class="row" style="gap:4px"><button class="btn sm" data-a="orgZoom" data-v="-1" aria-label="Diminuir">−</button><button class="btn sm" data-a="orgZoom" data-v="1" aria-label="Aumentar">+</button><button class="btn sm" data-a="orgZoom" data-v="0">Ajustar</button></div></div>
+  <div class="orgwrap" id="orgWrap"><div class="org" id="orgIn"><ul><li><div class="onode root" style="--g:${gradCor(eu.grad_idx)}"><span class="oav" style="background:#fff">${esc(initials(eu.nome))}</span><span class="onome">Você</span><span class="ograd" style="color:#cfe7df">${esc(gradNome(eu.grad_idx))}</span></div>
+   ${diretas.length?`<ul>${diretas.map(orgNo).join('')}</ul>`:''}</li></ul></div></div>
+  <div class="row tiny muted" style="gap:12px;margin:2px 2px 0"><span><i class="odot ok" style="position:static;display:inline-block;vertical-align:middle"></i> ativa no ciclo</span><span><i class="odot warn" style="position:static;display:inline-block;vertical-align:middle"></i> ativação pendente</span><span>borda = cor da graduação</span></div>`;
+}
+function ajustarOrg(){
+  const w=document.getElementById('orgWrap'),o=document.getElementById('orgIn');if(!w||!o)return;
+  if(S.redeZoom==null){o.style.zoom=1;const nat=o.scrollWidth,av=w.clientWidth-16;const z=Math.max(.45,Math.min(1,av/nat));S.redeZoom=Math.round(z*100)/100;o.style.zoom=S.redeZoom;w.scrollLeft=(w.scrollWidth-w.clientWidth)/2}
+  else{o.style.zoom=S.redeZoom;if(S.orgScroll!=null)w.scrollLeft=S.orgScroll}
+}
 function viewRede(){
   carregarRede(false);
   const R=S.rede,manual=arr('rede').sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
@@ -1307,6 +1390,9 @@ function viewRede(){
   <div class="row" style="margin:12px 0 4px"><button class="btn pri" data-a="redeAdicionar">${ic('plus',17)} Adicionar pessoa à rede</button><button class="btn" data-a="redeAtualizar" ${S.redeLoading?'disabled':''}>${S.redeLoading?'Atualizando…':'Atualizar'}</button></div>
   ${S.redeErro?`<div class="note warn">${ic('alert',18)}<div>${esc(S.redeErro)}</div></div>`:''}
   ${rede.length?`
+  <div class="row" style="justify-content:space-between;align-items:center;margin-top:18px"><h3 style="font-size:18px">Sua rede</h3><div class="row" style="gap:6px"><button class="chip ${S.redeVista!=='lista'?'on':''}" data-a="redeVista" data-v="org">Organograma</button><button class="chip ${S.redeVista==='lista'?'on':''}" data-a="redeVista" data-v="lista">Lista</button></div></div>
+  ${S.redeVista==='lista'?`<div class="rtree"><div class="rroot"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--deep);color:#fff">${esc(initials(eu.nome))}</div><b>Você</b><span class="tiny muted">conectou ${diretas.length}</span></div>
+   <div class="rkids">${diretas.map(redeNo).join('')}</div></div>`:organograma(eu,diretas)}
   <div class="sec"><h3>Resumo da equipe</h3><span class="tiny muted">valores aproximados</span></div>
   <div class="grid4" style="margin-top:6px">
     <div class="stat"><div class="l">Média da meta do mês</div><div class="v">${media!=null?'~'+media+'%':'—'}</div></div>
@@ -1315,9 +1401,7 @@ function viewRede(){
     <div class="stat"><div class="l">Vendas mais comuns</div><div class="v" style="font-size:14px;margin-top:6px">${esc(fxNome||'—')}</div></div>
   </div>
   <div class="card flat" style="margin-top:0"><div class="lbl" style="margin-bottom:8px">Graduações na rede</div><div class="row" style="gap:6px">${Object.entries(grads).sort((a,b)=>b[0]-a[0]).map(([g,n])=>`<span class="pill" style="background:${gradCor(+g)}22;color:var(--ink)"><i style="width:8px;height:8px;border-radius:50%;background:${gradCor(+g)};display:inline-block"></i>${esc(gradNome(+g))} · ${n}</span>`).join('')}</div></div>
-  <div class="sec"><h3>Como sua rede está conectada</h3></div>
-  <div class="rtree"><div class="rroot"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--deep);color:#fff">${esc(initials(eu.nome))}</div><b>Você</b><span class="tiny muted">conectou ${diretas.length}</span></div>
-   <div class="rkids">${diretas.map(redeNo).join('')}</div></div>`
+`
   :`<div class="empty"><h3>Sua rede começa aqui</h3>Adicione as pessoas que você cadastrou, pelo nome completo. Quem já tem login no app aparece conectada, com nível, progresso e atividade.<br><button class="btn pri" data-a="redeAdicionar">${ic('plus',16)} Adicionar pessoa</button></div>`}
   <p class="tiny muted">Para preservar a privacidade, você vê faixas e médias (vendas, meta, clientes), não os valores exatos. Graduação e ativação aparecem quando cada pessoa atualiza o Plano de carreira no app.</p>
   <div class="sec"><h3>Contatos sem login</h3><button class="link" data-a="formRede">+ Adicionar</button></div>
@@ -1327,7 +1411,9 @@ function redePessoa(id){
   const p=((S.rede&&S.rede.rede)||[]).find(x=>x.user_id===id);if(!p)return;
   const pat=p.nivel===1?'Você':(((S.rede.rede||[]).find(x=>x.user_id===p.patrocinador_id))||{}).nome||'—';
   const abaixo=redeAbaixo(p.user_id);
-  openSheet(p.nome,`<div class="row" style="gap:6px;margin-bottom:12px"><span class="pill" style="background:${gradCor(p.grad_idx)};color:${p.grad_idx>=0?'#fff':'var(--ink)'}">${esc(gradNome(p.grad_idx))}</span>${p.ativa===true?'<span class="pill ok">Ativa no ciclo</span>':p.ativa===false?'<span class="pill warn">Ativação pendente</span>':'<span class="pill">Ativação não informada</span>'}</div>
+  const ate=Math.min(NIVEIS.length-1,Math.max(2,p.grad_idx+2)),de=Math.max(0,ate-4);
+  const trilha=`<div class="small muted" style="margin-bottom:6px">Avanço na companhia</div><div class="row nowrap" style="gap:4px;overflow-x:auto;margin-bottom:14px">${Array.from({length:ate-de+1},(_,k)=>{const i=de+k;return`<div style="text-align:center;min-width:58px">${medalha(i,i<=p.grad_idx,i===p.grad_idx?46:38)}<div class="tiny" style="font-weight:700;color:${i<=p.grad_idx?'var(--ink)':'var(--faint)'}">${esc(NIVEIS[i].n)}</div></div>`}).join('<span style="color:var(--faint);align-self:center">›</span>')}</div>`;
+  openSheet(p.nome,trilha+`<div class="row" style="gap:6px;margin-bottom:12px"><span class="pill" style="background:${gradCor(p.grad_idx)};color:${p.grad_idx>=0?'#fff':'var(--ink)'}">${esc(gradNome(p.grad_idx))}</span>${p.ativa===true?'<span class="pill ok">Ativa no ciclo</span>':p.ativa===false?'<span class="pill warn">Ativação pendente</span>':'<span class="pill">Ativação não informada</span>'}</div>
    ${p.meta_pct!=null?`<div class="small muted">Meta de faturamento do mês</div><div class="row nowrap" style="gap:8px;margin:4px 0 12px"><div class="bar ${p.meta_pct>=100?'ok':''}" style="flex:1;height:10px"><i style="width:${Math.min(100,p.meta_pct)}%"></i></div><b class="mono">~${p.meta_pct}%</b></div>`:''}
    <dl class="kv">
     <dt>Vendas no mês</dt><dd>${esc(p.vendas_faixa)}</dd>
@@ -1467,6 +1553,7 @@ function viewAjustes(){
    <div class="field"><label for="cWa">Seu WhatsApp</label><input class="inp" id="cWa" name="whatsapp" inputmode="tel" value="${esc(c.whatsapp)}" placeholder="(67) 99999-0000"></div>
    <div class="field"><label for="cCid">Sua cidade</label><input class="inp" id="cCid" name="cidade" value="${esc(c.cidade||'')}"><span class="tiny muted">Entra nos scripts de abordagem.</span></div>
    <div class="field"><label for="cLoja">Link da sua loja virtual</label><input class="inp" id="cLoja" name="lojaUrl" value="${esc(c.lojaUrl||'')}" placeholder="loja.atlanticanatural.com.br/…"><span class="tiny muted">Vai no catálogo enviado e na mensagem de recompra.</span></div>
+   <div class="field"><label for="cLojaA">Link da loja Atlântica Natural</label><input class="inp" id="cLojaA" name="lojaAtlantica" value="${esc(c.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}"><span class="tiny muted">Abre no botão “Comprar na loja Atlântica”, no Catálogo e em Produtos.</span></div>
    <div class="field"><label for="cCat">Categorias de clientes</label><input class="inp" id="cCat" name="categorias" value="${esc((c.categorias||[]).join(', '))}"><span class="tiny muted">Separe por vírgula.</span></div>
    <h3 style="margin-top:18px">Mensagem de prospecção (WhatsApp)</h3>
    <textarea class="inp" id="tProsp" name="msgProsp" data-prev="pvProsp">${esc(c.msgProsp)}</textarea>
@@ -1756,6 +1843,8 @@ const A={
   buscaAddTodas:()=>{const n=addDaBusca(S.busca.rows);toast(`${n} empresa(s) adicionada(s) à sua base ✓`);render()},
   cnpjReceita:async el=>{const c=el.dataset.cnpj;S.cnpj={cnpj:c,carregando:true};render();try{const d=await chamarBusca({action:'cnpj',cnpj:c});S.cnpj={cnpj:c,receita:d.row}}catch(e){S.cnpj={cnpj:c,erro:e.message}}render()},
   redeAtualizar:()=>carregarRede(true),
+  redeVista:el=>{S.redeVista=el.dataset.v;S.redeZoom=null;render()},
+  orgZoom:el=>{const v=+el.dataset.v;if(v===0){S.redeZoom=null;S.orgScroll=null}else S.redeZoom=Math.max(.35,Math.min(1.4,Math.round(((S.redeZoom||1)+v*.15)*100)/100));render()},
   redeToggle:el=>{S.redeFechados=S.redeFechados||{};S.redeFechados[el.dataset.id]=!S.redeFechados[el.dataset.id];render()},
   redePessoa:el=>redePessoa(el.dataset.id),
   redeAdicionar:()=>redeAdicionar(),
@@ -1870,7 +1959,7 @@ document.addEventListener('submit',async ev=>{
   if(f.id==='empNotas'){const e=get('empresas',f.dataset.id);const fd=new FormData(f);Store.put('empresas',{...e,retorno:fd.get('retorno')||'',notas:fd.get('notas')||''});toast('Acompanhamento salvo');render();return}
   if(f.id==='buscaForm'){lerBuscaForm();if(S.busca.tab==='receita'&&!S.busca.seg.length&&!S.busca.texto&&!S.busca.cidade){toast('Escolha um segmento, uma cidade ou um nome.');return}executarBusca(false);return}
   if(f.id==='carForm'){const fd=Object.fromEntries(new FormData(f));const k={};['vp','vq','linhas','maior','viagem'].forEach(x=>k[x]=num(fd[x]));k.mes=curMonth();Store.setConfig({carreira:k});toast('Painel de carreira atualizado');render();return}
-  if(f.id==='cfgForm'){const fd=Object.fromEntries(new FormData(f));Store.setConfig({...fd,whatsapp:normPhone(fd.whatsapp),categorias:String(fd.categorias||'').split(',').map(s=>s.trim()).filter(Boolean),atlanticaUrl:(fd.atlanticaUrl||DEF_CONFIG.atlanticaUrl).trim()});toast('Ajustes salvos');render();return}
+  if(f.id==='cfgForm'){const fd=Object.fromEntries(new FormData(f));Store.setConfig({...fd,whatsapp:normPhone(fd.whatsapp),categorias:String(fd.categorias||'').split(',').map(s=>s.trim()).filter(Boolean),atlanticaUrl:(fd.atlanticaUrl||DEF_CONFIG.atlanticaUrl).trim(),lojaAtlantica:(u=>/^https?:\/\//.test(u)?u:'https://'+u)(String(fd.lojaAtlantica||DEF_CONFIG.lojaAtlantica).trim())});toast('Ajustes salvos');render();return}
 });
 
 /* ============ início ============ */
@@ -1941,7 +2030,21 @@ function demoRedeBase(){
     m({user_id:'d6',patrocinador_id:'d1',nivel:2,nome:'Kátia Nunes',usuario:'consultora7',grad_idx:0,meta_pct:90,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4,atividade:'Hoje'}),
     m({user_id:'d7',patrocinador_id:'d2',nivel:2,nome:'Aline Ferreira',usuario:'consultora8',ativa:null,meta_pct:0,vendas_faixa:'Sem vendas no mês',vendas_ordem:0,clientes_faixa:'Nenhum ainda',contatos_faixa:'Nenhum no mês',atividade:'Ainda não usou o app',carreira_mes:null,desde:addDays(today(),-5)+'T12:00:00Z'}),
     m({user_id:'d8',patrocinador_id:'d4',nivel:3,nome:'Bruna Costa',usuario:'consultora9',meta_pct:40,vendas_faixa:'R$ 500 a 1 mil',vendas_ordem:2,clientes_faixa:'Até 5'}),
-    m({user_id:'d9',patrocinador_id:'d6',nivel:3,nome:'Débora Martins',usuario:'consultora10',meta_pct:70,atividade:'Hoje'})]};
+    m({user_id:'d9',patrocinador_id:'d6',nivel:3,nome:'Débora Martins',usuario:'consultora10',meta_pct:70,atividade:'Hoje'}),
+    m({user_id:'d10',patrocinador_id:'demo',nivel:1,nome:'Fabiana Rocha',usuario:'consultora15',grad_idx:1,meta_pct:100,vendas_faixa:'R$ 5 a 10 mil',vendas_ordem:5,clientes_faixa:'Mais de 30',atividade:'Hoje',desde:addDays(today(),-200)+'T12:00:00Z'}),
+    m({user_id:'d11',patrocinador_id:'d10',nivel:2,nome:'Michele Santos',usuario:'consultora16',grad_idx:0,meta_pct:60}),
+    m({user_id:'d12',patrocinador_id:'d10',nivel:2,nome:'Cristiane Pereira',usuario:'consultora17',meta_pct:40,vendas_faixa:'R$ 500 a 1 mil',vendas_ordem:2}),
+    m({user_id:'d13',patrocinador_id:'d10',nivel:2,nome:'Elaine Moura',usuario:'consultora18',meta_pct:70}),
+    m({user_id:'d14',patrocinador_id:'d2',nivel:2,nome:'Sabrina Lopes',usuario:'consultora19',meta_pct:30,ativa:false,vendas_faixa:'Até R$ 500',vendas_ordem:1}),
+    m({user_id:'d15',patrocinador_id:'d11',nivel:3,nome:'Thaís Oliveira',usuario:'consultora20',meta_pct:50}),
+    m({user_id:'d16',patrocinador_id:'d11',nivel:3,nome:'Paula Freire',usuario:'consultora21',meta_pct:20,vendas_faixa:'Até R$ 500',vendas_ordem:1,atividade:'Neste mês'}),
+    m({user_id:'d17',patrocinador_id:'d3',nivel:2,nome:'Lívia Martins',usuario:'consultora22',meta_pct:60})]};
+}
+function demoRanking(){
+  const m=rankingLocal(),out={};Object.entries(m).forEach(([id,o])=>{out[id]={qtd:o.qtd*3,vendas:o.vendas*3,consultoras:4}});
+  const prods=montarCatalogo();const extra=[['Natuoz, óleo de girassol',22],['Vitamina D3 gotas',18],['Creatina Monohidratada',14],['Night Chá',11],['Natuoz Shampoo',9],['5 Magnésios',8],['Sérum facial',8],['Colágeno',6],['Bortoletto 521',5],['Ômega',4],['Gel dental',4],['Hidratante',3]];
+  extra.forEach(([k,q])=>{const p=prods.find(x=>x.nome.includes(k));if(!p)return;const o=out[p.id]||(out[p.id]={qtd:0,vendas:0,consultoras:0});o.qtd+=q;o.vendas+=Math.ceil(q*.7);o.consultoras=Math.min(8,o.consultoras+3)});
+  return Object.entries(out).map(([id,o])=>({produto_id:id,qtd:o.qtd,vendas:o.vendas,consultoras:o.consultoras}));
 }
 const DEMO_LIVRES=[['d20','Luciana Batista','consultora11'],['d21','Marcela Duarte','consultora12'],['d22','Tânia Rezende','consultora13']];
 function demoClient(){
