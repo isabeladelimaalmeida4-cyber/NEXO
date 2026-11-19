@@ -483,6 +483,7 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
   async init(){
     if(!sbc){S.ready=true;S.loginErro='Não foi possível carregar o sistema. Verifique a internet e recarregue a página.';S.needLogin=true;render();return}
     let sess=null;try{const{data}=await sbc.auth.getSession();sess=data&&data.session}catch(e){}
+    carregarModoLogin();
     if(sess)await this.start(sess);else{S.ready=true;S.needLogin=true;render()}
     sbc.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT'&&!S.needLogin){this.limpar();S.needLogin=true;render()}});
     window.addEventListener('online',()=>this.flush());
@@ -492,6 +493,14 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
     ls.set('atl-remember',lembrar?'1':'0');
     const u=String(usuario||'').trim().toLowerCase().replace(/\s+/g,'');
     const email=u.includes('@')?u:u+EMAIL_DOM;
+    if(S.semSenha){
+      let r;try{r=await sbc.functions.invoke('app-entrar',{body:{action:'entrar',usuario:u}})}catch(e){throw new Error('Sem conexão com a internet.')}
+      if(r.error){let msg='Não consegui entrar agora.';try{const j=await r.error.context.json();if(j&&j.error)msg=j.error;if(j&&j.code==='precisa_senha'){S.semSenha=false;render()}}catch(e){if(/fetch|network/i.test(String(r.error.message)))msg='Sem conexão com a internet.'}throw new Error(msg)}
+      let v=await sbc.auth.verifyOtp({token_hash:r.data.token_hash,type:'email'});
+      if(v.error||!v.data.session)v=await sbc.auth.verifyOtp({token_hash:r.data.token_hash,type:'magiclink'});
+      if(v.error||!v.data.session)throw new Error('Não consegui entrar agora. Tente de novo.');
+      await this.start(v.data.session);return;
+    }
     const{data,error}=await sbc.auth.signInWithPassword({email,password:senha});
     if(error||!data.session){throw new Error(error&&/fetch|network/i.test(error.message)?'Sem conexão com a internet.':'Usuário ou senha incorretos.')}
     await this.start(data.session);
@@ -551,6 +560,10 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
     toast('Sem conexão: vou salvar assim que a internet voltar.');
   }
 };
+async function carregarModoLogin(){
+  try{const{data,error}=await sbc.functions.invoke('app-entrar',{body:{action:'modo'}});if(error)throw error;S.semSenha=!!(data&&data.sem_senha)}catch(e){if(S.semSenha===undefined)S.semSenha=false}
+  S.modoCarregado=true;schedule();
+}
 async function chamarBusca(body){
   const{data,error}=await sbc.functions.invoke('app-busca',{body});
   if(error){let msg='Não foi possível buscar agora.';try{const j=await error.context.json();if(j&&j.error)msg=j.error}catch(e){if(/fetch|network/i.test(String(error.message)))msg='Sem conexão com a internet.'}throw new Error(msg)}
@@ -692,11 +705,11 @@ function viewLock(){
   <span class="pill sea">${ic('lock',14)} Acesso das consultoras</span>
   <h1>Entrar</h1><p class="muted mt0">Atlântica Natural · Vendas & Prospecção</p>
   <div class="field"><label for="lockUser">Usuário</label><input class="inp" id="lockUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Ex.: consultora1" value="${esc(ls.get('atl-ultimo-usuario')||'')}"></div>
-  <div class="field"><label for="lockPin">Senha</label><input class="inp" type="password" id="lockPin" autocomplete="current-password" placeholder="Sua senha"></div>
+  ${S.semSenha?'':`<div class="field"><label for="lockPin">Senha</label><input class="inp" type="password" id="lockPin" autocomplete="current-password" placeholder="Sua senha"></div>`}
   <label class="check"><input type="checkbox" id="lockRemember" ${ls.get('atl-remember')==='0'?'':'checked'}> Lembrar neste aparelho</label>
   <p class="small" id="lockErr" style="color:var(--coral);min-height:18px">${esc(S.loginErro||'')}</p>
-  <button class="btn pri block" type="submit" id="lockBtn">Entrar</button>
-  <p class="tiny muted" style="margin:14px 0 0;text-align:center">Esqueceu a senha? Fale com a sua líder.</p></form></div>`;
+  <button class="btn pri block" type="submit" id="lockBtn" ${S.modoCarregado?'':'disabled'}>${S.modoCarregado?'Entrar':'Carregando…'}</button>
+  <p class="tiny muted" style="margin:14px 0 0;text-align:center">${S.semSenha?'Por enquanto, o acesso é só com o seu usuário.':'Esqueceu a senha? Fale com a sua líder.'}</p></form></div>`;
 }
 
 function ring(p,size=78){const r=(size-10)/2,c=2*Math.PI*r,v=Math.max(0,Math.min(1,p));
@@ -1417,9 +1430,9 @@ function viewAjustes(){
    <div class="preview" id="pvCob">${esc(fill(c.msgCobranca,ex))}</div>
    <button class="btn pri block" style="margin-top:16px" type="submit">Salvar ajustes</button>
   </form>
-  <div class="card"><h3>${ic('lock',18)} Senha de acesso</h3>
-   <p class="small muted mt0">Você entra como <b>${esc((Store.perfil&&Store.perfil.usuario)||'')}</b>. Pode trocar sua senha quando quiser.</p>
-   <div class="row"><button class="btn" data-a="formSenha">Trocar minha senha</button></div></div>
+  <div class="card"><h3>${ic('lock',18)} Seu acesso</h3>
+   <p class="small muted mt0">Você entra como <b>${esc((Store.perfil&&Store.perfil.usuario)||'')}</b>.${S.semSenha?' Por enquanto o app entra só com o usuário, sem senha.':' Pode trocar sua senha quando quiser.'}</p>
+   ${S.semSenha?'':'<div class="row"><button class="btn" data-a="formSenha">Trocar minha senha</button></div>'}</div>
   <div class="card"><h3>${ic('download',18)} Dados e backup</h3>
    <p class="small muted mt0">Seus dados ficam salvos na nuvem, só no seu login, e aparecem em qualquer aparelho em que você entrar.</p>
    <div class="row"><button class="btn" data-a="backup">${ic('download',16)} Baixar backup</button><button class="btn" data-a="restore">${ic('upload',16)} Restaurar backup</button></div>
@@ -1800,7 +1813,7 @@ function setDraft(path,val){const parts=path.split('.');let o=S.draft;for(let i=
 document.addEventListener('submit',async ev=>{
   const f=ev.target;ev.preventDefault();
   if(f.id==='sheetForm'&&sheetSubmit){const v={};f.querySelectorAll('[name]').forEach(el=>{v[el.name]=el.type==='checkbox'?el.checked:el.value});sheetSubmit(v,f);return}
-  if(f.id==='lockForm'){const u=$('#lockUser').value,pw=$('#lockPin').value;if(!u.trim()||!pw){$('#lockErr').textContent='Preencha usuário e senha.';return}
+  if(f.id==='lockForm'){const u=$('#lockUser').value,pw=($('#lockPin')||{}).value||'';if(!u.trim()||(!S.semSenha&&!pw)){$('#lockErr').textContent=S.semSenha?'Digite seu usuário.':'Preencha usuário e senha.';return}
     const btn=$('#lockBtn');btn.disabled=true;btn.textContent='Entrando…';
     try{await Store.login(u,pw,$('#lockRemember').checked);ls.set('atl-ultimo-usuario',u.trim().toLowerCase())}catch(e){S.loginErro=e.message;const el=$('#lockErr');if(el)el.textContent=e.message;btn.disabled=false;btn.textContent='Entrar';const pi=$('#lockPin');if(pi){pi.value='';pi.focus()}}
     return}
