@@ -218,6 +218,12 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 .rnode:before{content:"";position:absolute;left:-14px;top:26px;width:12px;border-top:2px solid var(--line)}
 .rcard{margin:0}
 .rtoggle{display:block;margin:6px 0 0 4px;font-size:12.5px}
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 8px;margin-top:6px}
+.qcell{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.qval{font-size:12.5px;font-weight:800;color:#b3bab7;background:#f0eee8;border-radius:9px;padding:5px 0;width:100%;font-variant-numeric:tabular-nums}
+.qval.on{background:#0d1b2a;color:#fff}
+.qnome{font-size:12.5px;font-weight:700;color:#a7afac;line-height:1.2}
+.demo-strip{background:#0d1b2a;color:#f6e7b8;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:5px 8px;margin:calc(-8px - env(safe-area-inset-top)) 0 8px;padding-top:calc(5px + env(safe-area-inset-top))}
 .hide{display:none!important}
 </style>
 </head>
@@ -294,7 +300,7 @@ const norm=s=>noAccent(s).toLowerCase();
 function normPhone(s){let d=digits(s);if(d.length>=12&&d.startsWith('55'))d=d.slice(2);if(d.length===11&&d.startsWith('0'))d=d.slice(1);return d.length>=8?d:''}
 const isMobile=s=>{const d=normPhone(s);return d.length===11&&d[2]==='9'};
 function fmtPhone(s){const d=normPhone(s);if(d.length===11)return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;if(d.length===10)return`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return s||''}
-const waLink=(phone,text)=>{const d=normPhone(phone);return 'https://wa.me/'+(d?'55'+d:'')+(text?'?text='+encodeURIComponent(text):'')};
+const waLink=(phone,text)=>{const d=window.ATL_DEMO?'':normPhone(phone);return 'https://wa.me/'+(d?'55'+d:'')+(text?'?text='+encodeURIComponent(text):'')};
 function fmtCnpj(s){const d=digits(s);if(d.length===14)return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5');if(d.length===11)return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/,'$1.$2.$3-$4');return s||''}
 const fill=(t,v)=>String(t||'').replace(/\{(\w+)\}/g,(m,k)=>v[k]!=null?String(v[k]):'').replace(/[ \t]{2,}/g,' ');
 const initials=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?';
@@ -331,7 +337,10 @@ const NIVEIS=[
  {n:"Duplo Diamante",c:"#24577E",l:3,vq:250000,vme:84000,prod:"Não informada",ind:8,inf:9,extra:"Super bônus 20% e 15%; Clube do Carro: HB20"},
  {n:"Triplo Diamante",c:"#1C4464",l:3,vq:500000,vme:170000,prod:"Não informada",ind:8,inf:10,extra:"Super bônus 20%, 15% e 10%; Clube do Carro: Mercedes-Benz"},
  {n:"Imperial",c:"#5B3E8A",l:4,vq:1000000,vme:300000,prod:"Não informada",ind:8,inf:11,extra:"Super bônus até 5 níveis; Clube do Carro: Range Rover Evoque"},
- {n:"Royal",c:"#7A2E4F",l:5,vq:3000000,vme:600000,prod:"Não informada",ind:8,inf:12,extra:"Liderança 2% em 5 níveis; super bônus até 6 níveis; Clube do Carro: Porsche Cayenne"}
+ {n:"Royal",c:"#7A2E4F",l:5,vq:3000000,vme:600000,prod:"Não informada",ind:8,inf:12,extra:"Liderança 2% em 5 níveis; super bônus até 6 níveis; Clube do Carro: Porsche Cayenne"},
+ {n:"Crown",c:"#B0812A",l:5,vq:10000000,vme:null,confirmar:true,prod:"Não informada",ind:8,inf:12,extra:"Linhas, limite por linha e bônus: confirme no Escritório Virtual"},
+ {n:"Double Crown",c:"#8E6820",l:5,vq:25000000,vme:null,confirmar:true,prod:"Não informada",ind:8,inf:12,extra:"Linhas, limite por linha e bônus: confirme no Escritório Virtual"},
+ {n:"Triplo Crown",c:"#634A16",l:5,vq:50000000,vme:null,confirmar:true,prod:"Não informada",ind:8,inf:12,extra:"Linhas, limite por linha e bônus: confirme no Escritório Virtual"}
 ];
 const VIAGENS=[["Cruzeiro",100000,25000],["Punta Cana",200000,50000],["Cancún",300000,75000],["Europa",500000,125000],["Dubai",1000000,250000],["Bora Bora",3000000,600000]];
 const GANHOS=[
@@ -434,7 +443,7 @@ function scriptFill(t,v={}){const c=S.config;
    .replace(/\[LINK\]/g,c.lojaUrl||'[LINK]').replace(/Rondonópolis/g,c.cidade||'Rondonópolis')}
 const slug=s=>norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
 function carreiraCalc(){const k=S.config.carreira||{};const vp=num(k.vp),vq=num(k.vq),linhas=num(k.linhas),maior=num(k.maior),viagem=num(k.viagem);
-  const ef=n=>Math.max(0,vq-Math.max(0,maior-n.vme));let idx=-1;NIVEIS.forEach((n,i)=>{if(linhas>=n.l&&ef(n)>=n.vq)idx=i});
+  const ef=n=>Math.max(0,vq-(n.vme?Math.max(0,maior-n.vme):0));let idx=-1;NIVEIS.forEach((n,i)=>{if(linhas>=n.l&&ef(n)>=n.vq)idx=i});
   return{k,vp,vq,linhas,maior,viagem,ativo:vp>=50,idx,prox:NIVEIS[idx+1],ef,preenchido:!!S.config.carreira}}
 function recompras(){
   const t=today(),out=[];
@@ -477,7 +486,8 @@ const authStorage={
   setItem(k,v){try{this._s().setItem(k,v)}catch(e){}},
   removeItem(k){try{localStorage.removeItem(k)}catch(e){}try{sessionStorage.removeItem(k)}catch(e){}}
 };
-const sbc=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{storage:authStorage,storageKey:'atl-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}):null;
+const DEMO=!!window.ATL_DEMO;
+const sbc=DEMO?demoClient():(window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{storage:authStorage,storageKey:'atl-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}):null);
 const LS_KEY='atl-vendas-v1';
 const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad:0,
   async init(){
@@ -564,6 +574,16 @@ async function carregarModoLogin(){
   try{const{data,error}=await sbc.functions.invoke('app-entrar',{body:{action:'modo'}});if(error)throw error;S.semSenha=!!(data&&data.sem_senha)}catch(e){if(S.semSenha===undefined)S.semSenha=false}
   S.modoCarregado=true;schedule();
 }
+if(DEMO)Object.assign(Store,{mode:'demo',
+  async init(){seedDemo();this.uid='demo';this.perfil={usuario:'demonstracao',nome:'Isabela Almeida',ativo:true};S.needLogin=false;S.semSenha=false;S.modoCarregado=true;S.ready=true;render()},
+  async login(){await this.init()},
+  put(kind,obj){const o=JSON.parse(JSON.stringify(obj));o.atualizadoEm=Date.now();S.data[kind]={...S.data[kind],[o.id]:o};return Promise.resolve()},
+  del(kind,id){const m={...S.data[kind]};delete m[id];S.data[kind]=m;return Promise.resolve()},
+  async bulkPut(kind,list,onProg){const m={...S.data[kind]};list.forEach(o=>{m[o.id]=o});S.data[kind]=m;onProg&&onProg(list.length)},
+  setConfig(patch){S.config={...S.config,...patch};return Promise.resolve()},
+  async sair(){S.rede=null;S.busca=null;S.cart={};S.draft=null;S.stack=[];S.route='inicio';await this.init();toast('Demonstração reiniciada com os dados de exemplo')},
+  flush(){},async load(){}
+});
 async function chamarBusca(body){
   const{data,error}=await sbc.functions.invoke('app-busca',{body});
   if(error){let msg='Não foi possível buscar agora.';try{const j=await error.context.json();if(j&&j.error)msg=j.error}catch(e){if(/fetch|network/i.test(String(error.message)))msg='Sem conexão com a internet.'}throw new Error(msg)}
@@ -690,7 +710,7 @@ function render(){
   const head=r==='inicio'
     ?`<div class="brand"><b>Atlantica Natural</b><small>VENDAS & PROSPECÇÃO</small></div><div class="sp"></div>`
     :(isTab?`<h2>${esc(TITLES[r])}</h2>`:`<button class="icon-btn" data-a="back" aria-label="Voltar">${ic('back',22)}</button><h2>${esc(TITLES[r]||'')}</h2>`);
-  app.innerHTML=`<header class="top"><div class="top-in">${head}
+  app.innerHTML=`<header class="top">${DEMO?'<div class="demo-strip">Demonstração · dados fictícios · nada é salvo</div>':''}<div class="top-in">${head}
     <span class="sync ${S.offline?'local':''}" title="${S.offline?'Sem conexão — salvando quando a internet voltar':'Salvo na nuvem'}"><i></i>${S.offline?'sem conexão':esc((Store.perfil&&Store.perfil.usuario)||'')}</span>
     <button class="icon-btn" data-a="go" data-r="notificacoes" aria-label="Notificações">${ic('bell',22)}${nN?`<span class="badge">${nN>9?'9+':nN}</span>`:''}</button></div></header>
   <main class="wrap">${body}</main>
@@ -754,6 +774,7 @@ function viewInicio(){
     ${tl('carreira','star','Plano de carreira',cr.preenchido?(cr.idx>=0?NIVEIS[cr.idx].n:'Rumo ao Bronze')+(cr.ativo?' · ativa':' · faltam '+nf(50-cr.vp)+' VP'):'Graduação e VP do ciclo')}
     ${tl('scripts','wa','Scripts',`${SCRIPTS.length} mensagens prontas`)}
     ${tl('manual','leaf','Manual',rc?`${rc} recompra(s) prevista(s)`:'Públicos, canais e regras')}</div>`})()}
+  ${qualifCard(true)}
   <div class="grid4">
     <div class="stat"><div class="l">Vendas no mês</div><div class="v">${st.qtd}</div></div>
     <div class="stat"><div class="l">Ticket médio</div><div class="v">${brl0(st.ticket)}</div></div>
@@ -1363,6 +1384,32 @@ function viewManual(){
   return`<div class="scrollx" style="margin-top:4px">${tabs.map(([k,l])=>`<button class="chip ${tab===k?'on':''}" data-a="manualTab" data-v="${k}">${l}</button>`).join('')}</div>${body}
   <p class="tiny muted">Do seu Manual de operação da consultora (pesquisa e checagem de 11/11/2026). Material de apoio independente; confirme mudanças no Escritório Virtual.</p>`;
 }
+/* ---- qualificações (medalhas) ---- */
+function clarear(hex,t){const n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,m=x=>Math.round(x+(255-x)*t);return`rgb(${m(r)},${m(g)},${m(b)})`}
+let _mid=0;
+function medalha(i,on,size=58){const n=NIVEIS[i],id='md'+(++_mid),cor=on?n.c:'#c9cdcc',luz=on?clarear(n.c,.55):'#eceeed';
+  const pet=Array.from({length:6},(_,k)=>`<ellipse cx="32" cy="22.5" rx="4.6" ry="8.2" transform="rotate(${k*60} 32 32)" fill="rgba(255,255,255,${on?.78:.7})"/>`).join('');
+  const coroa=n.vq>=10000000?`<path d="M23 12.5l3.2 3.4 2.9-4.2 2.9 4.2 2.9-4.2 2.9 4.2 3.2-3.4-1.2 6H24.2z" fill="rgba(255,255,255,${on?.9:.75})"/>`:'';
+  return`<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true" style="${on?'filter:drop-shadow(0 3px 6px rgba(0,0,0,.18))':'opacity:.75'}"><defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${luz}"/><stop offset="1" stop-color="${cor}"/></radialGradient></defs>
+   <circle cx="32" cy="32" r="30" fill="url(#${id})"/><circle cx="32" cy="32" r="25.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/>${pet}<circle cx="32" cy="32" r="4.3" fill="${on?clarear(n.c,.25):'#dfe2e1'}"/>${coroa}</svg>`}
+function volumeQualificavel(r){return r.prox?r.ef(r.prox):r.vq}
+function qualifCard(compacto){
+  const r=carreiraCalc(),vol=volumeQualificavel(r),prox=r.prox,cur=r.idx;
+  const pct=prox?Math.min(100,vol/prox.vq*100):100;
+  const rodape=`<div class="row nowrap" style="justify-content:space-between;align-items:flex-end;margin-top:${compacto?10:18}px"><span class="muted">Volume qualificável</span><b style="font-size:22px" class="mono">${nf(vol)}</b></div>
+    <div class="bar" style="height:10px;margin-top:8px"><i style="width:${Math.max(r.preenchido&&vol>0?2:0,pct)}%;background:linear-gradient(90deg,#9a7412,#c9a227)"></i></div>
+    <div class="tiny muted" style="margin-top:6px">${prox?`Faltam ${nf(Math.max(0,prox.vq-vol))} pontos para ${esc(prox.n)}${r.linhas<prox.l?` · e ${prox.l-r.linhas} linha(s) qualificada(s)`:''}`:'Qualificação máxima do plano'}</div>`;
+  if(compacto){
+    return`<div class="card" data-a="go" data-r="carreira" style="cursor:pointer"><h3>${ic('star',18)} Qualificação atual<span class="sp"></span><span class="link">Ver todas</span></h3>
+     <div class="row nowrap" style="gap:14px">${cur>=0?medalha(cur,true,64):`<div style="width:64px;height:64px;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;color:var(--faint)">${ic('star',22)}</div>`}
+      <div style="flex:1;min-width:0"><b style="font-size:18px">${cur>=0?esc(NIVEIS[cur].n):'Sem qualificação'}</b><div class="small muted">${r.preenchido?(prox?`Próxima: ${esc(prox.n)} (${nf(prox.vq)})`:'Topo do plano'):'Toque para preencher seus números do ciclo'}</div></div></div>
+     ${r.preenchido?rodape:''}</div>`;
+  }
+  return`<div class="card"><h3>${ic('star',18)} Qualificação atual</h3>
+   <div class="qgrid">${NIVEIS.map((n,i)=>{const on=i<=cur,atual=i===cur;return`<div class="qcell ${atual?'atual':''}"><span class="qval ${atual?'on':''}">${nf(n.vq)}</span>${medalha(i,on,atual?62:54)}<span class="qnome" style="${on?'color:var(--ink)':''}">${esc(n.n)}</span></div>`}).join('')}</div>
+   ${rodape}
+   ${NIVEIS.some(n=>n.confirmar)?'<p class="tiny muted mb0" style="margin-top:10px">Crown, Double Crown e Triplo Crown: o app usa só o volume e 5 linhas. Confirme os demais requisitos no Escritório Virtual.</p>':''}</div>`;
+}
 function viewCarreira(){
   const r=carreiraCalc(),k=r.k,prox=r.prox,c=S.config;
   const efp=prox?r.ef(prox):0,pct=prox?Math.min(100,Math.round(efp/prox.vq*100)):100;
@@ -1372,7 +1419,8 @@ function viewCarreira(){
   <div class="hero" style="margin-top:4px"><div class="eyebrow">Rota de graduação</div>
    <h1 style="font-size:24px;margin:4px 0 4px">${cur?esc(cur.n):'Sem graduação'}</h1>
    <div class="small" style="color:#cfe7df">${r.preenchido?(r.ativo?`Ativa no ciclo: ${nf(r.vp)} VP`:`Ativação pendente: faltam ${nf(50-r.vp)} VP`):'Preencha com os números do Escritório Virtual'}${k&&k.mes?` · dados de ${MESES_L[+k.mes.slice(5)-1]}`:''}</div>
-   <div class="scrollx" style="margin-top:14px;gap:0">${NIVEIS.map((n,i)=>`<div style="min-width:86px;display:flex;flex-direction:column;align-items:flex-start;position:relative"><span style="width:18px;height:18px;border-radius:50%;border:2px solid ${i<=r.idx?n.c:'rgba(255,255,255,.45)'};background:${i<=r.idx?n.c:'transparent'};${i===r.idx?'box-shadow:0 0 0 4px rgba(255,255,255,.25)':''}"></span><b style="font-size:12px;margin-top:5px;white-space:nowrap;color:${i===r.idx?'#fff':'#cfe7df'}">${n.n}</b><span style="font-size:10.5px;color:#a9d2c8">${nf(n.vq)} pts</span></div>`).join('')}</div></div>
+  </div>
+  ${qualifCard(false)}
   <form class="card" id="carForm"><h3>Números do ciclo</h3>
    <div class="grid2">${F('vp','Volume pessoal (VP)',k?k.vp:'',{im:'numeric',ph:'0'})}${F('vq','VQ da rede',k?k.vq:'',{im:'numeric',ph:'0'})}
    ${F('linhas','Linhas qualificadas',k?k.linhas:'',{im:'numeric',ph:'0'})}${F('maior','Pontos da maior linha',k?k.maior:'',{im:'numeric',ph:'0'})}</div>
@@ -1383,13 +1431,13 @@ function viewCarreira(){
    ${prox?`<div class="bar" style="height:10px"><i style="width:${pct}%;background:${prox.c}"></i></div><div class="small muted" style="margin:4px 0 10px">${pct}% do volume qualificado</div>
    ${[[efp>=prox.vq,efp>=prox.vq?`Volume qualificado atingido (${nf(efp)} de ${nf(prox.vq)})`:`Faltam ${nf(prox.vq-efp)} pontos qualificados (${nf(efp)} de ${nf(prox.vq)})`],
       [r.linhas>=prox.l,r.linhas>=prox.l?`Linhas qualificadas: ${r.linhas} de ${prox.l}`:`Faltam ${prox.l-r.linhas} linha(s) qualificada(s)`],
-      ...(r.maior>prox.vme?[[false,`Sua maior linha conta só até ${nf(prox.vme)} pontos (VME). Desenvolva outras linhas.`]]:[]),
+      ...(prox.vme&&r.maior>prox.vme?[[false,`Sua maior linha conta só até ${nf(prox.vme)} pontos (VME). Desenvolva outras linhas.`]]:[]),
       [r.ativo,r.ativo?'Ativação do ciclo em dia':'Ative-se com 50 VP para receber bônus']].map(([ok,t])=>`<div class="row nowrap small" style="margin:6px 0;align-items:flex-start"><span style="width:10px;height:10px;border-radius:50%;flex:none;margin-top:5px;background:${ok?'var(--ok)':'var(--gold)'}"></span>${esc(t)}</div>`).join('')}
    <div class="divider"></div><div class="small"><b>Ao chegar em ${esc(prox.n)}:</b> produtividade ${esc(prox.prod)} · infinity em ${prox.inf} níveis · ${esc(prox.extra)}</div>`:''}</div>
   <div class="card"><h3>${ic('star',18)} Bônus viagem</h3>${prV?`<div class="small">Próximo destino: <b>${prV[0]}</b> — faltam ${nf(prV[1]-r.viagem)} pontos</div><div class="bar" style="height:10px;margin-top:8px"><i style="width:${Math.min(100,r.viagem/prV[1]*100)}%;background:var(--gold)"></i></div>`:'<div class="small">Todos os destinos do plano alcançados.</div>'}
    <p class="tiny muted mb0" style="margin-top:8px">Os pontos de viagem zeram se você ficar sem ativação.</p></div>`:''}
-  <div class="sec"><h3>As 10 graduações</h3></div>
-  <div class="list">${NIVEIS.map((n,i)=>`<div class="item" style="border-left:5px solid ${n.c};cursor:default"><div class="hd"><div class="grow"><div class="t">${n.n}</div><div class="s"><b>${nf(n.vq)}</b> pontos de VQ em <b>${n.l} linhas</b>, até ${nf(n.vme)} por linha</div><div class="s">Produtividade: ${esc(n.prod)} · infinity em ${n.inf} níveis</div><div class="s">${esc(n.extra)}</div></div><span class="pill">${i+1}º</span></div></div>`).join('')}</div>
+  <div class="sec"><h3>As ${NIVEIS.length} qualificações</h3></div>
+  <div class="list">${NIVEIS.map((n,i)=>`<div class="item" style="border-left:5px solid ${n.c};cursor:default"><div class="hd"><div class="grow"><div class="t">${n.n}</div><div class="s"><b>${nf(n.vq)}</b> pontos de VQ${n.confirmar?'':` em <b>${n.l} linhas</b>, até ${nf(n.vme)} por linha`}</div><div class="s">Produtividade: ${esc(n.prod)} · infinity em ${n.inf} níveis</div><div class="s">${esc(n.extra)}</div></div><span class="pill">${i+1}º</span></div></div>`).join('')}</div>
   <details class="card"><summary style="cursor:pointer;font-weight:800">Formas de ganho</summary>${GANHOS.map(g=>`<div style="border-top:1px solid var(--line);padding:10px 0 2px"><b>${esc(g[0])}</b><div class="small muted">${esc(g[1])}</div></div>`).join('')}</details>
   <div class="note">${ic('alert',18)}<div>No recrutamento, apresente o plano oficial e deixe claro que o resultado depende de vendas. Não prometa renda, carro ou viagem.</div></div>`;
 }
@@ -1739,7 +1787,7 @@ const A={
   metaAdd:()=>{const L=lerMetasForm(coletarSheet());L.push({id:newId('m'),nome:'',tipo:'vendido',alvo:''});formMetas(L);setTimeout(()=>{const b=$('.sheet-b');if(b)b.scrollTop=b.scrollHeight},30)},
   metaRm:el=>{const L=lerMetasForm(coletarSheet());L.splice(+el.dataset.i,1);formMetas(L)},
   metaReset:()=>formMetas(metasPadrao({})),
-  formSenha:()=>formSenha(),
+  formSenha:()=>DEMO?toast('Na demonstração não há senha para trocar.'):formSenha(),
   sair:()=>confirmSheet('Sair desta conta neste aparelho?',()=>{closeSheet();Store.sair()},'Sair'),
   waEmp:el=>{const e=get('empresas',el.dataset.id);if(e){const o={...e,contatadoEm:today()};if(!e.status||e.status==='novo')o.status='contatado';Store.put('empresas',o);setTimeout(render,300)}return'link'},
   copyMsg:el=>{const e=get('empresas',el.dataset.id);copy(msgEmpresa(e,S.params.script),'Mensagem copiada ✓')},
@@ -1782,6 +1830,7 @@ function virarCliente(e){
   formCliente(null,{nome:e.fantasia||e.nome,telefone:empWhats(e)||empPhone(e),email:e.email,cpfCnpj:e.cnpj,cidade:e.cidade,uf:e.uf,endereco:[e.endereco,e.bairro].filter(Boolean).join(', '),empresaId:e.id,notas:e.notas||''});
 }
 document.addEventListener('click',ev=>{
+  if(DEMO){const a=ev.target.closest('a[href^="tel:"]');if(a){ev.preventDefault();ev.stopPropagation();toast('Na demonstração as ligações ficam desativadas.');return}}
   const el=ev.target.closest('[data-a]');if(!el)return;
   const a=el.dataset.a;
   if(el.tagName==='A'){if(A[a])A[a](el,ev);ev.stopPropagation();return}
@@ -1825,6 +1874,106 @@ document.addEventListener('submit',async ev=>{
 });
 
 /* ============ início ============ */
+/* ============ demonstração (dados fictícios, só na memória) ============ */
+function demoRand(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function demoTel(r){return '6699'+String(100000+Math.floor(r()*899999)).padStart(7,'0').slice(0,7)}
+function demoCnpj(r){let d='';for(let i=0;i<12;i++)d+=Math.floor(r()*10);return d+'00'}
+function seedDemo(){
+  const r=demoRand(20261119),t=today(),mk=curMonth(),now=Date.now(),dia=864e5;
+  const pick=a=>a[Math.floor(r()*a.length)];
+  S.data=Object.fromEntries(KINDS.map(k=>[k,{}]));
+  S.config={...DEF_CONFIG,vendedor:'Isabela',whatsapp:'',cidade:'Rondonópolis',lojaUrl:'loja.atlanticanatural.com.br/demonstracao',
+    metas:[{id:'m_fat',nome:'Faturamento',tipo:'vendido',alvo:3000},{id:'m_cli',nome:'Clientes atendidas',tipo:'clientesAtendidos',alvo:15},{id:'m_cont',nome:'Novos contatos',tipo:'contatos',alvo:40},{id:'m_eq',nome:'Novas consultoras na equipe',tipo:'manual',unidade:'un',alvo:3,ajustes:{[mk]:2}}],
+    metaMensal:3000,metaClientes:15,metaContatos:40,carreira:{vp:85,vq:6800,linhas:2,maior:3900,viagem:28000,mes:mk}};
+  const prods=montarCatalogo();const P=k=>prods.find(p=>p.nome.includes(k))||prods[0];
+  const top=['Natuoz, óleo de girassol','Vitamina D3 gotas','Natuoz Shampoo','Sérum facial','Creatina','Night Chá','5 Magnésios','Bortoletto 521','Hidratante'].map(P);
+  // clientes
+  const nomes=['Ana Clara Moreira','Beatriz Nogueira','Camila Teixeira','Daniela Rocha','Eliane Barros','Fernanda Lopes','Gabriela Pires','Helena Duarte','Juliana Castro','Larissa Freitas','Mariana Campos','Natália Ribeiro','Patrícia Gomes','Renata Vieira','Simone Araújo','Tatiane Cardoso'];
+  const cats=['Cliente final','Recompra mensal','Salão / parceiro','VIP','Cliente final','Recompra mensal'];
+  nomes.forEach((n,i)=>{const id='c_demo'+i;const desde=i<4?now-(i+2)*dia*3:now-(30+i*11)*dia;
+    S.data.clientes[id]={id,nome:n,telefone:demoTel(r),categoria:i===2?'Salão / parceiro':pick(cats),cidade:'Rondonópolis',uf:'MT',email:'',criadoEm:desde,
+      aniversario:i===5?'1990-'+addDays(t,2).slice(5):(i===9?'1985-'+addDays(t,6).slice(5):''),notas:i===0?'Prefere contato à tarde. Usa vitamina D todo mês.':''}});
+  // vendas
+  let num=0;const cli=Object.values(S.data.clientes);
+  const venda=(diasAtras,c,itens,pag,nParc,pagas)=>{const data=addDays(t,-diasAtras);const total=round2(sum(itens,i=>i.qtd*i.preco));num++;
+    const n=nParc||1,base=Math.floor(total/n*100)/100;const parcelas=Array.from({length:n},(_,k)=>({valor:k===n-1?round2(total-base*(n-1)):base,venc:n>1?addMonths(data,k):data,pagoEm:k<(pagas==null?n:pagas)?(n>1?addMonths(data,k):data):null}));
+    parcelas.forEach(p=>{if(p.pagoEm&&p.pagoEm>t)p.pagoEm=null});
+    const id='v_demo'+num;S.data.vendas[id]={id,numero:num,data,clienteId:c?c.id:'',clienteNome:c?c.nome:'',itens:itens.map(i=>({produtoId:i.id,nome:i.nome,qtd:i.qtd,preco:i.preco,precoSugerido:i.preco,custo:round2(i.preco/2)})),desconto:0,total,pagamento:pag,parcelas,obs:'',criadoEm:now-diasAtras*dia}};
+  const it=(p,q=1)=>({id:p.id,nome:p.nome,qtd:q,preco:p.preco});
+  const pags=['Pix','Pix','Dinheiro','Cartão de crédito','Cartão de débito'];
+  for(let k=0;k<26;k++){const dAtras=Math.floor(25+r()*120);const c=pick(cli);const its=[it(pick(top),1+Math.floor(r()*2))];if(r()>.55)its.push(it(pick(top)));venda(dAtras,c,its,pick(pags))}
+  // mês atual
+  const dm=new Date().getDate();
+  const mesAtual=[[top[0],1],[top[1],1],[top[3],1],[top[2],2],[top[5],1],[top[7],2],[top[6],1],[top[8],2],[top[0],1],[top[4],1],[top[1],1],[top[3],1]];
+  mesAtual.forEach(([p,q],k)=>venda(Math.min(dm-1,Math.floor(k*dm/mesAtual.length)),cli[k%cli.length],[it(p,q)],pick(pags)));
+  // recompras e cobrança
+  venda(28,cli[0],[it(top[1])],'Pix');
+  venda(57,cli[3],[it(top[7]),it(top[0])],'Pix');
+  venda(48,cli[6],[it(top[4]),it(top[6])],'Fiado / a prazo',3,1);
+  venda(40,cli[11],[it(top[3]),it(top[2],2)],'Boleto',2,0);
+  venda(9,cli[8],[it(top[0]),it(top[5])],'Cartão de crédito',3,1);
+  // empresas (prospecção)
+  const emp=[['Studio Bella Flor','Cabeleireiros, manicure e pedicure','cliente'],['Espaço Corpo em Movimento','Atividades de condicionamento físico','negociando'],['Esmalteria Mãos de Seda','Cabeleireiros, manicure e pedicure','contatado'],
+    ['Clínica Estética Pele Viva','Atividades de estética e outros serviços de cuidados com a beleza','negociando'],['Barbearia Navalha de Ouro','Cabeleireiros, manicure e pedicure','contatado'],['Boutique Flor de Lis','Comércio varejista de artigos do vestuário e acessórios','novo'],
+    ['Academia Força Total','Atividades de condicionamento físico','contatado'],['Perfumaria Essência','Comércio varejista de cosméticos, produtos de perfumaria e de higiene pessoal','novo'],['Pilates Equilíbrio','Atividades de condicionamento físico','perdido'],
+    ['Salão Beleza Real','Cabeleireiros, manicure e pedicure','novo'],['Studio de Sobrancelhas Olhar','Atividades de estética e outros serviços de cuidados com a beleza','contatado'],['Condomínio Residencial das Palmeiras','Condomínios prediais','novo'],
+    ['Farmácia Saúde e Vida','Comércio varejista de produtos farmacêuticos','cliente'],['Escritório Contábil Prisma','Atividades de contabilidade','negociando'],['Moda Fit Rondon','Comércio varejista de artigos do vestuário e acessórios','novo'],
+    ['Spa Urbano Serenità','Atividades de estética e outros serviços de cuidados com a beleza','contatado'],['Box Funcional Impacto','Atividades de condicionamento físico','novo'],['Ateliê de Unhas Delicata','Cabeleireiros, manicure e pedicure','perdido']];
+  const bairros=['Centro','Vila Aurora','Jardim Atlântico','Parque Sagrada Família','Vila Operária','Jardim Guanabara','Cidade Salmen'];
+  emp.forEach(([nome,ativ,st],i)=>{const id='e_demo'+i;const cont=st!=='novo'?addDays(t,-Math.floor(r()*Math.min(dm,18))):'';
+    S.data.empresas[id]={id,nome:nome+' Ltda',fantasia:nome,cnpj:demoCnpj(r),atividade:ativ,cidade:'Rondonópolis',uf:'MT',bairro:pick(bairros),endereco:'',
+      celular:r()>.25?demoTel(r):'',telefone:r()>.6?'663'+String(4000000+Math.floor(r()*999999)):'',email:'',abertura:addDays(t,-Math.floor(400+r()*3000)),porte:pick(['ME','EPP','MEI']),capital:Math.round(5+r()*95)*1000,
+      status:st,contatadoEm:cont,retorno:st==='negociando'?addDays(t,i%3===0?0:-1):(st==='contatado'&&i%2?addDays(t,3):''),notas:st==='negociando'?'Pediu catálogo e amostra do óleo Natuoz.':'',criadoEm:now-i*dia*2,clienteId:''}});
+  const sb=S.data.empresas.e_demo0;S.data.clientes.c_demo2.empresaId=sb.id;sb.clienteId='c_demo2';
+  // rede (contato sem login)
+  S.data.rede.r_demo1={id:'r_demo1',nome:'Sueli Andrade',tipo:'downline',telefone:'',nivel:'Recém-cadastrada',desde:addDays(t,-3),notas:'Fez o cadastro na Atlântica, ainda sem login no app.'};
+  _demoRede=null;S.rede=null;
+}
+let _demoRede=null;
+function demoRedeBase(){
+  const m=(o)=>Object.assign({vendas_faixa:'R$ 1 a 2 mil',vendas_ordem:3,meta_pct:50,clientes_faixa:'6 a 15',contatos_faixa:'11 a 30 no mês',atividade:'Nesta semana',grad_idx:-1,ativa:true,carreira_mes:curMonth(),telefone:null,desde:addDays(today(),-60)+'T12:00:00Z'},o);
+  return{eu:m({user_id:'demo',nome:'Isabela Almeida',usuario:'demonstracao',grad_idx:1,meta_pct:70,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4}),patrocinadora:null,rede:[
+    m({user_id:'d1',patrocinador_id:'demo',nivel:1,nome:'Carla Mendes',usuario:'consultora2',grad_idx:0,meta_pct:80,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4,clientes_faixa:'16 a 30',desde:addDays(today(),-150)+'T12:00:00Z'}),
+    m({user_id:'d2',patrocinador_id:'demo',nivel:1,nome:'Juliana Prado',usuario:'consultora3',meta_pct:50,desde:addDays(today(),-110)+'T12:00:00Z'}),
+    m({user_id:'d3',patrocinador_id:'demo',nivel:1,nome:'Roberta Lima',usuario:'consultora4',grad_idx:0,ativa:false,meta_pct:30,vendas_faixa:'R$ 500 a 1 mil',vendas_ordem:2,atividade:'Neste mês',contatos_faixa:'Até 10 no mês'}),
+    m({user_id:'d4',patrocinador_id:'d1',nivel:2,nome:'Priscila Alves',usuario:'consultora5',meta_pct:60,desde:addDays(today(),-90)+'T12:00:00Z'}),
+    m({user_id:'d5',patrocinador_id:'d1',nivel:2,nome:'Vanessa Souza',usuario:'consultora6',ativa:false,meta_pct:10,vendas_faixa:'Até R$ 500',vendas_ordem:1,clientes_faixa:'Até 5',contatos_faixa:'Até 10 no mês',atividade:'Há mais de um mês'}),
+    m({user_id:'d6',patrocinador_id:'d1',nivel:2,nome:'Kátia Nunes',usuario:'consultora7',grad_idx:0,meta_pct:90,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4,atividade:'Hoje'}),
+    m({user_id:'d7',patrocinador_id:'d2',nivel:2,nome:'Aline Ferreira',usuario:'consultora8',ativa:null,meta_pct:0,vendas_faixa:'Sem vendas no mês',vendas_ordem:0,clientes_faixa:'Nenhum ainda',contatos_faixa:'Nenhum no mês',atividade:'Ainda não usou o app',carreira_mes:null,desde:addDays(today(),-5)+'T12:00:00Z'}),
+    m({user_id:'d8',patrocinador_id:'d4',nivel:3,nome:'Bruna Costa',usuario:'consultora9',meta_pct:40,vendas_faixa:'R$ 500 a 1 mil',vendas_ordem:2,clientes_faixa:'Até 5'}),
+    m({user_id:'d9',patrocinador_id:'d6',nivel:3,nome:'Débora Martins',usuario:'consultora10',meta_pct:70,atividade:'Hoje'})]};
+}
+const DEMO_LIVRES=[['d20','Luciana Batista','consultora11'],['d21','Marcela Duarte','consultora12'],['d22','Tânia Rezende','consultora13']];
+function demoClient(){
+  const ok=d=>({data:d,error:null}),erro=m=>({data:null,error:{message:m}});
+  const espera=ms=>new Promise(r=>setTimeout(r,ms));
+  return{
+    auth:{async updateUser(){return{error:null}},async signOut(){return{error:null}},async getSession(){return{data:{session:null}}},onAuthStateChange(){}},
+    async rpc(nome,args={}){await espera(250);if(!_demoRede)_demoRede=demoRedeBase();const R=_demoRede;
+      if(nome==='app_minha_rede')return ok(JSON.parse(JSON.stringify(R)));
+      if(nome==='app_buscar_consultora'){const q=norm(args.p_nome||'');if(q.length<4)return erro('Digite pelo menos 4 letras do nome.');
+        const todos=[...DEMO_LIVRES.map(([id,n,u])=>({user_id:id,nome:n,usuario:u,situacao:R.rede.some(p=>p.user_id===id)?'na_sua_rede':'disponivel'})),...R.rede.map(p=>({user_id:p.user_id,nome:p.nome,usuario:p.usuario,situacao:'na_sua_rede'})),{user_id:'x1',nome:'Rosana Teles',usuario:'consultora14',situacao:'em_outra_rede'}];
+        return ok(todos.filter(c=>norm(c.nome).includes(q)||norm(c.usuario)===q).slice(0,8))}
+      if(nome==='app_conectar'){const l=DEMO_LIVRES.find(x=>x[0]===args.p_alvo);if(!l)return erro('Pessoa não encontrada.');
+        R.rede.push({user_id:l[0],patrocinador_id:'demo',nivel:1,nome:l[1],usuario:l[2],vendas_faixa:'Sem vendas no mês',vendas_ordem:0,meta_pct:0,clientes_faixa:'Nenhum ainda',contatos_faixa:'Nenhum no mês',atividade:'Hoje',grad_idx:-1,ativa:null,carreira_mes:null,telefone:null,desde:new Date().toISOString()});return ok('ok')}
+      if(nome==='app_desconectar'){const tira=new Set([args.p_alvo]);let mud=true;while(mud){mud=false;R.rede.forEach(p=>{if(tira.has(p.patrocinador_id)&&!tira.has(p.user_id)){tira.add(p.user_id);mud=true}})}R.rede=R.rede.filter(p=>!tira.has(p.user_id));return ok('ok')}
+      if(nome==='app_definir_nome'){const n=String(args.p_nome||'').trim();if(n.length<5)return erro('Informe o nome completo (5 a 80 letras).');R.eu.nome=n;return ok(n)}
+      return erro('Indisponível na demonstração.')},
+    functions:{async invoke(nome,{body}){await espera(700);const f=body.filtros||{},r=demoRand((body.pagina||1)*7919+(f.cnae||[]).join('').length*31+String(f.texto||'').length*17+String(f.municipio||'').length+(body.action==='cnpj'?5:0));
+      const cid=(f.municipio&&f.municipio[0])||'Rondonópolis',uf=(f.uf&&f.uf[0])||'MT';
+      const seg=(f.cnae&&f.cnae[0])||'9602501',segNome=(SEGMENTOS.find(s=>s[1]===seg)||SEGMENTOS[0])[0];
+      const pref={'9602501':['Salão','Studio','Espaço','Barbearia','Esmalteria'],'9602502':['Estética','Clínica','Studio','Spa'],'9313100':['Academia','Pilates','Box','Studio Fit'],'4772500':['Perfumaria','Cosméticos','Beleza'],'4781400':['Boutique','Moda','Ateliê'],'4771701':['Farmácia','Drogaria'],'8650004':['Fisioterapia','Clínica de Fisio'],'8112500':['Condomínio Residencial','Edifício'],'5611203':['Café','Lanchonete'],'4712100':['Mercearia','Minimercado']}[seg]||['Empresa'];
+      const suf=['Bela Vista','Aurora','Bem-Estar','Primavera','Harmonia','Vida Leve','Essencial','Sol Nascente','Jardim','Encanto','Natural','Do Bairro'];
+      const rows=Array.from({length:body.action==='cnpj'?1:(body.action==='base'?12:9)},(_,i)=>{const cel=r()>.3,fixo=r()>.6;const nm=(f.texto?f.texto[0].toUpperCase()+f.texto.slice(1)+' ':pick2(pref,r)+' ')+pick2(suf,r);
+        return{cnpj:body.cnpj||demoCnpj(r),razao:nm.toUpperCase()+' LTDA',fantasia:nm.toUpperCase(),cnae:seg,cnae_desc:segNome,municipio:cid.toUpperCase(),uf,bairro:pick2(['CENTRO','VILA AURORA','JARDIM ATLANTICO','VILA OPERARIA','JARDIM GUANABARA'],r),logradouro:'RUA EXEMPLO',numero:String(10+Math.floor(r()*900)),tel1:cel?demoTel(r):(fixo?'663'+String(4000000+Math.floor(r()*999999)):null),tel2:null,email:null,abertura:addDays(today(),-Math.floor(300+r()*3500)),porte:pick2(['ME','EPP','DEMAIS'],r),mei:r()>.75,capital:Math.round(5+r()*90)*1000}});
+      if(body.action==='search')return ok({rows:f.com_telefone||f.somente_celular?rows.filter(x=>x.tel1):rows,total_fonte:rows.length,novos:Math.floor(rows.length/2)});
+      if(body.action==='base')return ok({rows:rows.filter(x=>!(f.com_telefone||f.somente_celular)||x.tel1),total:rows.length});
+      if(body.action==='cnpj')return ok({row:rows[0]});
+      return{data:null,error:{message:'x',context:{json:async()=>({error:'Indisponível na demonstração.'})}}}}}
+  };
+}
+function pick2(a,r){return a[Math.floor(r()*a.length)]}
+
 render();
 Store.init().catch(e=>{console.error(e);S.ready=true;S.needLogin=true;S.loginErro='Não consegui conectar. Verifique a internet.';render()});
 </script>
