@@ -382,7 +382,7 @@ const DEF_CONFIG={
   msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!',
   categorias:['Cliente final','Recompra mensal','Salão / parceiro','Empresa','VIP'],
   metaMensal:3000,metaClientes:25,metaContatos:40,carreira:null,
-  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br/login'
+  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br/login?returnUrl=https%3A%2F%2Fev.atlanticanatural.com.br%2F'
 };
 /* ===== dados do Manual de operação da consultora (catálogo jul/2026, plano de carreira, scripts) ===== */
 const NIVEIS=[
@@ -1192,8 +1192,8 @@ function viewProdutos(){
   l.sort(ordCat);
   const vend={};const lim=addDays(today(),-90);arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(i.produtoId)vend[i.produtoId]=(vend[i.produtoId]||0)+num(i.qtd)}));
   return`
-  <a class="sitebar" href="${esc(S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">
-   <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>${esc((S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica).replace(/^https?:\/\//,'').replace(/\/$/,''))} · compre os produtos que você precisa</small></span><span class="sbgo">${ic('ext',18)}</span></a>
+  <a class="sitebar" href="${esc(S.config.evUrl||DEF_CONFIG.evUrl)}" target="_blank" rel="noopener">
+   <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>ev.atlanticanatural.com.br · entre e compre os produtos que você precisa</small></span><span class="sbgo">${ic('ext',18)}</span></a>
   <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
   <div class="scrollx"><button class="chip ${!u.prodAlert&&!u.prodCat?'on':''}" data-a="prodAll">Todos</button><button class="chip ${u.prodAlert==='estoque'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='estoque'?'':'estoque'}">Estoque baixo</button><button class="chip ${u.prodAlert==='preco'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='preco'?'':'preco'}">Preço ≠ catálogo</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="prodQ" data-ui="prodQ" value="${esc(u.prodQ)}" placeholder="Nome, código, categoria ou fábrica"></div>
@@ -1237,7 +1237,7 @@ function rankingLocal(){const lim=addDays(today(),-90),m={};arr('vendas').filter
 function rankingDe(id){return(S.ranking&&S.ranking.m[id])||null}
 function posicoesRanking(){const m=(S.ranking&&S.ranking.m)||{};const ids=Object.keys(m).filter(id=>get('produtos',id)&&m[id].qtd>0).sort((a,b)=>m[b].qtd-m[a].qtd||m[b].vendas-m[a].vendas);const pos={};ids.forEach((id,i)=>pos[id]=i+1);return pos}
 function viewCatalogo(){
-  const c=S.config,ev=c.evUrl||DEF_CONFIG.evUrl,host=ev.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  const c=S.config,ev=c.evUrl||DEF_CONFIG.evUrl,host=ev.replace(/^https?:\/\//,'').split(/[\/?#]/)[0];
   return`
   <section class="hero evfull">
    <div class="evtop"><div class="eyebrow">Atlântica Natural</div><span class="pill" style="background:rgba(255,255,255,.14);color:#fff">${ic('lock',13)} Acesso oficial</span></div>
