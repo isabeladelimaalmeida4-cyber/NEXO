@@ -254,6 +254,28 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 .obar{width:72px;height:5px;background:var(--sand);border-radius:4px;overflow:hidden;margin-top:4px}.obar i{display:block;height:100%;background:var(--sea)}
 .opct{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .otog{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);min-width:26px;height:22px;padding:0 7px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:11.5px;font-weight:800;color:var(--deep);cursor:pointer;z-index:2}
+.evfull{display:flex;flex-direction:column;justify-content:space-between;min-height:calc(100vh - 200px);min-height:calc(100dvh - 200px);margin-top:4px;padding:22px 20px;text-align:center}
+.evtop{display:flex;justify-content:space-between;align-items:center;text-align:left}
+.evmid{display:flex;flex-direction:column;align-items:center;gap:6px;padding:24px 0}
+.evicon{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.12);display:grid;place-items:center;margin-bottom:10px;color:#fff}
+.evfull h1{font-size:30px;margin:0;color:#fff}
+.evfull p{max-width:420px;color:#cfe7df;margin:6px auto 18px;font-size:15px}
+.evbtn{background:#fff;border-color:#fff;color:var(--deep);font-size:16px;padding:15px 22px;border-radius:14px;width:100%;max-width:360px}
+.evfoot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.evsec{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+@media(min-width:900px){
+  .wrap,.top-in,.nav-in{max-width:1040px}
+  .wrap{padding-left:24px;padding-right:24px}
+  .tiles{grid-template-columns:repeat(3,1fr)}
+  .list{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  .badges{grid-template-columns:repeat(4,1fr)}
+  .qgrid{grid-template-columns:repeat(4,1fr)}
+  .cartbar{max-width:1016px}
+  .scrollx{margin:0;padding-left:0;padding-right:0;flex-wrap:wrap}
+}
+@media(min-width:1280px){.tiles{grid-template-columns:repeat(4,1fr)}.qgrid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:359px){.grid4{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}.qgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.synct{display:none}}
 .hide{display:none!important}
 </style>
 </head>
@@ -354,7 +376,7 @@ const DEF_CONFIG={
   msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!',
   categorias:['Cliente final','Recompra mensal','Salão / parceiro','Empresa','VIP'],
   metaMensal:3000,metaClientes:25,metaContatos:40,carreira:null,
-  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br'
+  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br'
 };
 /* ===== dados do Manual de operação da consultora (catálogo jul/2026, plano de carreira, scripts) ===== */
 const NIVEIS=[
@@ -492,7 +514,7 @@ const STATUS_TONE={novo:'',contatado:'sea',negociando:'gold',cliente:'ok',perdid
 const PAGTOS=['Pix','Dinheiro','Cartão de crédito','Cartão de débito','Boleto','Fiado / a prazo'];
 const TABS=[['inicio','Início','home'],['base','Prospectar','target'],['vendas','Vendas','bag'],['clientes','Clientes','users'],['mais','Mais','grid']];
 const PARENT={empresa:'base',venda:'vendas',novaVenda:'vendas',cliente:'clientes',produtos:'mais',cobranca:'mais',catalogo:'mais',metas:'mais',fabricas:'mais',rede:'mais',notificacoes:'inicio',ajustes:'mais',carreira:'mais',scripts:'mais',manual:'mais',busca:'base'};
-const TITLES={empresa:'Empresa',venda:'Venda',novaVenda:'Nova venda',cliente:'Cliente',produtos:'Produtos',cobranca:'Cobrança',catalogo:'Catálogo',metas:'Metas e conquistas',fabricas:'Fábricas e marcas',rede:'Minha rede',notificacoes:'Notificações',ajustes:'Ajustes',carreira:'Plano de carreira',scripts:'Scripts de abordagem',manual:'Manual da consultora',busca:'Buscar empresas',base:'Prospectar',vendas:'Vendas',clientes:'Clientes',mais:'Mais'};
+const TITLES={empresa:'Empresa',venda:'Venda',novaVenda:'Nova venda',cliente:'Cliente',produtos:'Produtos',cobranca:'Cobrança',catalogo:'Escritório Virtual',metas:'Metas e conquistas',fabricas:'Fábricas e marcas',rede:'Minha rede',notificacoes:'Notificações',ajustes:'Ajustes',carreira:'Plano de carreira',scripts:'Scripts de abordagem',manual:'Manual da consultora',busca:'Buscar empresas',base:'Prospectar',vendas:'Vendas',clientes:'Clientes',mais:'Mais'};
 
 const S={route:'inicio',params:{},stack:[],data:Object.fromEntries(KINDS.map(k=>[k,{}])),config:{...DEF_CONFIG},
   ready:false,offline:false,unlocked:false,cnpj:null,draft:null,cart:{},
@@ -739,10 +761,10 @@ function render(){
   const active=isTab?r:(PARENT[r]||'inicio');
   let body='';try{body=(views[r]||viewInicio)()}catch(e){console.error(e);body=`<div class="empty"><h3>Algo deu errado nesta tela</h3><p>${esc(e.message)}</p><button class="btn" data-a="tab" data-r="inicio">Voltar ao início</button></div>`}
   const head=r==='inicio'
-    ?`<div class="brand"><b>Atlantica Natural</b><small>VENDAS & PROSPECÇÃO</small></div><div class="sp"></div>`
+    ?`<div class="brand"><b>Atlântica Natural</b><small>VENDAS & PROSPECÇÃO</small></div><div class="sp"></div>`
     :(isTab?`<h2>${esc(TITLES[r])}</h2>`:`<button class="icon-btn" data-a="back" aria-label="Voltar">${ic('back',22)}</button><h2>${esc(TITLES[r]||'')}</h2>`);
   app.innerHTML=`<header class="top">${DEMO?'<div class="demo-strip">Demonstração · dados fictícios · nada é salvo</div>':''}<div class="top-in">${head}
-    <span class="sync ${S.offline?'local':''}" title="${S.offline?'Sem conexão — salvando quando a internet voltar':'Salvo na nuvem'}"><i></i>${S.offline?'sem conexão':esc((Store.perfil&&Store.perfil.usuario)||'')}</span>
+    <span class="sync ${S.offline?'local':''}" title="${S.offline?'Sem conexão — salvando quando a internet voltar':'Salvo na nuvem'}"><i></i><span class="synct">${S.offline?'sem conexão':esc((Store.perfil&&Store.perfil.usuario)||'')}</span></span>
     <button class="icon-btn" data-a="go" data-r="notificacoes" aria-label="Notificações">${ic('bell',22)}${nN?`<span class="badge">${nN>9?'9+':nN}</span>`:''}</button></div></header>
   <main class="wrap">${body}</main>
   ${S.route==='catalogo'?cartBar():''}
@@ -802,7 +824,7 @@ function viewInicio(){
   ${(()=>{const cr=carreiraCalc(),nCat=arr('produtos').filter(p=>p.noCatalogo!==false).length,rc=recompras().length;
    const tl=(r,i,b,sx)=>`<button class="tile" data-a="go" data-r="${r}"><span class="ic">${ic(i)}</span><b>${b}</b><span class="s">${sx}</span></button>`;
    return`<div class="sec" style="margin-top:14px"><h3>Atlântica Natural</h3></div><div class="tiles" style="margin-top:6px">
-    ${tl('catalogo','store','Catálogo',`${nf(nCat)} itens · jul/2026`)}
+    ${tl('catalogo','lock','Escritório Virtual','Login oficial Atlântica')}
     ${tl('carreira','star','Plano de carreira',cr.preenchido?(cr.idx>=0?NIVEIS[cr.idx].n:'Rumo ao Bronze')+(cr.ativo?' · ativa':' · faltam '+nf(50-cr.vp)+' VP'):'Graduação e VP do ciclo')}
     ${tl('scripts','wa','Scripts',`${SCRIPTS.length} mensagens prontas`)}
     ${tl('manual','leaf','Manual',rc?`${rc} recompra(s) prevista(s)`:'Públicos, canais e regras')}</div>`})()}
@@ -1207,16 +1229,19 @@ function rankingLocal(){const lim=addDays(today(),-90),m={};arr('vendas').filter
 function rankingDe(id){return(S.ranking&&S.ranking.m[id])||null}
 function posicoesRanking(){const m=(S.ranking&&S.ranking.m)||{};const ids=Object.keys(m).filter(id=>get('produtos',id)&&m[id].qtd>0).sort((a,b)=>m[b].qtd-m[a].qtd||m[b].vendas-m[a].vendas);const pos={};ids.forEach((id,i)=>pos[id]=i+1);return pos}
 function viewCatalogo(){
-  const u=S.ui,c=S.config;const cats=ordLinhas([...new Set(arr('produtos').filter(p=>p.noCatalogo!==false).map(p=>p.categoria).filter(Boolean))]);
-  const l=catalogoFiltrado(),pos=posicoesRanking();
-  const maxQ=Math.max(1,...l.map(p=>(rankingDe(p.id)||{}).qtd||0));
-  const R=S.ranking;
+  const c=S.config,ev=c.evUrl||DEF_CONFIG.evUrl,host=ev.replace(/^https?:\/\//,'').replace(/\/$/,'');
   return`
-  <div class="hero" style="margin-top:4px;padding:16px"><div class="eyebrow">Catálogo e loja</div><h1 style="font-size:22px;margin:4px 0 6px">Atlântica Natural</h1>
-   <div class="small" style="color:#cfe7df">Compre os produtos que você precisa direto na loja oficial.</div>
-   <div class="row" style="margin-top:12px"><a class="btn sm" style="background:#fff;border-color:#fff;color:var(--deep)" href="${esc(c.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">${ic('store',15)} Comprar na loja Atlântica</a>${c.lojaUrl?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
-   <div class="row" style="margin-top:8px"><button class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" data-a="copyCatalogo">${ic('copy',15)} Copiar ${u.catCat||u.catQ?'seleção':'catálogo'}</button>${l.length&&l.length<=80?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(waLink('',textoCatalogo()))}" target="_blank" rel="noopener">${ic('wa',15)} Enviar no WhatsApp</a>`:''}</div></div>
-  <div style="height:${cartItems().length?70:0}px"></div>`;
+  <section class="hero evfull">
+   <div class="evtop"><div class="eyebrow">Atlântica Natural</div><span class="pill" style="background:rgba(255,255,255,.14);color:#fff">${ic('lock',13)} Acesso oficial</span></div>
+   <div class="evmid">
+     <div class="evicon">${ic('store',34,1.6)}</div>
+     <h1>Escritório Virtual</h1>
+     <p>Entre na sua conta oficial da Atlântica Natural para fazer pedidos, acompanhar pontos, qualificação, rede e bônus.</p>
+     <a class="btn evbtn" href="${esc(ev)}" target="_blank" rel="noopener">${ic('lock',18)} Entrar no Escritório Virtual</a>
+     <div class="tiny" style="color:#a9d2c8;margin-top:10px">${esc(host)}</div>
+   </div>
+   <div class="evfoot"><button class="btn sm evsec" data-a="copyCatalogo">${ic('copy',15)} Copiar catálogo</button>${c.lojaUrl?`<a class="btn sm evsec" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
+  </section>`;
 }
 const catIdx=c=>{const i=ATL_CAT.findIndex(g=>g.l===c);return i<0?99:i};
 const ordCat=(a,b)=>catIdx(a.categoria)-catIdx(b.categoria)||(a.ordem??9999)-(b.ordem??9999)||(a.nome||'').localeCompare(b.nome||'','pt');
@@ -1534,6 +1559,7 @@ function viewAjustes(){
    <div class="field"><label for="cWa">Seu WhatsApp</label><input class="inp" id="cWa" name="whatsapp" inputmode="tel" value="${esc(c.whatsapp)}" placeholder="(67) 99999-0000"></div>
    <div class="field"><label for="cCid">Sua cidade</label><input class="inp" id="cCid" name="cidade" value="${esc(c.cidade||'')}"><span class="tiny muted">Entra nos scripts de abordagem.</span></div>
    <div class="field"><label for="cLoja">Link da sua loja virtual</label><input class="inp" id="cLoja" name="lojaUrl" value="${esc(c.lojaUrl||'')}" placeholder="loja.atlanticanatural.com.br/…"><span class="tiny muted">Vai no catálogo enviado e na mensagem de recompra.</span></div>
+   <div class="field"><label for="cEv">Link do Escritório Virtual</label><input class="inp" id="cEv" name="evUrl" value="${esc(c.evUrl||DEF_CONFIG.evUrl)}"><span class="tiny muted">Abre no botão “Entrar no Escritório Virtual”.</span></div>
    <div class="field"><label for="cLojaA">Link da loja Atlântica Natural</label><input class="inp" id="cLojaA" name="lojaAtlantica" value="${esc(c.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}"><span class="tiny muted">Abre no botão “Comprar na loja Atlântica”, no Catálogo e em Produtos.</span></div>
    <div class="field"><label for="cCat">Categorias de clientes</label><input class="inp" id="cCat" name="categorias" value="${esc((c.categorias||[]).join(', '))}"><span class="tiny muted">Separe por vírgula.</span></div>
    <h3 style="margin-top:18px">Mensagem de prospecção (WhatsApp)</h3>
@@ -1940,7 +1966,7 @@ document.addEventListener('submit',async ev=>{
   if(f.id==='empNotas'){const e=get('empresas',f.dataset.id);const fd=new FormData(f);Store.put('empresas',{...e,retorno:fd.get('retorno')||'',notas:fd.get('notas')||''});toast('Acompanhamento salvo');render();return}
   if(f.id==='buscaForm'){lerBuscaForm();if(S.busca.tab==='receita'&&!S.busca.seg.length&&!S.busca.texto&&!S.busca.cidade){toast('Escolha um segmento, uma cidade ou um nome.');return}executarBusca(false);return}
   if(f.id==='carForm'){const fd=Object.fromEntries(new FormData(f));const k={};['vp','vq','linhas','maior','viagem'].forEach(x=>k[x]=num(fd[x]));k.mes=curMonth();Store.setConfig({carreira:k});toast('Painel de carreira atualizado');render();return}
-  if(f.id==='cfgForm'){const fd=Object.fromEntries(new FormData(f));Store.setConfig({...fd,whatsapp:normPhone(fd.whatsapp),categorias:String(fd.categorias||'').split(',').map(s=>s.trim()).filter(Boolean),atlanticaUrl:(fd.atlanticaUrl||DEF_CONFIG.atlanticaUrl).trim(),lojaAtlantica:(u=>/^https?:\/\//.test(u)?u:'https://'+u)(String(fd.lojaAtlantica||DEF_CONFIG.lojaAtlantica).trim())});toast('Ajustes salvos');render();return}
+  if(f.id==='cfgForm'){const fd=Object.fromEntries(new FormData(f));Store.setConfig({...fd,whatsapp:normPhone(fd.whatsapp),categorias:String(fd.categorias||'').split(',').map(s=>s.trim()).filter(Boolean),atlanticaUrl:(fd.atlanticaUrl||DEF_CONFIG.atlanticaUrl).trim(),lojaAtlantica:(u=>/^https?:\/\//.test(u)?u:'https://'+u)(String(fd.lojaAtlantica||DEF_CONFIG.lojaAtlantica).trim()),evUrl:(u=>/^https?:\/\//.test(u)?u:'https://'+u)(String(fd.evUrl||DEF_CONFIG.evUrl).trim())});toast('Ajustes salvos');render();return}
 });
 
 /* ============ início ============ */
