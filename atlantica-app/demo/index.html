@@ -281,6 +281,18 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 @media(max-width:420px){.synct{display:none}}
 .sitebar{display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,var(--deep),#11706f);color:#fff;border-radius:16px;padding:13px 14px;margin:4px 0 12px;text-decoration:none;box-shadow:var(--shadow)}
 .sitebar:active{transform:scale(.99)}
+.sbbag{display:inline-flex;align-items:center;gap:4px;background:#fff;color:var(--deep);border-radius:12px;padding:3px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.bagbtn{margin-left:auto}.bagbtn.on{background:var(--deep);color:#fff;border-color:var(--deep)}
+.sac-bg{position:fixed;inset:0;background:rgba(10,30,32,.35);z-index:62;animation:fade .18s}
+.sac{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);background:var(--paper);z-index:63;display:flex;flex-direction:column;box-shadow:-10px 0 34px rgba(10,30,32,.2);animation:sacin .24s cubic-bezier(.2,.8,.2,1);padding-top:env(safe-area-inset-top)}
+@keyframes sacin{from{transform:translateX(100%)}to{transform:none}}
+.sac-h{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid var(--line)}.sac-h h3{margin:0;font-size:19px;flex:1}
+.sac-b{flex:1;overflow-y:auto;padding:10px 14px}
+.sac-i{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.sac-i .t{font-weight:800;font-size:14px;line-height:1.25}.sac-i .s{font-size:12px;color:var(--muted);margin-top:2px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden}.qty button{width:34px;height:32px;border:0;background:var(--sand);font-size:18px;font-weight:800;color:var(--deep);cursor:pointer}.qty b{min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+.sac-f{border-top:1px solid var(--line);padding:12px 14px calc(14px + env(safe-area-inset-bottom));background:#fbf8f2}
+.sac-tot{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.sac-tot b{font-variant-numeric:tabular-nums}
 .sbic{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
 .sbtx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
 .sbtx b{font-size:15px}.sbtx small{font-size:12px;color:#cfe7df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -291,6 +303,7 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 <body>
 <div id="app"></div>
 <div id="sheet"></div>
+<div id="sacola"></div>
 <div id="toast"></div>
 <input type="file" id="fileImport" accept=".csv,.xlsx,.xls,.json,text/csv,application/json" class="hide">
 <input type="file" id="fileBackup" accept=".json,application/json" class="hide">
@@ -603,7 +616,7 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
     }catch(e){console.warn(e);S.offline=true;if(!silencioso)toast('Sem conexão: não consegui carregar seus dados.')}
     S.ready=true;render();
   },
-  limpar(){this.uid=null;this.perfil=null;this.q={};this.pend={};S.data=Object.fromEntries(KINDS.map(k=>[k,{}]));S.config={...DEF_CONFIG};S.draft=null;S.cart={};S.route='inicio';S.stack=[]},
+  limpar(){S.sacolaAberta=false;if(typeof renderSacola==='function')renderSacola();document.body.style.overflow='';this.uid=null;this.perfil=null;this.q={};this.pend={};S.data=Object.fromEntries(KINDS.map(k=>[k,{}]));S.config={...DEF_CONFIG};S.draft=null;S.cart={};S.route='inicio';S.stack=[]},
   async sair(){try{await sbc.auth.signOut()}catch(e){}authStorage.removeItem('atl-auth');this.limpar();S.needLogin=true;render()},
   enqueue(key,fn){const prev=this.q[key]||Promise.resolve();const p=prev.then(async()=>{try{await fn();delete this.pend[key];if(S.offline&&!Object.keys(this.pend).length){S.offline=false;schedule()}}catch(e){this.pend[key]=fn;this.err(e)}});this.q[key]=p;return p},
   flush(){const ks=Object.keys(this.pend);if(!ks.length)return;ks.forEach(k=>{const fn=this.pend[k];this.enqueue(k,fn)})},
@@ -1205,15 +1218,15 @@ function viewProdutos(){
   l.sort(ordCat);
   const vend={};const lim=addDays(today(),-90);arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(i.produtoId)vend[i.produtoId]=(vend[i.produtoId]||0)+num(i.qtd)}));
   return`
-  <a class="sitebar" href="${esc(S.config.evUrl||DEF_CONFIG.evUrl)}" target="_blank" rel="noopener">
-   <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>ev.atlanticanatural.com.br · entre e compre os produtos que você precisa</small></span><span class="sbgo">${ic('ext',18)}</span></a>
-  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
+  <a class="sitebar" href="${esc(S.config.evUrl||DEF_CONFIG.evUrl)}" data-a="sacolaSite" rel="noopener">
+   <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>${sacolaN()?`toque para ver a sua sacola e abrir o site`:'ev.atlanticanatural.com.br · entre e compre os produtos que você precisa'}</small></span>${sacolaN()?`<span class="sbbag">${ic('bag',14)} ${nf(sacolaN())}</span>`:''}<span class="sbgo">${ic('ext',18)}</span></a>
+  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="sacolaAbrir">${ic('bag',16)} Sacola${sacolaN()?` (${nf(sacolaN())})`:''}</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
   <div class="scrollx"><button class="chip ${!u.prodCat?'on':''}" data-a="prodAll">Todos</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="prodQ" data-ui="prodQ" value="${esc(u.prodQ)}" placeholder="Nome, código, categoria ou fábrica"></div>
   <div class="note sea" style="margin-top:4px">${ic('leaf',18)}<div>Catálogo Essencial Atlântica Natural (jul/2026) já incluído: preço de catálogo, preço de consultora (50%) e ciclo de recompra. Toque num produto para ajustar preço, foto ou estoque.</div></div>
   <div class="small muted" style="margin:10px 2px 0"><b>${nf(l.length)}</b> produto${l.length===1?'':'s'}</div>
   ${l.length?`<div class="list">${l.slice(0,u.prodLimit).map(p=>{const f=get('fabricas',p.fabricaId);return`<div class="item" data-a="formProduto" data-id="${p.id}"><div class="hd">${p.foto?`<div class="thumb" style="background-image:url('${p.foto}')"></div>`:''}<div class="grow"><div class="t">${esc(p.nome)}</div><div class="s">${esc([p.sku,p.categoria,f&&f.nome].filter(Boolean).join(' · ')||'—')}</div>
-   <div class="row" style="margin-top:6px;gap:5px">${p.controlaEstoque?`<span class="pill ${estoqueBaixo(p)?'warn':''}">Estoque ${nf(num(p.estoque))}</span>`:''}${precoDiverge(p)?`<span class="pill gold">Catálogo ${brl(p.precoSugerido)}</span>`:''}${p.custo?`<span class="pill">custo ${brl(p.custo)}</span>`:''}${vend[p.id]?`<span class="pill sea">${nf(vend[p.id])} vend. 90d</span>`:''}${p.noCatalogo===false?'<span class="pill">fora do catálogo</span>':''}</div></div><div class="amt">${brl(p.preco)}</div></div></div>`}).join('')}</div>${l.length>u.prodLimit?`<button class="btn block" data-a="moreProd">Mostrar mais (${nf(l.length-u.prodLimit)})</button>`:''}`
+   <div class="row" style="margin-top:6px;gap:5px">${p.controlaEstoque?`<span class="pill ${estoqueBaixo(p)?'warn':''}">Estoque ${nf(num(p.estoque))}</span>`:''}${precoDiverge(p)?`<span class="pill gold">Catálogo ${brl(p.precoSugerido)}</span>`:''}${p.custo?`<span class="pill">custo ${brl(p.custo)}</span>`:''}${vend[p.id]?`<span class="pill sea">${nf(vend[p.id])} vend. 90d</span>`:''}<button class="btn sm bagbtn ${sacolaQtd(p.id)?'on':''}" data-a="sacolaAdd" data-id="${p.id}" aria-label="Pôr na sacola">${ic('bag',14)} ${sacolaQtd(p.id)?nf(sacolaQtd(p.id))+' na sacola':'Sacola'}</button>${p.noCatalogo===false?'<span class="pill">fora do catálogo</span>':''}</div></div><div class="amt">${brl(p.preco)}</div></div></div>`}).join('')}</div>${l.length>u.prodLimit?`<button class="btn block" data-a="moreProd">Mostrar mais (${nf(l.length-u.prodLimit)})</button>`:''}`
    :`<div class="empty">${arr('produtos').length?'Nenhum produto com esses filtros.':'<h3>Nenhum produto</h3>Cadastre seus produtos.'}</div>`}`;
 }
 function viewCobranca(){
@@ -1230,6 +1243,31 @@ function viewCobranca(){
     ${x.p.pagoEm?'':`<div class="acts"><button class="btn sm sea" data-a="baixa" data-id="${x.v.id}" data-i="${x.i}">${ic('check',15)} Dar baixa</button>${c&&c.telefone?`<a class="btn sm wa" href="${esc(waLink(c.telefone,msgCob(c,x.p)))}" target="_blank" rel="noopener">${ic('wa',15)} Cobrar</a>`:''}</div>`}</div>`}).join('')}</div>`
    :`<div class="empty">Nada por aqui. ${tab==='vencidas'?'Sua cobrança está em dia 👏':''}</div>`}`;
 }
+/* Sacola: produtos separados para comprar no site oficial. Fica salva na conta (config.sacola). */
+const sacolaRaw=()=>Array.isArray(S.config.sacola)?S.config.sacola:[];
+const sacola=()=>sacolaRaw().map(x=>({...x,p:get('produtos',x.id)})).filter(x=>x.p&&x.qtd>0);
+const sacolaQtd=id=>(sacolaRaw().find(x=>x.id===id)||{}).qtd||0;
+const sacolaN=()=>sum(sacola(),x=>x.qtd);
+function salvarSacola(l){Store.setConfig({sacola:l.filter(x=>x.qtd>0).map(x=>({id:x.id,qtd:x.qtd}))});renderSacola();render()}
+function sacolaMudar(id,d){const l=sacolaRaw().map(x=>({...x}));const i=l.find(x=>x.id===id);if(i)i.qtd=Math.max(0,Math.min(999,i.qtd+d));else if(d>0)l.push({id,qtd:d});salvarSacola(l)}
+function sacolaTexto(){const l=sacola();
+  return['Minha sacola · Atlântica Natural','',...l.map(x=>`${x.qtd} × ${x.p.nome}${x.p.sku?` (cód. ${x.p.sku})`:''} · ${brl(num(x.p.preco)*x.qtd)}`),'',`Total no catálogo: ${brl(sum(l,x=>num(x.p.preco)*x.qtd))}`,`Custo de consultora: ${brl(sum(l,x=>num(x.p.custo)*x.qtd))}`].join('\n')}
+function renderSacola(){const box=$('#sacola');if(!box)return;
+  if(!S.sacolaAberta){box.innerHTML='';return}
+  const l=sacola(),ev=S.config.evUrl||DEF_CONFIG.evUrl,tot=sum(l,x=>num(x.p.preco)*x.qtd),cus=sum(l,x=>num(x.p.custo)*x.qtd),y=$('.sac-b')?$('.sac-b').scrollTop:0;
+  box.innerHTML=`<div class="sac-bg" data-a="sacolaFechar"></div><aside class="sac" role="dialog" aria-label="Minha sacola">
+   <div class="sac-h">${ic('bag',22)}<h3>Minha sacola${l.length?` <span class="tiny muted">${nf(sacolaN())} ite${sacolaN()===1?'m':'ns'}</span>`:''}</h3><button type="button" class="icon-btn" data-a="sacolaFechar" aria-label="Fechar">${ic('x',20)}</button></div>
+   <div class="sac-b">${l.length?l.map(x=>`<div class="sac-i"><div class="row nowrap" style="gap:8px;align-items:flex-start"><div style="flex:1;min-width:0"><div class="t">${esc(x.p.nome)}</div><div class="s">${esc([x.p.sku&&'cód. '+x.p.sku,x.p.categoria].filter(Boolean).join(' · '))}</div></div><button type="button" class="icon-btn" data-a="sacolaRem" data-id="${x.id}" aria-label="Tirar da sacola" style="margin:-6px -6px 0 0">${ic('x',16)}</button></div>
+     <div class="row nowrap" style="justify-content:space-between;margin-top:8px"><span class="qty"><button type="button" data-a="sacolaMais" data-id="${x.id}" data-v="-1" aria-label="Menos">−</button><b>${x.qtd}</b><button type="button" data-a="sacolaMais" data-id="${x.id}" data-v="1" aria-label="Mais">+</button></span><div style="text-align:right"><b class="mono">${brl(num(x.p.preco)*x.qtd)}</b>${x.qtd>1?`<div class="tiny muted">${brl(x.p.preco)} cada</div>`:''}</div></div></div>`).join('')
+    :`<div class="empty" style="padding:40px 10px">${ic('bag',30)}<h3 style="margin-top:10px">Sua sacola está vazia</h3>Em Produtos, toque em <b>Sacola</b> nos itens que você quer comprar. Eles aparecem aqui em forma de lista.</div>`}</div>
+   <div class="sac-f">${l.length?`<div class="sac-tot"><span>Total no catálogo</span><b>${brl(tot)}</b></div><div class="sac-tot muted"><span>Custo de consultora</span><b>${brl(cus)}</b></div>`:''}
+    <a class="btn pri block" href="${esc(ev)}" target="_blank" rel="noopener" style="margin-top:8px">${ic('ext',17)} Abrir site oficial Atlântica</a>
+    ${l.length?`<div class="row nowrap" style="margin-top:8px"><button type="button" class="btn" style="flex:1" data-a="sacolaCopiar">${ic('copy',16)} Copiar lista</button><button type="button" class="btn ${S.sacolaConf?'danger':''}" data-a="sacolaLimpar">${S.sacolaConf?'Tocar de novo para limpar':'Limpar'}</button></div>`:''}
+    <p class="tiny muted" style="margin:8px 2px 0">A lista fica salva no app. Abra o site oficial e use a lista para montar o seu pedido.</p></div></aside>`;
+  const b=$('.sac-b');if(b)b.scrollTop=y}
+function abrirSacola(){S.sacolaAberta=true;renderSacola();document.body.style.overflow='hidden'}
+function fecharSacola(){S.sacolaAberta=false;renderSacola();document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.sacolaAberta)fecharSacola()});
 function cartItems(){return Object.entries(S.cart).map(([id,q])=>({p:get('produtos',id),q})).filter(x=>x.p&&x.q>0)}
 function cartBar(){const it=cartItems();if(!it.length)return'';const tot=sum(it,x=>x.q*x.p.preco);
   return`<div class="cartbar"><div style="flex:1"><div class="tiny" style="opacity:.7">${sum(it,x=>x.q)} item(ns) no pedido</div><b class="mono" style="font-size:18px">${brl(tot)}</b></div><button class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.3)" data-a="cartClear">Limpar</button><button class="btn sm sea" data-a="cartFechar">Fechar pedido</button></div>`}
@@ -1261,7 +1299,7 @@ function viewCatalogo(){
      <a class="btn evbtn" href="${esc(ev)}" target="_blank" rel="noopener">${ic('lock',18)} Entrar no Escritório Virtual</a>
      <div class="tiny" style="color:#a9d2c8;margin-top:10px">${esc(host)}</div>
    </div>
-   <div class="evfoot"><button class="btn sm evsec" data-a="copyCatalogo">${ic('copy',15)} Copiar catálogo</button>${c.lojaUrl?`<a class="btn sm evsec" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
+   <div class="evfoot"><button class="btn sm evsec" data-a="sacolaAbrir">${ic('bag',15)} Minha sacola${sacolaN()?` (${nf(sacolaN())})`:''}</button><button class="btn sm evsec" data-a="copyCatalogo">${ic('copy',15)} Copiar catálogo</button>${c.lojaUrl?`<a class="btn sm evsec" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
   </section>`;
 }
 const catIdx=c=>{const i=ATL_CAT.findIndex(g=>g.l===c);return i<0?99:i};
@@ -1950,6 +1988,14 @@ const A={
   undismiss:()=>{ls.del('atl-dismiss');render()},
   cart:el=>{const id=el.dataset.id,p=get('produtos',id);let q=(S.cart[id]||0)+(+el.dataset.v);if(p&&p.controlaEstoque&&q>num(p.estoque)){toast('Sem estoque suficiente');q=Math.max(0,num(p.estoque))}if(q<=0)delete S.cart[id];else S.cart[id]=q;render()},
   cartClear:()=>{S.cart={};render()},
+  sacolaAdd:el=>{sacolaMudar(el.dataset.id,1);toast('Na sacola ✓')},
+  sacolaMais:el=>sacolaMudar(el.dataset.id,+el.dataset.v),
+  sacolaRem:el=>salvarSacola(sacolaRaw().filter(x=>x.id!==el.dataset.id)),
+  sacolaAbrir:()=>abrirSacola(),
+  sacolaSite:(el,ev)=>{ev.preventDefault();abrirSacola()},
+  sacolaFechar:()=>fecharSacola(),
+  sacolaCopiar:()=>copy(sacolaTexto(),'Lista copiada ✓'),
+  sacolaLimpar:()=>{if(!S.sacolaConf){S.sacolaConf=1;renderSacola();setTimeout(()=>{if(S.sacolaConf){S.sacolaConf=0;renderSacola()}},4000);return}S.sacolaConf=0;salvarSacola([])},
   cartFechar:()=>{const it=cartItems(),tot=sum(it,x=>x.q*x.p.preco);const txt=`*Pedido — ${S.config.negocio}*\n\n${it.map(x=>`${x.q}x ${x.p.nome} — ${brl(x.q*x.p.preco)}`).join('\n')}\n\n*Total: ${brl(tot)}*`;
     openSheet('Fechar pedido',`<div class="preview">${esc(txt)}</div>${F('tel','Enviar para (WhatsApp)','',{im:'tel',ph:'Deixe vazio para escolher o contato'})}`,{submit:'Criar venda',extra:`<a class="btn wa" id="cartWaA" href="${esc(waLink('',txt))}" target="_blank" rel="noopener">${ic('wa',16)} WhatsApp</a>`,onSubmit:()=>{S.draft=newDraft({itens:it.map(x=>({produtoId:x.p.id,nome:x.p.nome,qtd:String(x.q),preco:(num(x.p.preco)).toFixed(2).replace('.',',')}))});S.cart={};closeSheet();go('novaVenda')}});S._cartTxt=txt},
   copyCatalogo:()=>copy(textoCatalogo(),'Catálogo copiado ✓'),
