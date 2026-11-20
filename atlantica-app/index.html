@@ -358,6 +358,8 @@ const norm=s=>noAccent(s).toLowerCase();
 function normPhone(s){let d=digits(s);if(d.length>=12&&d.startsWith('55'))d=d.slice(2);if(d.length===11&&d.startsWith('0'))d=d.slice(1);return d.length>=8?d:''}
 const isMobile=s=>{const d=normPhone(s);return d.length===11&&d[2]==='9'};
 function fmtPhone(s){const d=normPhone(s);if(d.length===11)return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;if(d.length===10)return`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return s||''}
+const procurarLinks=(nome,cidade)=>{const q=`"${nome}" ${cidade||''}`.trim();
+  return`<a class="btn sm" href="https://www.google.com/search?q=${encodeURIComponent('site:instagram.com '+q)}" target="_blank" rel="noopener">${ic('search',15)} Instagram</a><a class="btn sm" href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" rel="noopener">${ic('search',15)} Google</a>`};
 const waLink=(phone,text)=>{const d=window.ATL_DEMO?'':normPhone(phone);return 'https://wa.me/'+(d?'55'+d:'')+(text?'?text='+encodeURIComponent(text):'')};
 function fmtCnpj(s){const d=digits(s);if(d.length===14)return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5');if(d.length===11)return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/,'$1.$2.$3-$4');return s||''}
 const fill=(t,v)=>String(t||'').replace(/\{(\w+)\}/g,(m,k)=>v[k]!=null?String(v[k]):'').replace(/[ \t]{2,}/g,' ');
@@ -437,7 +439,8 @@ const MERCADO=[
  ["Esmalterias, lash e sobrancelha","Suplebase para unhas, Natuoz Creme mãos e corpo, Ultra Hidratante para os Pés e perfumes de 15 ml.","Itens de compra por impulso para a cliente levar no caixa."],
  ["Estética e massagem","Dermo Natuoz, Dermo Clean, séruns, máscaras faciais, Gel Redutor, Gel Relaxante, Gel de Massagem e óleos essenciais.","Home care pós-procedimento e insumos para a cabine."],
  ["Academias e pilates","Performance e treino, shakes, Natuoz Power, magnésios e controle de peso.","Indicação do personal e mostruário na recepção."],
- ["Barbearias","Linha Men 4 em 1, fragrâncias masculinas e desodorante sem alumínio.","Cliente homem esperando atendimento: perfume de 15 ml a R$40 como porta de entrada."],
+ ["Barbearias","Linha Men 4 em 1, 27 fragrâncias masculinas (15 ml a partir de R$40), desodorante sem alumínio e Natuoz Power.","O cliente espera na cadeira: um mostruário no balcão vira compra por impulso e o barbeiro ganha comissão sem ter estoque. Rondonópolis tem cerca de 30 barbearias com nome registrado na Receita (nov/2026). Datas fortes: Dia dos Pais e fim de ano."],
+ ["Consultoras e revendedoras","Linhas de recompra mensal (suplementos e linha casa), linha capilar ozonizada e perfumes de 15 ml.","Quem já vende cosméticos tem clientela e o costume de vender por catálogo, e muitas trabalham com mais de uma linha. Rondonópolis tem cerca de 900 MEIs com venda de cosméticos no CNPJ (nov/2026)."],
  ["Lojas de moda","Fragrâncias femininas e masculinas e kits presente.","Brinde para clientes VIP e kits de datas comemorativas."],
  ["Empresas e escritórios","Kits de fim de ano com perfume de 15 ml, hidratante ou óleo essencial.","Pedido grande de uma vez só, ideal para dezembro."],
  ["Vizinhança e condomínios","Linha casa e higiene bucal, em pedidos mensais.","Recompra previsível e entrega concentrada num só endereço."]
@@ -452,7 +455,10 @@ const SCRIPTS=[
  ["Barbearia","Olá, [NOME]. Trabalho com a Atlântica Natural e tenho uma linha masculina que combina com a sua barbearia: shampoo 4 em 1 e 27 fragrâncias masculinas, a partir de R$40 no frasco de 15 ml. Posso deixar um mostruário para seus clientes conhecerem?"],
  ["Kit de fim de ano para empresas","Olá, [NOME]. Estou montando kits de fim de ano para empresas de Rondonópolis, com perfume, hidratante ou óleo essencial, a partir de R$[VALOR] por colaborador. Posso enviar as opções?"],
  ["Linha casa","Olá, [NOME]. A Atlântica também tem linha para a casa: lava-roupas, amaciante, detergente e multilimpador ultra concentrados, e home sprays. Quer receber todo mês junto com seus outros produtos?"],
- ["Campanha de Natal","Olá, [NOME]. Preparei kits de presente Atlântica para ela e para ele, como hidratante com óleo essencial ou perfume Bortoletto de 15 ml. Quer ver as opções?"]
+ ["Campanha de Natal","Olá, [NOME]. Preparei kits de presente Atlântica para ela e para ele, como hidratante com óleo essencial ou perfume Bortoletto de 15 ml. Quer ver as opções?"],
+ ["Quem já vende cosméticos","Olá, [NOME]. Tudo bem? Sou [SEU NOME], de Rondonópolis. Vi que você trabalha com cosméticos e queria te apresentar uma linha natural que muita gente soma ao que já vende: suplementos, linha capilar ozonizada e linha casa, que têm recompra todo mês. A consultora compra pela metade do preço de catálogo e tem loja virtual própria. Posso te mandar um resumo rápido?"],
+ ["Barbearia: produto no balcão","Olá, [NOME]. Sou [SEU NOME], consultora Atlântica Natural em Rondonópolis. Tenho uma ideia para a sua barbearia: um expositor pequeno com perfumes de 15 ml e a linha Men 4 em 1 para o cliente levar depois do corte. Você fica com [X]% de cada venda, sem estoque. Posso passar aí para mostrar?"],
+ ["Barbearia: Dia dos Pais e fim de ano","Olá, [NOME]. Estou montando kits masculinos para presente, com perfume de 15 ml e shampoo 4 em 1, para o Dia dos Pais e o fim de ano. Que tal oferecer aos seus clientes aí na barbearia? Te envio as opções com preço."]
 ];
 const PUB=[
  ["Mulheres: público principal","Rotina completa de autocuidado: Dermo Natuoz e séruns, linha capilar, corpo e banho, 30 fragrâncias femininas, suplementos de beleza, A-Z Complex Mulher, Saúde da Mulher e controle de peso.","É quem mais compra para si e para a casa. Uma cliente bem atendida leva cabelo, pele e perfume no mesmo pedido."],
@@ -493,7 +499,7 @@ const CTRL=[
 /* ciclo de recompra por linha (manual: vitaminas, chás, shakes e casa ~30 dias; shampoo 45; óleos e perfumes 60) */
 const CICLO={"Óleos ozonizados Natuoz":60,"Cabelo":45,"Rosto e skincare":45,"Corpo, banho e unhas":45,"Higiene bucal":30,"Suplementos de beleza":30,"Vitaminas e minerais":30,"Saúde e vitalidade":30,"Sono e foco":30,"Controle de peso":30,"Performance e treino":30,"Fragrâncias femininas Bortoletto":60,"Fragrâncias masculinas Bortoletto":60,"Óleos essenciais":60,"Casa":30};
 /* palavras da atividade (CNAE) que indicam o script certo */
-const SCRIPT_HINT=[[/sal[aã]o|cabelei|beleza|cabelo/,0],[/manicure|pedicure|esmalt|unha|sobrancelh|c[ií]lio|lash|depila/,2],[/academia|pilates|fitness|condicionamento|crossfit|muscula|esport/,3],[/barbear/,6],[/est[eé]tica|massag|spa\b|dermo/,1],[/moda|vestu|roupa|confec|boutique|cal[cç]ad|acess[oó]rio/,1],[/condom[ií]nio/,8],[/escrit[oó]rio|advocac|cont[aá]bil|consultoria|imobili[aá]ria|cl[ií]nica/,7]];
+const SCRIPT_HINT=[[/barbear|barber|barbeiro/,6],[/cosm[eé]tico|perfumaria/,10],[/sal[aã]o|cabelei|beleza|cabelo/,0],[/manicure|pedicure|esmalt|unha|sobrancelh|c[ií]lio|lash|depila/,2],[/academia|pilates|fitness|condicionamento|crossfit|muscula|esport/,3],[/est[eé]tica|massag|spa\b|dermo/,1],[/moda|vestu|roupa|confec|boutique|cal[cç]ad|acess[oó]rio/,1],[/condom[ií]nio/,8],[/escrit[oó]rio|advocac|cont[aá]bil|consultoria|imobili[aá]ria|cl[ií]nica/,7]];
 const sugerirScript=e=>{const a=norm((e.atividade||'')+' '+(e.nome||'')+' '+(e.fantasia||''));const h=SCRIPT_HINT.find(([r])=>r.test(a));return h?h[1]:'padrao'};
 function scriptFill(t,v={}){const c=S.config;
   return String(t).replace(/Olá, \[NOME\]\./g,v.nome?`Olá, ${v.nome}.`:'Olá!').replace(/\[NOME\]/g,v.nome||'')
@@ -923,11 +929,11 @@ const msgEmpresa=(e,sel)=>{const k=sel!=null?sel:sugerirScript(e);return k==='pa
 const msgProsp=e=>fill(S.config.msgProsp,{empresa:empNome(e),cidade:e.cidade||'',uf:e.uf||'',atividade:(e.atividade||'').toLowerCase(),seunome:S.config.vendedor||'',negocio:S.config.negocio||''});
 
 /* ---- busca de empresas (função app-busca no Supabase) ---- */
-const SEGMENTOS=[['Salões, barbearias e manicure','9602501'],['Estética e beleza','9602502'],['Academias e pilates','9313100'],['Cosméticos e perfumaria','4772500'],['Lojas de roupa','4781400'],['Farmácias','4771701'],['Fisioterapia','8650004'],['Condomínios','8112500'],['Lanchonetes e cafés','5611203'],['Minimercados','4712100']];
+const SEGMENTOS=[['Consultoras','p:consultoras'],['Barbearias','p:barbearias'],['Salões e manicure','9602501'],['Estética e beleza','9602502'],['Academias e pilates','9313100'],['Cosméticos e perfumaria','4772500'],['Lojas de roupa','4781400'],['Farmácias','4771701'],['Fisioterapia','8650004'],['Condomínios','8112500'],['Lanchonetes e cafés','5611203'],['Minimercados','4712100']];
 const titulo=s=>{s=String(s||'').trim();return s&&s===s.toUpperCase()?s.toLowerCase().replace(/(^|[\s\/(-])\S/g,x=>x.toUpperCase()).replace(/\b(De|Da|Do|Das|Dos|E|Em)\b/g,x=>x.toLowerCase()):s};
 function sbParaEmpresa(r){
   const tels=[r.tel1,r.tel2].map(normPhone).filter(Boolean);const cel=tels.find(isMobile)||'';const fixo=tels.find(t=>t!==cel)||'';
-  return{nome:titulo(String(r.razao||'').replace(/\s*\*+\d+\*+\s*/g,' ').trim()),fantasia:titulo(r.fantasia||''),cnpj:digits(r.cnpj),atividade:r.cnae_desc||'',cidade:titulo(r.municipio||''),uf:(r.uf||'').toUpperCase(),
+  return{nome:titulo(String(r.razao||'').replace(/^\d{2}\.\d{3}\.\d{3}\s+/,'').replace(/\s*\*+\d+\*+\s*/g,' ').trim()),fantasia:titulo(r.fantasia||''),cnpj:digits(r.cnpj),atividade:r.cnae_desc||'',cidade:titulo(r.municipio||''),uf:(r.uf||'').toUpperCase(),
     bairro:titulo(r.bairro||''),endereco:titulo([r.logradouro,r.numero].filter(Boolean).join(', ')),celular:cel,telefone:fixo,email:(r.email||'').toLowerCase(),abertura:r.abertura||'',porte:r.mei?'MEI':(r.porte||''),capital:r.capital||''};
 }
 const naBase=cnpj=>arr('empresas').find(e=>digits(e.cnpj)===digits(cnpj));
@@ -935,7 +941,7 @@ function buscaCard(r){const e=sbParaEmpresa(r),ja=naBase(r.cnpj),tel=e.celular||
   return`<div class="item" style="cursor:default"><div class="hd"><div class="grow"><div class="t">${esc(e.fantasia||e.nome)}</div>${e.fantasia?`<div class="s">${esc(e.nome)}</div>`:''}<div class="s">${esc(e.atividade)}</div>
    <div class="s">${esc([e.bairro,e.cidade+(e.uf?'/'+e.uf:'')].filter(Boolean).join(' · '))}${e.abertura?' · desde '+fmtDate(e.abertura).slice(-4):''}${e.porte?' · '+esc(e.porte):''}</div>
    <div class="s" style="font-weight:700;color:${tel?'var(--ok)':'var(--faint)'}">${tel?(e.celular?'WhatsApp ':'Fixo ')+esc(fmtPhone(tel)):'Sem telefone público'}</div></div></div>
-   <div class="acts">${ja?`<button class="btn sm" data-a="go" data-r="empresa" data-id="${ja.id}">${ic('check',15)} Na sua base</button>`:`<button class="btn sm sea" data-a="buscaAdd" data-cnpj="${digits(r.cnpj)}">${ic('plus',15)} Adicionar à base</button>`}</div></div>`}
+   <div class="acts">${ja?`<button class="btn sm" data-a="go" data-r="empresa" data-id="${ja.id}">${ic('check',15)} Na sua base</button>`:`<button class="btn sm sea" data-a="buscaAdd" data-cnpj="${digits(r.cnpj)}">${ic('plus',15)} Adicionar à base</button>`}${tel?'':procurarLinks(e.fantasia||e.nome,e.cidade)}</div></div>`}
 function viewBusca(){
   if(!S.busca)S.busca={tab:'receita',seg:[],texto:'',uf:'MT',cidade:S.config.cidade||'',tel:true,cel:false,rows:[],total:0,pagina:1,loading:false,erro:'',feito:false};
   const b=S.busca,rows=b.rows||[],novas=rows.filter(r=>!naBase(r.cnpj));
@@ -944,27 +950,33 @@ function viewBusca(){
   <form class="card" id="buscaForm" style="margin-top:6px">
    <div class="lbl" style="margin-bottom:6px">Segmento</div>
    <div class="row" style="gap:6px;margin-bottom:12px">${SEGMENTOS.map(([l,c])=>`<button type="button" class="chip ${b.seg.includes(c)?'on':''}" data-a="buscaSeg" data-v="${c}">${esc(l)}</button>`).join('')}</div>
+   ${b.seg.includes('p:consultoras')?'<p class="tiny muted" style="margin:-4px 0 10px">Quem revende cosméticos com CNPJ (MEI). Os dados públicos de MEI costumam vir sem telefone: use os botões Instagram e Google para achar a pessoa. Quem vende só pelo CPF não aparece.</p>':b.seg.includes('p:barbearias')?'<p class="tiny muted" style="margin:-4px 0 10px">Barbearias e barbeiros pelo nome registrado na Receita.</p>':''}
    <div class="field"><label for="bTexto">Nome da empresa (opcional)</label><input class="inp" id="bTexto" name="texto" value="${esc(b.texto)}" placeholder="Ex.: studio, academia, beauty"></div>
    <div class="grid2"><div class="field"><label for="bUf">Estado</label><select class="inp" id="bUf" name="uf">${UFS.map(u=>`<option ${b.uf===u?'selected':''}>${u}</option>`).join('')}</select></div>
    <div class="field"><label for="bCid">Cidade</label><input class="inp" id="bCid" name="cidade" value="${esc(b.cidade)}" placeholder="Ex.: Rondonópolis"></div></div>
-   <label class="check"><input type="checkbox" name="tel" ${b.tel?'checked':''}> Só com telefone</label>
-   <label class="check"><input type="checkbox" name="cel" ${b.cel?'checked':''}> Só com celular / WhatsApp</label>
+   <label class="check" ${b.seg.includes('p:consultoras')?'style="display:none"':''}><input type="checkbox" name="tel" ${b.tel?'checked':''}> Só com telefone</label>
+   <label class="check" ${b.seg.includes('p:consultoras')?'style="display:none"':''}><input type="checkbox" name="cel" ${b.cel?'checked':''}> Só com celular / WhatsApp</label>
    <button class="btn pri block" type="submit" style="margin-top:8px" ${b.loading?'disabled':''}>${b.loading?'Buscando…':`${ic('search',17)} ${b.tab==='receita'?'Buscar na Receita':'Consultar base'}`}</button>
    <p class="tiny muted mb0" style="margin-top:8px">${b.tab==='receita'?'Cada busca traz até 20 empresas ativas e procura os contatos públicos. Pode levar até 1 minuto. MEIs costumam não ter telefone.':'Empresas que já foram pesquisadas por você ou pela equipe, com todos os contatos encontrados.'}</p>
   </form>
   ${b.erro?`<div class="note warn">${ic('alert',18)}<div>${esc(b.erro)}</div></div>`:''}
-  ${b.feito&&!b.loading?`<div class="row" style="justify-content:space-between;margin:6px 2px"><span class="small muted"><b>${rows.length}</b> empresa(s)${b.tab==='base'&&b.total>rows.length?` de ${nf(b.total)}`:''}${b.tab==='receita'&&b.novos?` · ${b.novos} nova(s) na base geral`:''}</span>${novas.length>1?`<button class="btn sm sea" data-a="buscaAddTodas">${ic('plus',15)} Adicionar ${novas.length}</button>`:''}</div>
+  ${b.feito&&!b.loading?`<div class="row" style="justify-content:space-between;margin:6px 2px"><span class="small muted"><b>${rows.length}</b> empresa(s)${b.total>rows.length?` de ${b.tab==='receita'?'cerca de ':''}${nf(b.total)}`:''}${b.tab==='receita'&&b.novos?` · ${b.novos} nova(s) na base geral`:''}</span>${novas.length>1?`<button class="btn sm sea" data-a="buscaAddTodas">${ic('plus',15)} Adicionar ${novas.length}</button>`:''}</div>
    ${rows.length?`<div class="list">${rows.map(buscaCard).join('')}</div>`:'<div class="empty">Nenhuma empresa encontrada com esses filtros.</div>'}
-   ${b.tab==='base'&&b.total>rows.length?`<button class="btn block" data-a="buscaMais">Carregar mais</button>`:''}`:''}`;
+   ${(b.tab==='base'&&b.total>rows.length)||(b.tab==='receita'&&b.proximoAte)?`<button class="btn block" data-a="buscaMais">${b.tab==='receita'?'Buscar mais 20':'Carregar mais'}</button>`:''}`:''}`;
 }
 function lerBuscaForm(){const f=$('#buscaForm');if(!f)return;const fd=new FormData(f);const b=S.busca;b.texto=String(fd.get('texto')||'').trim();b.uf=String(fd.get('uf')||'MT');b.cidade=String(fd.get('cidade')||'').trim();b.tel=!!fd.get('tel');b.cel=!!fd.get('cel')}
 async function executarBusca(mais){
   const b=S.busca;if(!mais){b.pagina=1;b.rows=[]}
-  const filtros={uf:[b.uf],municipio:b.cidade?[b.cidade]:[],cnae:b.seg,texto:b.texto,com_telefone:b.tel,somente_celular:b.cel};
+  const preset=(b.seg.find(x=>x.startsWith('p:'))||'').slice(2);
+  const filtros={uf:[b.uf],municipio:b.cidade?[b.cidade]:[],cnae:b.seg.filter(x=>!x.startsWith('p:')),preset,texto:b.texto,com_telefone:b.tel,somente_celular:b.cel};
+  if(mais&&b.tab==='receita'&&b.proximoAte)filtros.abertura_ate=b.proximoAte;
+  if(preset==='consultoras'){filtros.com_telefone=false;filtros.somente_celular=false}
   b.loading=true;b.erro='';render();
   try{
     const d=await chamarBusca(b.tab==='receita'?{action:'search',filtros}:{action:'base',filtros,pagina:b.pagina,por_pagina:50,ordem:'recentes'});
-    const rs=d.rows||[];b.rows=mais?[...b.rows,...rs]:rs;b.total=d.total||rs.length;b.novos=d.novos||0;b.feito=true;
+    const rs=d.rows||[],vistos=new Set(mais?b.rows.map(x=>digits(x.cnpj)):[]);b.rows=mais?[...b.rows,...rs.filter(x=>!vistos.has(digits(x.cnpj)))]:rs;
+    if(b.tab==='receita'){b.total=d.total_fonte||b.rows.length;b.proximoAte=d.proximo_ate||null}else b.total=d.total||rs.length;
+    b.novos=(mais?b.novos||0:0)+(d.novos||0);b.feito=true;
   }catch(e){b.erro=e.message}
   b.loading=false;render();
 }
@@ -987,7 +999,7 @@ function viewEmpresa(){
       ${wa?`<a class="btn wa" href="${esc(waLink(wa,msg))}" target="_blank" rel="noopener" data-a="waEmp" data-id="${e.id}">${ic('wa',17)} Chamar no WhatsApp</a>`:''}
       <button class="btn" data-a="copyMsg" data-id="${e.id}">${ic('copy',16)} Copiar</button>
     </div>
-    ${phones.length?`<div class="divider"></div><div class="lbl" style="margin-bottom:6px">Telefones</div>${phones.map(p=>`<div class="row" style="margin-bottom:6px"><a class="btn sm" href="tel:+55${p}" data-a="noop">${ic('phone',15)} ${fmtPhone(p)}</a>${isMobile(p)?`<span class="pill ok">celular</span>`:'<span class="pill">fixo</span>'}</div>`).join('')}`:'<p class="small muted">Sem telefone público (comum em MEIs).</p>'}
+    ${phones.length?`<div class="divider"></div><div class="lbl" style="margin-bottom:6px">Telefones</div>${phones.map(p=>`<div class="row" style="margin-bottom:6px"><a class="btn sm" href="tel:+55${p}" data-a="noop">${ic('phone',15)} ${fmtPhone(p)}</a>${isMobile(p)?`<span class="pill ok">celular</span>`:'<span class="pill">fixo</span>'}</div>`).join('')}`:`<div class="divider"></div><p class="small muted" style="margin-bottom:8px">Sem telefone público (comum em MEIs). Procure pelo nome:</p><div class="row">${procurarLinks(empNome(e),e.cidade)}</div>`}
   </div>
   <div class="card"><h3>Dados da empresa<span class="sp"></span><button class="link" data-a="formEmpresa" data-id="${e.id}">Editar</button></h3>
    <dl class="kv">
@@ -1850,8 +1862,8 @@ const A={
   moreBase:()=>{S.ui.baseLimit+=100;render()},
   manualTab:el=>{S.params={...S.params,tab:el.dataset.v};render()},
   buscaTab:el=>{lerBuscaForm();S.busca.tab=el.dataset.v;S.busca.feito=false;S.busca.rows=[];S.busca.erro='';render()},
-  buscaSeg:el=>{lerBuscaForm();const b=S.busca,c=el.dataset.v;b.seg=b.seg.includes(c)?b.seg.filter(x=>x!==c):[...b.seg,c];render()},
-  buscaMais:()=>{S.busca.pagina++;executarBusca(true)},
+  buscaSeg:el=>{lerBuscaForm();const b=S.busca,c=el.dataset.v,pre=c.startsWith('p:');b.seg=b.seg.includes(c)?b.seg.filter(x=>x!==c):pre?[c]:[...b.seg.filter(x=>!x.startsWith('p:')),c];render()},
+  buscaMais:()=>{if(S.busca.tab==='base')S.busca.pagina++;executarBusca(true)},
   buscaAdd:el=>{const src=[...((S.busca&&S.busca.rows)||[]),...(S.cnpj&&S.cnpj.receita?[S.cnpj.receita]:[])];const r=src.find(x=>digits(x.cnpj)===el.dataset.cnpj);if(r){addDaBusca([r]);toast('Adicionada à sua base ✓');render()}},
   buscaAddTodas:()=>{const n=addDaBusca(S.busca.rows);toast(`${n} empresa(s) adicionada(s) à sua base ✓`);render()},
   cnpjReceita:async el=>{const c=el.dataset.cnpj;S.cnpj={cnpj:c,carregando:true};render();try{const d=await chamarBusca({action:'cnpj',cnpj:c});S.cnpj={cnpj:c,receita:d.row}}catch(e){S.cnpj={cnpj:c,erro:e.message}}render()},
@@ -2075,14 +2087,14 @@ function demoClient(){
       if(nome==='app_desconectar'){const tira=new Set([args.p_alvo]);let mud=true;while(mud){mud=false;R.rede.forEach(p=>{if(tira.has(p.patrocinador_id)&&!tira.has(p.user_id)){tira.add(p.user_id);mud=true}})}R.rede=R.rede.filter(p=>!tira.has(p.user_id));return ok('ok')}
       if(nome==='app_definir_nome'){const n=String(args.p_nome||'').trim();if(n.length<5)return erro('Informe o nome completo (5 a 80 letras).');R.eu.nome=n;return ok(n)}
       return erro('Indisponível na demonstração.')},
-    functions:{async invoke(nome,{body}){await espera(700);const f=body.filtros||{},r=demoRand((body.pagina||1)*7919+(f.cnae||[]).join('').length*31+String(f.texto||'').length*17+String(f.municipio||'').length+(body.action==='cnpj'?5:0));
+    functions:{async invoke(nome,{body}){await espera(700);const f=body.filtros||{},r=demoRand((body.pagina||1)*7919+String(f.abertura_ate||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0)*3+String(f.preset||'').length*101+(f.cnae||[]).join('').length*31+String(f.texto||'').length*17+String(f.municipio||'').length+(body.action==='cnpj'?5:0));
       const cid=(f.municipio&&f.municipio[0])||'Rondonópolis',uf=(f.uf&&f.uf[0])||'MT';
-      const seg=(f.cnae&&f.cnae[0])||'9602501',segNome=(SEGMENTOS.find(s=>s[1]===seg)||SEGMENTOS[0])[0];
-      const pref={'9602501':['Salão','Studio','Espaço','Barbearia','Esmalteria'],'9602502':['Estética','Clínica','Studio','Spa'],'9313100':['Academia','Pilates','Box','Studio Fit'],'4772500':['Perfumaria','Cosméticos','Beleza'],'4781400':['Boutique','Moda','Ateliê'],'4771701':['Farmácia','Drogaria'],'8650004':['Fisioterapia','Clínica de Fisio'],'8112500':['Condomínio Residencial','Edifício'],'5611203':['Café','Lanchonete'],'4712100':['Mercearia','Minimercado']}[seg]||['Empresa'];
+      const seg=f.preset==='consultoras'?'4772500':(f.cnae&&f.cnae[0])||'9602501',segNome=f.preset==='consultoras'?'Comércio varejista de cosméticos, produtos de perfumaria e de higiene pessoal':(SEGMENTOS.find(s=>s[1]===seg)||SEGMENTOS[2])[0];
+      const pref={'9602501':['Salão','Studio','Espaço','Barbearia','Esmalteria'],'9602502':['Estética','Clínica','Studio','Spa'],'9313100':['Academia','Pilates','Box','Studio Fit'],'4772500':['Perfumaria','Cosméticos','Beleza'],'4781400':['Boutique','Moda','Ateliê'],'4771701':['Farmácia','Drogaria'],'8650004':['Fisioterapia','Clínica de Fisio'],'8112500':['Condomínio Residencial','Edifício'],'5611203':['Café','Lanchonete'],'4712100':['Mercearia','Minimercado']}[seg]||['Empresa'];if(f.preset==='barbearias')pref.splice(0,pref.length,'Barbearia','Barber Shop','Studio Barber','Barbearia do');
       const suf=['Bela Vista','Aurora','Bem-Estar','Primavera','Harmonia','Vida Leve','Essencial','Sol Nascente','Jardim','Encanto','Natural','Do Bairro'];
-      const rows=Array.from({length:body.action==='cnpj'?1:(body.action==='base'?12:9)},(_,i)=>{const cel=r()>.3,fixo=r()>.6;const nm=(f.texto?f.texto[0].toUpperCase()+f.texto.slice(1)+' ':pick2(pref,r)+' ')+pick2(suf,r);
-        return{cnpj:body.cnpj||demoCnpj(r),razao:nm.toUpperCase()+' LTDA',fantasia:nm.toUpperCase(),cnae:seg,cnae_desc:segNome,municipio:cid.toUpperCase(),uf,bairro:pick2(['CENTRO','VILA AURORA','JARDIM ATLANTICO','VILA OPERARIA','JARDIM GUANABARA'],r),logradouro:'RUA EXEMPLO',numero:String(10+Math.floor(r()*900)),tel1:cel?demoTel(r):(fixo?'663'+String(4000000+Math.floor(r()*999999)):null),tel2:null,email:null,abertura:addDays(today(),-Math.floor(300+r()*3500)),porte:pick2(['ME','EPP','DEMAIS'],r),mei:r()>.75,capital:Math.round(5+r()*90)*1000}});
-      if(body.action==='search')return ok({rows:f.com_telefone||f.somente_celular?rows.filter(x=>x.tel1):rows,total_fonte:rows.length,novos:Math.floor(rows.length/2)});
+      const rows=Array.from({length:body.action==='cnpj'?1:(body.action==='base'?12:9)},(_,i)=>{const cel=r()>.3,fixo=r()>.6;const pessoa=f.preset==='consultoras',nm=pessoa?pick2(['Ana Paula','Juliana','Fernanda','Patrícia','Camila','Luciana','Daniela','Renata','Simone','Marcia'],r)+' '+pick2(['Souza','Oliveira','Lima','Ferreira','Costa','Almeida','Barros','Ribeiro'],r)+' '+pick2(['da Silva','Santos','Pereira','Rocha'],r):(f.texto?f.texto[0].toUpperCase()+f.texto.slice(1)+' ':pick2(pref,r)+' ')+pick2(suf,r);
+        return{cnpj:body.cnpj||demoCnpj(r),razao:pessoa?demoCnpj(r).slice(0,8).replace(/(\d{2})(\d{3})(\d{3})/,'$1.$2.$3')+' '+nm.toUpperCase():nm.toUpperCase()+' LTDA',fantasia:pessoa?'':nm.toUpperCase(),cnae:seg,cnae_desc:segNome,municipio:cid.toUpperCase(),uf,bairro:pick2(['CENTRO','VILA AURORA','JARDIM ATLANTICO','VILA OPERARIA','JARDIM GUANABARA'],r),logradouro:'RUA EXEMPLO',numero:String(10+Math.floor(r()*900)),tel1:pessoa?null:cel?demoTel(r):(fixo?'663'+String(4000000+Math.floor(r()*999999)):null),tel2:null,email:null,abertura:addDays(today(),-Math.floor(300+r()*3500)),porte:pessoa?'ME':pick2(['ME','EPP','DEMAIS'],r),mei:pessoa||r()>.75,capital:Math.round(5+r()*90)*1000}});
+      if(body.action==='search')return ok({rows:f.com_telefone||f.somente_celular?rows.filter(x=>x.tel1):rows,total_fonte:f.preset==='consultoras'?918:f.preset==='barbearias'?30:rows.length,novos:Math.floor(rows.length/2),proximo_ate:f.preset?'2025-03-01':null});
       if(body.action==='base')return ok({rows:rows.filter(x=>!(f.com_telefone||f.somente_celular)||x.tel1),total:rows.length});
       if(body.action==='cnpj')return ok({row:rows[0]});
       return{data:null,error:{message:'x',context:{json:async()=>({error:'Indisponível na demonstração.'})}}}}}
