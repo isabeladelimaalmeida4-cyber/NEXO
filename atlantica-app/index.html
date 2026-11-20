@@ -822,11 +822,6 @@ function viewInicio(){
     <div class="stat"><div class="l">Com celular / WhatsApp</div><div class="v">${nf(st.comWa)}</div></div>
     <div class="stat"><div class="l">Estados</div><div class="v">${st.ufs}</div></div>
   </div>
-  <div class="card"><h3>${ic('search',18)} Consultar um CNPJ</h3>
-    <form class="row nowrap" id="cnpjForm"><input class="inp" id="cnpjQ" inputmode="numeric" placeholder="00.000.000/0000-00" value="${esc(S.ui.cnpjQ)}" data-ui="cnpjQ"><button class="btn pri" type="submit">Consultar</button></form>
-    ${cnpjResult()}
-  </div>
-  ${ufList.length?`<div class="card"><h3>${ic('pin',18)} Base por estado</h3>${ufList.map(([u,n])=>`<div class="hbar"><b>${u}</b><div class="bar"><i style="width:${n/ufMax*100}%"></i></div><span class="n">${n}</span></div>`).join('')}</div>`:''}
   ${top.length?`<div class="card"><h3>${ic('star',18)} Mais vendidos (90 dias)</h3>${top.map(x=>`<div class="hbar" style="grid-template-columns:1fr auto"><span>${esc(x.p.nome)}</span><span class="n">${nf(x.q)} un.</span></div>`).join('')}</div>`:''}
   ${recentes.length?`<div class="card"><h3>${ic('clock',18)} Adicionadas recentemente</h3>${recentes.map(e=>`<div class="notif" data-a="go" data-r="empresa" data-id="${e.id}" style="cursor:pointer"><div class="ico">${ic('target',18)}</div><div class="tx"><b>${esc(empNome(e))}</b><span>${esc([e.cidade,e.uf].filter(Boolean).join('/'))} ${e.atividade?'· '+esc(e.atividade):''}</span></div></div>`).join('')}</div>`:''}
   `;
@@ -1150,12 +1145,10 @@ function viewMais(){
   return`<div class="tiles" style="margin-top:4px">
    ${t('produtos','box','Produtos',`${arr('produtos').length} cadastrados${bx?` · ${bx} c/ estoque baixo`:''}`)}
    ${t('cobranca','cash','Cobrança',st.vencidasN?`${st.vencidasN} vencida(s) · ${brl0(st.vencidasValor)}`:`${brl0(st.aReceber)} a receber`)}
-   ${t('catalogo','store','Catálogo / Loja','Vitrine e pedidos pelo WhatsApp')}
    ${t('metas','trophy','Metas e conquistas',(()=>{const m=metaFat();return m&&metaAlvo(m)?`${Math.round(fatAtual()/metaAlvo(m)*100)}% da meta do mês`:`${getMetas().length} meta(s)`})())}
    ${t('fabricas','factory','Fábricas e marcas',`${arr('fabricas').length} cadastradas`)}
    ${t('carreira','star','Plano de carreira',(()=>{const c=carreiraCalc();return c.preenchido?(c.idx>=0?NIVEIS[c.idx].n:'Rumo ao Bronze')+(c.ativo?' · ativa':' · ativação pendente'):'Graduação, VP e bônus viagem'})())}
    ${t('scripts','wa','Scripts de abordagem',`${SCRIPTS.length} mensagens prontas`)}
-   ${t('manual','leaf','Manual da consultora','Públicos, canais, automações e regras')}
    ${t('rede','network','Minha rede',S.rede?`${(S.rede.rede||[]).length} pessoa(s) conectada(s)`:'Sua equipe conectada')}
    ${t('notificacoes','bell','Notificações',`${notificacoes().length} pendente(s)`)}
    ${t('ajustes','gear','Ajustes','Mensagens, senha e backup')}
@@ -1214,27 +1207,15 @@ function rankingLocal(){const lim=addDays(today(),-90),m={};arr('vendas').filter
 function rankingDe(id){return(S.ranking&&S.ranking.m[id])||null}
 function posicoesRanking(){const m=(S.ranking&&S.ranking.m)||{};const ids=Object.keys(m).filter(id=>get('produtos',id)&&m[id].qtd>0).sort((a,b)=>m[b].qtd-m[a].qtd||m[b].vendas-m[a].vendas);const pos={};ids.forEach((id,i)=>pos[id]=i+1);return pos}
 function viewCatalogo(){
-  carregarRanking(false);
   const u=S.ui,c=S.config;const cats=ordLinhas([...new Set(arr('produtos').filter(p=>p.noCatalogo!==false).map(p=>p.categoria).filter(Boolean))]);
   const l=catalogoFiltrado(),pos=posicoesRanking();
   const maxQ=Math.max(1,...l.map(p=>(rankingDe(p.id)||{}).qtd||0));
   const R=S.ranking;
   return`
   <div class="hero" style="margin-top:4px;padding:16px"><div class="eyebrow">Catálogo e loja</div><h1 style="font-size:22px;margin:4px 0 6px">Atlântica Natural</h1>
-   <div class="small" style="color:#cfe7df">Compre os produtos que você precisa direto na loja oficial. A lista abaixo se ordena sozinha pelo que mais sai nas vendas registradas no app.</div>
+   <div class="small" style="color:#cfe7df">Compre os produtos que você precisa direto na loja oficial.</div>
    <div class="row" style="margin-top:12px"><a class="btn sm" style="background:#fff;border-color:#fff;color:var(--deep)" href="${esc(c.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">${ic('store',15)} Comprar na loja Atlântica</a>${c.lojaUrl?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(/^https?:/.test(c.lojaUrl)?c.lojaUrl:'https://'+c.lojaUrl)}" target="_blank" rel="noopener">${ic('ext',15)} Minha loja</a>`:''}</div>
    <div class="row" style="margin-top:8px"><button class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" data-a="copyCatalogo">${ic('copy',15)} Copiar ${u.catCat||u.catQ?'seleção':'catálogo'}</button>${l.length&&l.length<=80?`<a class="btn sm" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="${esc(waLink('',textoCatalogo()))}" target="_blank" rel="noopener">${ic('wa',15)} Enviar no WhatsApp</a>`:''}</div></div>
-  <div class="scrollx" style="margin-top:12px">${[['vendidos','Mais vendidos'],['linha','Por linha'],['az','A–Z']].map(([k,t])=>`<button class="chip ${u.catOrdem===k?'on':''}" data-a="ui" data-k="catOrdem" data-v="${k}">${t}</button>`).join('')}</div>
-  <div class="search">${ic('search',18)}<input class="inp" id="catQ" data-ui="catQ" value="${esc(u.catQ)}" placeholder="Buscar produto (ex.: sérum, creatina, Zeus)"></div>
-  ${cats.length?`<div class="scrollx" style="margin-top:10px"><button class="chip ${!u.catCat?'on':''}" data-a="ui" data-k="catCat" data-v="">Todas as linhas</button>${cats.map(x=>`<button class="chip ${u.catCat===x?'on':''}" data-a="ui" data-k="catCat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
-  <div class="tiny muted" style="margin:4px 2px 8px">${R?(R.equipe?'Ranking dos últimos 90 dias com as vendas registradas por toda a equipe no app.':'Sem conexão: ranking só com as suas vendas.'):'Carregando ranking…'} ${l.length} produto${l.length===1?'':'s'}.</div>
-  ${l.length?`<div class="plist">${l.slice(0,u.catLimit).map(p=>{const q=S.cart[p.id]||0,rk=rankingDe(p.id),po=pos[p.id];
-    return`<div class="prow"><div class="prank ${po&&po<=3?'top'+po:''}">${po?po+'º':'—'}</div>
-     <div class="pinfo"><b>${esc(p.nome)}</b><div class="tiny muted">${esc(p.categoria||'')} · ${brl(p.preco)}</div>
-      ${rk&&rk.qtd>0?`<div class="row nowrap" style="gap:8px;margin-top:5px"><div class="bar" style="flex:1;height:6px"><i style="width:${Math.max(4,rk.qtd/maxQ*100)}%;background:var(--gold)"></i></div><span class="tiny mono" style="white-space:nowrap">${nf(rk.qtd)} vendido${rk.qtd===1?'':'s'}</span></div>`:'<div class="tiny" style="color:var(--faint);margin-top:4px">Ainda sem vendas no app</div>'}</div>
-     <div>${q?`<div class="stepper"><button data-a="cart" data-id="${p.id}" data-v="-1">−</button><input value="${q}" readonly aria-label="Quantidade"><button data-a="cart" data-id="${p.id}" data-v="1">+</button></div>`:`<button class="btn sm sea" data-a="cart" data-id="${p.id}" data-v="1" aria-label="Adicionar ao pedido">${ic('plus',15)}</button>`}</div></div>`}).join('')}</div>
-   ${l.length>u.catLimit?`<button class="btn block" style="margin-top:12px" data-a="moreCat">Mostrar mais (${nf(l.length-u.catLimit)})</button>`:''}`
-   :`<div class="empty">${arr('produtos').length?'Nenhum produto encontrado.':'<h3>Catálogo vazio</h3>Cadastre seus produtos.'}</div>`}
   <div style="height:${cartItems().length?70:0}px"></div>`;
 }
 const catIdx=c=>{const i=ATL_CAT.findIndex(g=>g.l===c);return i<0?99:i};
