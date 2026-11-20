@@ -249,6 +249,9 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 .oav{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:color-mix(in srgb,var(--g) 16%,white);color:var(--ink);border:2px solid var(--g)}
 .odot{position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
 .odot.ok{background:#2c7a4b}.odot.warn{background:#bf5530}
+.onode.off{background:#faf8f4;border:1.5px dashed #b9b0a0;border-top:4px dashed #b9b0a0;box-shadow:none}.onode.off .oav{background:#efeae0;border:2px dashed #b9b0a0;color:var(--muted)}.onode.off .onome{color:var(--muted)}
+.otag{font-size:10px;font-weight:800;color:#8a7f6c;background:#efeae0;border-radius:8px;padding:1px 7px;margin-top:3px}
+.rcard.off{border-left:5px dashed #b9b0a0;background:#faf8f4}
 .onome{font-size:12px;font-weight:800;line-height:1.15;margin-top:2px}
 .ograd{font-size:10.5px;color:var(--muted);font-weight:700}
 .obar{width:72px;height:5px;background:var(--sand);border-radius:4px;overflow:hidden;margin-top:4px}.obar i{display:block;height:100%;background:var(--sea)}
@@ -1358,9 +1361,21 @@ async function carregarRede(forcar){
 const gradNome=i=>i>=0&&NIVEIS[i]?NIVEIS[i].n:'Sem graduação';
 const gradCor=i=>i>=0&&NIVEIS[i]?NIVEIS[i].c:'#b9c3bf';
 function redeFilhos(id){return((S.rede&&S.rede.rede)||[]).filter(p=>p.patrocinador_id===id)}
+/* pessoas da equipe sem login no app (anotadas pela consultora): aparecem no organograma, sem evolução */
+function foraDoApp(){const rede=(S.rede&&S.rede.rede)||[],ids=new Set(rede.map(p=>p.user_id)),nomes=new Set(rede.map(p=>norm(p.nome)));
+  return arr('rede').filter(r=>r.tipo!=='upline'&&!nomes.has(norm(r.nome))).map(r=>({...r,abaixo:r.abaixoDe&&ids.has(r.abaixoDe)?r.abaixoDe:''}))}
+const foraAbaixo=id=>foraDoApp().filter(r=>r.abaixo===(id||'')).sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+const orgFora=r=>`<li><div class="onode off" data-a="redeFora" data-id="${r.id}" role="button" tabindex="0"><span class="oav">${esc(initials(r.nome))}</span><span class="onome">${esc(nomeCurto(r.nome))}</span><span class="otag">fora do app</span></div></li>`;
+const redeForaCard=r=>`<div class="rnode"><div class="item rcard off" data-a="redeFora" data-id="${r.id}"><div class="hd"><div class="av" style="background:#efeae0;color:var(--muted)">${esc(initials(r.nome))}</div><div class="grow"><div class="t" style="color:var(--muted)">${esc(r.nome)}</div><div class="row" style="gap:5px;margin-top:4px"><span class="pill">Fora do app</span></div></div></div><div class="s" style="margin-top:6px">Não está conectada pelo aplicativo</div></div></div>`;
+function redeFora(id){const r=get('rede',id);if(!r)return;const nome=(r.nome||'').split(' ')[0];
+  const convite=`Oi, ${nome}! Estou usando o app da nossa equipe Atlântica Natural para acompanhar vendas, clientes e a rede. Quer entrar também? Te passo o acesso.`;
+  openSheet(r.nome,`<div class="note" style="margin-top:0">${ic('alert',18)}<div><b>Essa pessoa não está conectada pelo aplicativo.</b><br>Faz parte da sua rede, mas não usa o app. Por isso não há evolução, meta ou vendas para mostrar.</div></div>
+   <dl class="kv">${r.nivel?`<dt>Nível / cargo</dt><dd>${esc(r.nivel)}</dd>`:''}${r.desde?`<dt>Na rede desde</dt><dd>${fmtDate(r.desde)}</dd>`:''}${r.cidade?`<dt>Cidade</dt><dd>${esc(r.cidade)}</dd>`:''}${r.notas?`<dt>Observações</dt><dd>${esc(r.notas)}</dd>`:''}</dl>
+   <p class="small muted">Quando essa pessoa tiver login, use <b>Adicionar pessoa à rede</b> para conectar. A partir daí a evolução aparece aqui.</p>
+   <div class="row" style="margin-top:10px">${r.telefone?`<a class="btn wa" href="${esc(waLink(r.telefone,convite))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',17)} Convidar para o app</a>`:''}<button class="btn" data-a="formRede" data-id="${r.id}">${ic('edit',16)} Editar</button></div>`)}
 function redeAbaixo(id){let n=0;const st=[id];while(st.length){const k=st.pop();redeFilhos(k).forEach(c=>{n++;st.push(c.user_id)})}return n}
 function redeNo(p){
-  const filhos=redeFilhos(p.user_id),aberto=!(S.redeFechados||{})[p.user_id],pct=p.meta_pct;
+  const filhos=redeFilhos(p.user_id),fora=foraAbaixo(p.user_id),aberto=!(S.redeFechados||{})[p.user_id],pct=p.meta_pct;
   const at=p.ativa===true?'<span class="pill ok">Ativa</span>':p.ativa===false?'<span class="pill warn">Ativação pendente</span>':'';
   return`<div class="rnode"><div class="item rcard" data-a="redePessoa" data-id="${p.user_id}" style="border-left:5px solid ${gradCor(p.grad_idx)}">
     <div class="hd"><div class="av" style="background:${gradCor(p.grad_idx)}22;color:${p.grad_idx>=0?gradCor(p.grad_idx):'var(--deep)'}">${esc(initials(p.nome))}</div>
@@ -1369,23 +1384,23 @@ function redeNo(p){
     ${pct!=null?`<div class="row nowrap small" style="margin-top:10px;gap:8px"><span class="muted" style="white-space:nowrap">Meta do mês</span><div class="bar ${pct>=100?'ok':''}" style="flex:1"><i style="width:${Math.min(100,pct)}%"></i></div><b class="mono" style="white-space:nowrap">~${pct}%</b></div>`:''}
     <div class="s" style="margin-top:6px">${esc(p.vendas_faixa)} · ${esc(p.atividade)}</div>
   </div>
-  ${filhos.length?`<button class="link rtoggle" data-a="redeToggle" data-id="${p.user_id}">${aberto?'▾':'▸'} ${filhos.length} pessoa${filhos.length>1?'s':''} conectada${filhos.length>1?'s':''} por ${esc(p.nome.split(' ')[0])}</button>
-   ${aberto?`<div class="rkids">${filhos.map(redeNo).join('')}</div>`:''}`:''}</div>`;
+  ${filhos.length+fora.length?`<button class="link rtoggle" data-a="redeToggle" data-id="${p.user_id}">${aberto?'▾':'▸'} ${filhos.length+fora.length} pessoa${filhos.length+fora.length>1?'s':''} na equipe de ${esc(p.nome.split(' ')[0])}</button>
+   ${aberto?`<div class="rkids">${filhos.map(redeNo).join('')}${fora.map(redeForaCard).join('')}</div>`:''}`:''}</div>`;
 }
 const nomeCurto=n=>{const w=String(n||'').trim().split(/\s+/);return w.length>1?w[0]+' '+w[w.length-1]:w[0]||''};
-function orgNo(p){const filhos=redeFilhos(p.user_id),fech=(S.redeFechados||{})[p.user_id];
+function orgNo(p){const filhos=redeFilhos(p.user_id),fora=foraAbaixo(p.user_id),fech=(S.redeFechados||{})[p.user_id];
   return`<li><div class="onode" data-a="redePessoa" data-id="${p.user_id}" style="--g:${gradCor(p.grad_idx)}" role="button" tabindex="0">
     <span class="oav">${esc(initials(p.nome))}${p.ativa===true?'<i class="odot ok"></i>':p.ativa===false?'<i class="odot warn"></i>':''}</span>
     <span class="onome">${esc(nomeCurto(p.nome))}</span><span class="ograd">${esc(gradNome(p.grad_idx))}</span>
     ${p.meta_pct!=null?`<span class="obar"><i style="width:${Math.min(100,p.meta_pct)}%"></i></span><span class="opct">meta ~${p.meta_pct}%</span>`:'<span class="opct">sem meta</span>'}
-    ${filhos.length?`<button class="otog" data-a="redeToggle" data-id="${p.user_id}" aria-label="${fech?'Mostrar':'Esconder'} equipe">${fech?'+'+filhos.length:'−'}</button>`:''}
-   </div>${filhos.length&&!fech?`<ul>${filhos.map(orgNo).join('')}</ul>`:''}</li>`}
+    ${filhos.length+fora.length?`<button class="otog" data-a="redeToggle" data-id="${p.user_id}" aria-label="${fech?'Mostrar':'Esconder'} equipe">${fech?'+'+(filhos.length+fora.length):'−'}</button>`:''}
+   </div>${filhos.length+fora.length&&!fech?`<ul>${filhos.map(orgNo).join('')}${fora.map(orgFora).join('')}</ul>`:''}</li>`}
 function organograma(eu,diretas){
   return`<div class="row" style="justify-content:space-between;margin:2px 0 6px"><span class="tiny muted">Toque em uma pessoa para ver o avanço dela. Arraste para os lados para ver a rede toda.</span>
    <div class="row" style="gap:4px"><button class="btn sm" data-a="orgZoom" data-v="-1" aria-label="Diminuir">−</button><button class="btn sm" data-a="orgZoom" data-v="1" aria-label="Aumentar">+</button><button class="btn sm" data-a="orgZoom" data-v="0">Ajustar</button></div></div>
   <div class="orgwrap" id="orgWrap"><div class="org" id="orgIn"><ul><li><div class="onode root" style="--g:${gradCor(eu.grad_idx)}"><span class="oav" style="background:#fff">${esc(initials(eu.nome))}</span><span class="onome">Você</span><span class="ograd" style="color:#cfe7df">${esc(gradNome(eu.grad_idx))}</span></div>
-   ${diretas.length?`<ul>${diretas.map(orgNo).join('')}</ul>`:''}</li></ul></div></div>
-  <div class="row tiny muted" style="gap:12px;margin:2px 2px 0"><span><i class="odot ok" style="position:static;display:inline-block;vertical-align:middle"></i> ativa no ciclo</span><span><i class="odot warn" style="position:static;display:inline-block;vertical-align:middle"></i> ativação pendente</span><span>borda = cor da graduação</span></div>`;
+   ${diretas.length||foraAbaixo('').length?`<ul>${diretas.map(orgNo).join('')}${foraAbaixo('').map(orgFora).join('')}</ul>`:''}</li></ul></div></div>
+  <div class="row tiny muted" style="gap:12px;margin:2px 2px 0"><span><i class="odot ok" style="position:static;display:inline-block;vertical-align:middle"></i> ativa no ciclo</span><span><i class="odot warn" style="position:static;display:inline-block;vertical-align:middle"></i> ativação pendente</span><span>borda = cor da graduação</span>${foraDoApp().length?'<span>tracejado = fora do app</span>':''}</div>`;
 }
 function ajustarOrg(){
   const w=document.getElementById('orgWrap'),o=document.getElementById('orgIn');if(!w||!o)return;
@@ -1413,10 +1428,10 @@ function viewRede(){
   </div>
   <div class="row" style="margin:12px 0 4px"><button class="btn pri" data-a="redeAdicionar">${ic('plus',17)} Adicionar pessoa à rede</button><button class="btn" data-a="redeAtualizar" ${S.redeLoading?'disabled':''}>${S.redeLoading?'Atualizando…':'Atualizar'}</button></div>
   ${S.redeErro?`<div class="note warn">${ic('alert',18)}<div>${esc(S.redeErro)}</div></div>`:''}
-  ${rede.length?`
+  ${rede.length||foraDoApp().length?`
   <div class="row" style="justify-content:space-between;align-items:center;margin-top:18px"><h3 style="font-size:18px">Sua rede</h3><div class="row" style="gap:6px"><button class="chip ${S.redeVista!=='lista'?'on':''}" data-a="redeVista" data-v="org">Organograma</button><button class="chip ${S.redeVista==='lista'?'on':''}" data-a="redeVista" data-v="lista">Lista</button></div></div>
   ${S.redeVista==='lista'?`<div class="rtree"><div class="rroot"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--deep);color:#fff">${esc(initials(eu.nome))}</div><b>Você</b><span class="tiny muted">conectou ${diretas.length}</span></div>
-   <div class="rkids">${diretas.map(redeNo).join('')}</div></div>`:organograma(eu,diretas)}
+   <div class="rkids">${diretas.map(redeNo).join('')}${foraAbaixo('').map(redeForaCard).join('')}</div></div>`:organograma(eu,diretas)}
   <div class="sec"><h3>Resumo da equipe</h3><span class="tiny muted">valores aproximados</span></div>
   <div class="grid4" style="margin-top:6px">
     <div class="stat"><div class="l">Média da meta do mês</div><div class="v">${media!=null?'~'+media+'%':'—'}</div></div>
@@ -1428,8 +1443,8 @@ function viewRede(){
 `
   :`<div class="empty"><h3>Sua rede começa aqui</h3>Adicione as pessoas que você cadastrou, pelo nome completo. Quem já tem login no app aparece conectada, com nível, progresso e atividade.<br><button class="btn pri" data-a="redeAdicionar">${ic('plus',16)} Adicionar pessoa</button></div>`}
   <p class="tiny muted">Para preservar a privacidade, você vê faixas e médias (vendas, meta, clientes), não os valores exatos. Graduação e ativação aparecem quando cada pessoa atualiza o Plano de carreira no app.</p>
-  <div class="sec"><h3>Contatos sem login</h3><button class="link" data-a="formRede">+ Adicionar</button></div>
-  ${manual.length?`<div class="list">${manual.map(r=>`<div class="item" data-a="formRede" data-id="${r.id}"><div class="hd"><div class="av">${esc(initials(r.nome))}</div><div class="grow"><div class="t">${esc(r.nome)}</div><div class="s">${esc([r.tipo==='upline'?'Acima de mim':'Minha equipe',r.nivel,r.desde?'desde '+fmtDate(r.desde):''].filter(Boolean).join(' · '))}</div></div>${r.telefone?`<a class="btn sm wa" href="${esc(waLink(r.telefone,''))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',15)}</a>`:''}</div></div>`).join('')}</div>`:'<p class="small muted">Pessoas que ainda não têm login no app (por exemplo, recém-cadastradas na Atlântica) podem ficar anotadas aqui.</p>'}`;
+  <div class="sec"><h3>Fora do app</h3><button class="link" data-a="formRede">+ Adicionar</button></div>
+  ${manual.length?`<div class="list">${manual.map(r=>`<div class="item" data-a="formRede" data-id="${r.id}"><div class="hd"><div class="av">${esc(initials(r.nome))}</div><div class="grow"><div class="t">${esc(r.nome)}</div><div class="s">${esc([r.tipo==='upline'?'Acima de mim':'Minha equipe',r.nivel,r.desde?'desde '+fmtDate(r.desde):''].filter(Boolean).join(' · '))}</div></div>${r.telefone?`<a class="btn sm wa" href="${esc(waLink(r.telefone,''))}" target="_blank" rel="noopener" data-a="noop">${ic('wa',15)}</a>`:''}</div></div>`).join('')}</div>`:'<p class="small muted">Quem está na sua rede mas não usa o app pode ficar anotado aqui. Aparece no organograma com cartão tracejado, sem evolução.</p>'}`;
 }
 function redePessoa(id){
   const p=((S.rede&&S.rede.rede)||[]).find(x=>x.user_id===id);if(!p)return;
@@ -1466,7 +1481,7 @@ async function redeBuscar(){
   const{data,error}=await sbc.rpc('app_buscar_consultora',{p_nome:q});
   if(error){box.innerHTML=`<p class="small" style="color:var(--coral)">${esc(/fetch|network/i.test(error.message)?'Sem conexão.':error.message)}</p>`;return}
   box.innerHTML=(data||[]).length?`<div class="list">${data.map(c=>`<div class="item" style="cursor:default"><div class="hd"><div class="av">${esc(initials(c.nome))}</div><div class="grow"><div class="t">${esc(c.nome)}</div><div class="s">Login: ${esc(c.usuario)}</div><span class="pill ${SITU[c.situacao][1]}" style="margin-top:6px">${SITU[c.situacao][0]}</span></div>${c.situacao==='disponivel'?`<button type="button" class="btn sm sea" data-a="redeConectar" data-id="${c.user_id}" data-nome="${esc(c.nome)}">Conectar</button>`:''}</div></div>`).join('')}</div>`
-   :`<div class="note sea">${ic('users',18)}<div>Ninguém com esse nome tem login no app ainda. Confira se o nome está igual ao cadastro dela ou anote como contato sem login.<div style="margin-top:8px"><button type="button" class="btn sm" data-a="redeManual">Anotar como contato sem login</button></div></div></div>`;
+   :`<div class="note sea">${ic('users',18)}<div>Ninguém com esse nome tem login no app ainda. Confira se o nome está igual ao cadastro ou adicione como fora do app: a pessoa aparece no organograma, sem evolução.<div style="margin-top:8px"><button type="button" class="btn sm" data-a="redeManual">Adicionar como fora do app</button></div></div></div>`;
 }
 function regrasHtml(){return`<div class="card"><h3>${ic('alert',18)} Regras do contrato e comunicação</h3>
    <ul class="small" style="padding-left:18px;margin:0 0 4px">
@@ -1689,7 +1704,7 @@ function formFabrica(id){
 }
 function formRede(id){
   const r=id?get('rede',id):{tipo:'downline'};
-  openSheet(id?'Editar pessoa':'Adicionar à rede',`${F('nome','Nome',r.nome,{req:1})}${F('tipo','Posição',r.tipo,{type:'select',options:[['downline','Minha equipe (downline)'],['upline','Acima de mim (upline)']]})}${F('telefone','Telefone / WhatsApp',r.telefone?fmtPhone(r.telefone):'',{im:'tel'})}<div class="grid2">${F('nivel','Nível / cargo',r.nivel,{ph:'Ex.: Líder'})}${F('desde','Desde',r.desde,{type:'date'})}</div>${F('cidade','Cidade',r.cidade)}${F('notas','Observações',r.notas,{type:'textarea'})}`,
+  openSheet(id?'Editar pessoa':'Adicionar à rede',`${F('nome','Nome',r.nome,{req:1})}${F('tipo','Posição',r.tipo,{type:'select',options:[['downline','Minha equipe (downline)'],['upline','Acima de mim (upline)']]})}${F('abaixoDe','No organograma, fica abaixo de',r.abaixoDe||'',{type:'select',options:[['','Você'],...(((S.rede&&S.rede.rede)||[]).map(p=>[p.user_id,p.nome]))]})}${F('telefone','Telefone / WhatsApp',r.telefone?fmtPhone(r.telefone):'',{im:'tel'})}<div class="grid2">${F('nivel','Nível / cargo',r.nivel,{ph:'Ex.: Líder'})}${F('desde','Desde',r.desde,{type:'date'})}</div>${F('cidade','Cidade',r.cidade)}${F('notas','Observações',r.notas,{type:'textarea'})}`,
    {extra:id?`<button type="button" class="btn danger" data-a="delRede" data-id="${id}">Excluir</button>`:'',onSubmit:v=>{if(!v.nome.trim())return toast('Informe o nome.');Store.put('rede',{...r,...v,telefone:normPhone(v.telefone),id:id||newId('r')});closeSheet();toast('Salvo');render()}});
 }
 function formSenha(){
@@ -1872,6 +1887,7 @@ const A={
   orgZoom:el=>{const v=+el.dataset.v;if(v===0){S.redeZoom=null;S.orgScroll=null}else S.redeZoom=Math.max(.35,Math.min(1.4,Math.round(((S.redeZoom||1)+v*.15)*100)/100));render()},
   redeToggle:el=>{S.redeFechados=S.redeFechados||{};S.redeFechados[el.dataset.id]=!S.redeFechados[el.dataset.id];render()},
   redePessoa:el=>redePessoa(el.dataset.id),
+  redeFora:el=>redeFora(el.dataset.id),
   redeAdicionar:()=>redeAdicionar(),
   redeBuscar:()=>redeBuscar(),
   redeManual:()=>{const n=($('#redeQ')||{}).value||'';closeSheet();formRede(null);setTimeout(()=>{const f=$('#f_nome');if(f)f.value=n},20)},
@@ -2040,7 +2056,8 @@ function seedDemo(){
       status:st,contatadoEm:cont,retorno:st==='negociando'?addDays(t,i%3===0?0:-1):(st==='contatado'&&i%2?addDays(t,3):''),notas:st==='negociando'?'Pediu catálogo e amostra do óleo Natuoz.':'',criadoEm:now-i*dia*2,clienteId:''}});
   const sb=S.data.empresas.e_demo0;S.data.clientes.c_demo2.empresaId=sb.id;sb.clienteId='c_demo2';
   // rede (contato sem login)
-  S.data.rede.r_demo1={id:'r_demo1',nome:'Sueli Andrade',tipo:'downline',telefone:'',nivel:'Recém-cadastrada',desde:addDays(t,-3),notas:'Fez o cadastro na Atlântica, ainda sem login no app.'};
+  S.data.rede.r_demo1={id:'r_demo1',nome:'Sueli Andrade',tipo:'downline',abaixoDe:'d1',telefone:'',nivel:'Recém-cadastrada',desde:addDays(t,-3),notas:'Fez o cadastro na Atlântica, ainda sem login no app.'};
+  S.data.rede.r_demo2={id:'r_demo2',nome:'Pedro Henrique Lima',tipo:'downline',abaixoDe:'',telefone:'66999990000',nivel:'Consultor',desde:addDays(t,-40),cidade:'Rondonópolis',notas:'Prefere controlar tudo pelo caderno.'};
   _demoRede=null;S.rede=null;
 }
 let _demoRede=null;
