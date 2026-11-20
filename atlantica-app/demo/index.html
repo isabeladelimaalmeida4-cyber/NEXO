@@ -276,6 +276,12 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 @media(min-width:1280px){.tiles{grid-template-columns:repeat(4,1fr)}.qgrid{grid-template-columns:repeat(5,1fr)}}
 @media(max-width:359px){.grid4{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}.qgrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:420px){.synct{display:none}}
+.sitebar{display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,var(--deep),#11706f);color:#fff;border-radius:16px;padding:13px 14px;margin:4px 0 12px;text-decoration:none;box-shadow:var(--shadow)}
+.sitebar:active{transform:scale(.99)}
+.sbic{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
+.sbtx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.sbtx b{font-size:15px}.sbtx small{font-size:12px;color:#cfe7df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sbgo{flex:none;opacity:.9}
 .hide{display:none!important}
 </style>
 </head>
@@ -376,7 +382,7 @@ const DEF_CONFIG={
   msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!',
   categorias:['Cliente final','Recompra mensal','Salão / parceiro','Empresa','VIP'],
   metaMensal:3000,metaClientes:25,metaContatos:40,carreira:null,
-  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br'
+  pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br/login'
 };
 /* ===== dados do Manual de operação da consultora (catálogo jul/2026, plano de carreira, scripts) ===== */
 const NIVEIS=[
@@ -1186,7 +1192,9 @@ function viewProdutos(){
   l.sort(ordCat);
   const vend={};const lim=addDays(today(),-90);arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(i.produtoId)vend[i.produtoId]=(vend[i.produtoId]||0)+num(i.qtd)}));
   return`
-  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button><a class="btn" href="${esc(S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">${ic('store',16)} Loja Atlântica</a></div>
+  <a class="sitebar" href="${esc(S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica)}" target="_blank" rel="noopener">
+   <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>${esc((S.config.lojaAtlantica||DEF_CONFIG.lojaAtlantica).replace(/^https?:\/\//,'').replace(/\/$/,''))} · compre os produtos que você precisa</small></span><span class="sbgo">${ic('ext',18)}</span></a>
+  <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
   <div class="scrollx"><button class="chip ${!u.prodAlert&&!u.prodCat?'on':''}" data-a="prodAll">Todos</button><button class="chip ${u.prodAlert==='estoque'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='estoque'?'':'estoque'}">Estoque baixo</button><button class="chip ${u.prodAlert==='preco'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='preco'?'':'preco'}">Preço ≠ catálogo</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="prodQ" data-ui="prodQ" value="${esc(u.prodQ)}" placeholder="Nome, código, categoria ou fábrica"></div>
   <div class="note sea" style="margin-top:4px">${ic('leaf',18)}<div>Catálogo Essencial Atlântica Natural (jul/2026) já incluído: preço de catálogo, preço de consultora (50%) e ciclo de recompra. Toque num produto para ajustar preço, foto ou estoque.</div></div>
