@@ -1248,7 +1248,7 @@ const sacolaRaw=()=>Array.isArray(S.config.sacola)?S.config.sacola:[];
 const sacola=()=>sacolaRaw().map(x=>({...x,p:get('produtos',x.id)})).filter(x=>x.p&&x.qtd>0);
 const sacolaQtd=id=>(sacolaRaw().find(x=>x.id===id)||{}).qtd||0;
 const sacolaN=()=>sum(sacola(),x=>x.qtd);
-function salvarSacola(l){Store.setConfig({sacola:l.filter(x=>x.qtd>0).map(x=>({id:x.id,qtd:x.qtd}))});renderSacola();render()}
+function salvarSacola(l){Store.setConfig({sacola:l.filter(x=>x.qtd>0).map(x=>({id:x.id,qtd:x.qtd}))});if(typeof desenharPip==='function')desenharPip();renderSacola();render()}
 function sacolaMudar(id,d){const l=sacolaRaw().map(x=>({...x}));const i=l.find(x=>x.id===id);if(i)i.qtd=Math.max(0,Math.min(999,i.qtd+d));else if(d>0)l.push({id,qtd:d});salvarSacola(l)}
 function sacolaTexto(){const l=sacola();
   return['Minha sacola · Atlântica Natural','',...l.map(x=>`${x.qtd} × ${x.p.nome}${x.p.sku?` (cód. ${x.p.sku})`:''} · ${brl(num(x.p.preco)*x.qtd)}`),'',`Total no catálogo: ${brl(sum(l,x=>num(x.p.preco)*x.qtd))}`,`Custo de consultora: ${brl(sum(l,x=>num(x.p.custo)*x.qtd))}`].join('\n')}
@@ -1261,11 +1261,49 @@ function renderSacola(){const box=$('#sacola');if(!box)return;
      <div class="row nowrap" style="justify-content:space-between;margin-top:8px"><span class="qty"><button type="button" data-a="sacolaMais" data-id="${x.id}" data-v="-1" aria-label="Menos">−</button><b>${x.qtd}</b><button type="button" data-a="sacolaMais" data-id="${x.id}" data-v="1" aria-label="Mais">+</button></span><div style="text-align:right"><b class="mono">${brl(num(x.p.preco)*x.qtd)}</b>${x.qtd>1?`<div class="tiny muted">${brl(x.p.preco)} cada</div>`:''}</div></div></div>`).join('')
     :`<div class="empty" style="padding:40px 10px">${ic('bag',30)}<h3 style="margin-top:10px">Sua sacola está vazia</h3>Em Produtos, toque em <b>Sacola</b> nos itens que você quer comprar. Eles aparecem aqui em forma de lista.</div>`}</div>
    <div class="sac-f">${l.length?`<div class="sac-tot"><span>Total no catálogo</span><b>${brl(tot)}</b></div><div class="sac-tot muted"><span>Custo de consultora</span><b>${brl(cus)}</b></div>`:''}
-    <a class="btn pri block" href="${esc(ev)}" target="_blank" rel="noopener" style="margin-top:8px">${ic('ext',17)} Abrir site oficial Atlântica</a>
+    ${l.length?(typeof pipV!=='undefined'&&pipV&&document.pictureInPictureElement===pipV?`<button type="button" class="btn block" data-a="sacolaFlutFechar" style="margin-top:8px">${ic('x',16)} Fechar lista flutuante</button>`:`<button type="button" class="btn sea block" data-a="sacolaFlut" style="margin-top:8px">${ic("bag",16)} 1. Deixar a lista flutuando na tela</button>`):''}
+    <a class="btn pri block" href="${esc(ev)}" target="_blank" rel="noopener" style="margin-top:8px">${ic('ext',17)} ${l.length?'2. ':''}Abrir site oficial Atlântica</a>
+    ${l.length&&ehAndroid()&&!ehApp()?`<p class="tiny" style="margin:8px 2px 0;color:var(--coral)">No Android, a lista só fica por cima do site quando o app é aberto pelo ícone na tela inicial (menu do navegador › Adicionar à tela inicial).</p>`:''}
     ${l.length?`<div class="row nowrap" style="margin-top:8px"><button type="button" class="btn" style="flex:1" data-a="sacolaCopiar">${ic('copy',16)} Copiar lista</button><button type="button" class="btn ${S.sacolaConf?'danger':''}" data-a="sacolaLimpar">${S.sacolaConf?'Tocar de novo para limpar':'Limpar'}</button></div>`:''}
-    <p class="tiny muted" style="margin:8px 2px 0">A lista fica salva no app. Abra o site oficial e use a lista para montar o seu pedido.</p></div></aside>`;
+    <p class="tiny muted" style="margin:8px 2px 0">A lista fica salva no app. A lista flutuante fica num cantinho da tela, por cima do site da Atlântica, e dá para arrastar.</p></div></aside>`;
   const b=$('.sac-b');if(b)b.scrollTop=y}
-function abrirSacola(){S.sacolaAberta=true;renderSacola();document.body.style.overflow='hidden'}
+/* Lista flutuante: a sacola vira uma janelinha (picture-in-picture) que fica por cima de outros apps,
+   inclusive do site da Atlântica. Desenhada num canvas transmitido para um vídeo. */
+let pipC=null,pipV=null,pipT=null;
+const pipOk=()=>!!(document.pictureInPictureEnabled&&window.HTMLVideoElement&&HTMLVideoElement.prototype.requestPictureInPicture&&HTMLCanvasElement.prototype.captureStream);
+const ehAndroid=()=>/Android/i.test(navigator.userAgent);
+const ehApp=()=>{try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true}catch(e){return false}};
+function prepPip(){if(!pipOk()||pipV)return;try{pipC=document.createElement('canvas');pipC.width=600;pipC.height=900;desenharPip();
+  pipV=document.createElement('video');pipV.muted=true;pipV.playsInline=true;pipV.setAttribute('playsinline','');pipV.srcObject=pipC.captureStream(10);
+  pipV.addEventListener('leavepictureinpicture',()=>{clearInterval(pipT);pipT=null;renderSacola()});pipV.play().catch(()=>{})}catch(e){pipV=null}}
+function desenharPip(){if(!pipC)return;const g=pipC.getContext('2d'),W=pipC.width,H=pipC.height,l=sacola();
+  const corta=(t,max)=>{if(g.measureText(t).width<=max)return t;while(t.length>1&&g.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'};
+  const linhas=(t,max,n)=>{const w=String(t).split(' ');const out=[];let cur='';for(const p of w){const tt=cur?cur+' '+p:p;if(g.measureText(tt).width<=max)cur=tt;else{if(cur)out.push(cur);cur=p}}if(cur)out.push(cur);if(out.length>n){out.length=n;out[n-1]=corta(out[n-1]+' …',max)}return out.map(x=>corta(x,max))};
+  g.fillStyle='#f7f3ea';g.fillRect(0,0,W,H);
+  g.fillStyle='#0b4f54';g.fillRect(0,0,W,118);
+  g.fillStyle='#fff';g.font='800 42px sans-serif';g.textBaseline='alphabetic';g.fillText('Minha sacola',28,60);
+  g.font='500 26px sans-serif';g.fillStyle='#cfe7df';const n=sum(l,x=>x.qtd);g.fillText(l.length?`${n} ite${n===1?'m':'ns'} · Atlântica Natural`:'Atlântica Natural',28,98);
+  let y=140;const fim=H-146;let mostrados=0;
+  if(!l.length){g.fillStyle='#5d6b6c';g.font='600 32px sans-serif';g.fillText('Sacola vazia',28,200)}
+  for(const x of l){g.font='800 30px sans-serif';const ls=linhas(x.p.nome,W-150,2);const card=ls.length*34+56,h=card+10;if(y+h>fim)break;
+    g.fillStyle='#ffffff';g.strokeStyle='#d9e2e0';g.lineWidth=2;g.beginPath();g.roundRect?g.roundRect(18,y,W-36,card,18):g.rect(18,y,W-36,card);g.fill();g.stroke();
+    g.fillStyle='#c8553d';g.beginPath();g.arc(62,y+38,26,0,7);g.fill();g.fillStyle='#fff';g.font='800 26px sans-serif';g.textAlign='center';g.fillText(x.qtd+'×',62,y+47);g.textAlign='left';
+    g.fillStyle='#1d2b2c';g.font='800 30px sans-serif';ls.forEach((t,i)=>g.fillText(t,104,y+40+i*34));
+    g.fillStyle='#5d6b6c';g.font='600 25px sans-serif';g.fillText(brl(num(x.p.preco)*x.qtd),104,y+38+ls.length*34);
+    y+=h;mostrados++}
+  if(l.length>mostrados){g.fillStyle='#0b4f54';g.font='800 28px sans-serif';g.fillText(`+ ${l.length-mostrados} outro${l.length-mostrados>1?'s':''} produto${l.length-mostrados>1?'s':''}`,28,y+30)}
+  g.fillStyle='#0b4f54';g.fillRect(0,H-96,W,96);g.fillStyle='#fff';g.font='600 26px sans-serif';g.fillText('Total no catálogo',28,H-40);
+  g.font='800 36px sans-serif';g.textAlign='right';g.fillText(brl(sum(l,x=>num(x.p.preco)*x.qtd)),W-28,H-38);g.textAlign='left'}
+async function sacolaFlutuante(){
+  if(!pipOk()){toast('Este navegador não abre janela flutuante. Use Copiar lista ou a tela dividida.');return}
+  prepPip();if(!pipV)return toast('Não consegui abrir a lista flutuante.');
+  desenharPip();
+  try{if(pipV.readyState<1)await pipV.play();desenharPip();await pipV.requestPictureInPicture();
+    clearInterval(pipT);pipT=setInterval(desenharPip,1000);renderSacola();
+    toast('Lista flutuante ligada. Agora toque em Abrir site oficial.')}
+  catch(e){toast('Não consegui abrir a lista flutuante neste aparelho. Use Copiar lista.')}}
+async function fecharFlutuante(){try{if(document.pictureInPictureElement)await document.exitPictureInPicture()}catch(e){}clearInterval(pipT);pipT=null;renderSacola()}
+function abrirSacola(){S.sacolaAberta=true;renderSacola();document.body.style.overflow='hidden';prepPip()}
 function fecharSacola(){S.sacolaAberta=false;renderSacola();document.body.style.overflow=''}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.sacolaAberta)fecharSacola()});
 function cartItems(){return Object.entries(S.cart).map(([id,q])=>({p:get('produtos',id),q})).filter(x=>x.p&&x.q>0)}
@@ -1994,6 +2032,8 @@ const A={
   sacolaAbrir:()=>abrirSacola(),
   sacolaSite:(el,ev)=>{ev.preventDefault();abrirSacola()},
   sacolaFechar:()=>fecharSacola(),
+  sacolaFlut:()=>sacolaFlutuante(),
+  sacolaFlutFechar:()=>fecharFlutuante(),
   sacolaCopiar:()=>copy(sacolaTexto(),'Lista copiada ✓'),
   sacolaLimpar:()=>{if(!S.sacolaConf){S.sacolaConf=1;renderSacola();setTimeout(()=>{if(S.sacolaConf){S.sacolaConf=0;renderSacola()}},4000);return}S.sacolaConf=0;salvarSacola([])},
   cartFechar:()=>{const it=cartItems(),tot=sum(it,x=>x.q*x.p.preco);const txt=`*Pedido — ${S.config.negocio}*\n\n${it.map(x=>`${x.q}x ${x.p.nome} — ${brl(x.q*x.p.preco)}`).join('\n')}\n\n*Total: ${brl(tot)}*`;
