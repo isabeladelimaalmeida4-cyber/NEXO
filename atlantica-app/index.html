@@ -695,9 +695,9 @@ function notificacoes(){
   if(ret.length>5)out.push({key:'ret-mais-'+t,tone:'sea',icon:'target',title:`+${ret.length-5} retornos de prospecção`,text:'Veja na base de empresas',go:['base',{}]});
   arr('clientes').forEach(cl=>{if(!cl.aniversario)return;const md=cl.aniversario.slice(5);for(let i=0;i<=7;i++){const d=addDays(t,i);if(d.slice(5)===md){out.push({key:'aniv-'+cl.id+'-'+d.slice(0,4),tone:'ok',icon:'cake',title:`Aniversário de ${cl.nome}`,text:i===0?'É hoje! Mande uma mensagem.':`Em ${i} dia${i>1?'s':''} (${fmtShort(d)})`,go:['cliente',{id:cl.id}]});break}}});
   const baixo=arr('produtos').filter(estoqueBaixo);
-  if(baixo.length)out.push({key:'est-'+t+'-'+baixo.length,tone:'gold',icon:'box',title:`${baixo.length} produto${baixo.length>1?'s':''} com estoque baixo`,text:baixo.slice(0,3).map(p=>p.nome).join(', '),go:['produtos',{alert:'estoque'}]});
+  if(baixo.length)out.push({key:'est-'+t+'-'+baixo.length,tone:'gold',icon:'box',title:`${baixo.length} produto${baixo.length>1?'s':''} com estoque baixo`,text:baixo.slice(0,3).map(p=>p.nome).join(', '),go:['produtos',{}]});
   const div=arr('produtos').filter(precoDiverge);
-  if(div.length)out.push({key:'preco-'+div.map(p=>p.id+p.preco).join('').slice(0,60),tone:'gold',icon:'tag',title:`${div.length} produto${div.length>1?'s':''} com preço fora do catálogo`,text:div.slice(0,3).map(p=>p.nome).join(', '),go:['produtos',{alert:'preco'}]});
+  if(div.length)out.push({key:'preco-'+div.map(p=>p.id+p.preco).join('').slice(0,60),tone:'gold',icon:'tag',title:`${div.length} produto${div.length>1?'s':''} com preço fora do catálogo`,text:div.slice(0,3).map(p=>p.nome).join(', '),go:['produtos',{}]});
   const sumidos=arr('clientes').filter(cl=>{const vs=vendasCliente(cl.id);return vs.length&&diffDays(vs[0].data,t)>=60});
   if(sumidos.length)out.push({key:'sumidos-'+t.slice(0,7)+'-'+sumidos.length,tone:'sea',icon:'users',title:`${sumidos.length} cliente${sumidos.length>1?'s':''} sem comprar há 60+ dias`,text:sumidos.slice(0,3).map(c=>c.nome).join(', '),go:['clientes',{sort:'ultima'}]});
   const st=stats(),dia=new Date().getDate(),dim=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
@@ -1186,8 +1186,6 @@ function viewProdutos(){
   const u=S.ui;let l=arr('produtos');
   const cats=ordLinhas([...new Set(l.map(p=>p.categoria).filter(Boolean))]);
   if(u.prodCat)l=l.filter(p=>p.categoria===u.prodCat);
-  if(u.prodAlert==='estoque')l=l.filter(estoqueBaixo);
-  if(u.prodAlert==='preco')l=l.filter(precoDiverge);
   if(u.prodQ){const q=norm(u.prodQ);l=l.filter(p=>norm([p.nome,p.sku,p.categoria,(get('fabricas',p.fabricaId)||{}).nome].join(' ')).includes(q))}
   l.sort(ordCat);
   const vend={};const lim=addDays(today(),-90);arr('vendas').filter(v=>v.data>=lim).forEach(v=>(v.itens||[]).forEach(i=>{if(i.produtoId)vend[i.produtoId]=(vend[i.produtoId]||0)+num(i.qtd)}));
@@ -1195,7 +1193,7 @@ function viewProdutos(){
   <a class="sitebar" href="${esc(S.config.evUrl||DEF_CONFIG.evUrl)}" target="_blank" rel="noopener">
    <span class="sbic">${ic('store',20)}</span><span class="sbtx"><b>Site oficial Atlântica Natural</b><small>ev.atlanticanatural.com.br · entre e compre os produtos que você precisa</small></span><span class="sbgo">${ic('ext',18)}</span></a>
   <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formProduto">${ic('plus',17)} Novo produto</button><button class="btn" data-a="go" data-r="fabricas">${ic('factory',16)} Fábricas</button></div>
-  <div class="scrollx"><button class="chip ${!u.prodAlert&&!u.prodCat?'on':''}" data-a="prodAll">Todos</button><button class="chip ${u.prodAlert==='estoque'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='estoque'?'':'estoque'}">Estoque baixo</button><button class="chip ${u.prodAlert==='preco'?'on':''}" data-a="ui" data-k="prodAlert" data-v="${u.prodAlert==='preco'?'':'preco'}">Preço ≠ catálogo</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
+  <div class="scrollx"><button class="chip ${!u.prodCat?'on':''}" data-a="prodAll">Todos</button>${cats.map(c=>`<button class="chip ${u.prodCat===c?'on':''}" data-a="ui" data-k="prodCat" data-v="${u.prodCat===c?'':esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="prodQ" data-ui="prodQ" value="${esc(u.prodQ)}" placeholder="Nome, código, categoria ou fábrica"></div>
   <div class="note sea" style="margin-top:4px">${ic('leaf',18)}<div>Catálogo Essencial Atlântica Natural (jul/2026) já incluído: preço de catálogo, preço de consultora (50%) e ciclo de recompra. Toque num produto para ajustar preço, foto ou estoque.</div></div>
   <div class="small muted" style="margin:10px 2px 0"><b>${nf(l.length)}</b> produto${l.length===1?'':'s'}</div>
