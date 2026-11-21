@@ -560,6 +560,8 @@ function get(k,id){if(!id)return undefined;const o=S.data[k]&&S.data[k][id];if(o
 const SB_URL='https://lgffswhzrvnasvzqkvgt.supabase.co';
 const SB_KEY='sb_publishable_LGudHVZsK68JzrXp_ITT9w_tFufz18K';
 const EMAIL_DOM='@atlantica.local';
+/* o usuário é o nome completo da consultora; por dentro vira uma chave sem acento nem espaço (Joctã Emanuel → joctaemanuel) */
+const usuarioChave=s=>{s=String(s||'').trim();if(s.includes('@'))return s.toLowerCase();return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9._-]/g,'')};
 const authStorage={
   _s(){try{return ls.get('atl-remember')==='0'?window.sessionStorage:window.localStorage}catch(e){return null}},
   getItem(k){try{return this._s().getItem(k)}catch(e){return null}},
@@ -581,7 +583,7 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
   },
   async login(usuario,senha,lembrar){
     ls.set('atl-remember',lembrar?'1':'0');
-    const u=String(usuario||'').trim().toLowerCase().replace(/\s+/g,'');
+    const u=usuarioChave(usuario);
     const email=u.includes('@')?u:u+EMAIL_DOM;
     if(S.semSenha){
       let r;try{r=await sbc.functions.invoke('app-entrar',{body:{action:'entrar',usuario:u}})}catch(e){throw new Error('Sem conexão com a internet.')}
@@ -792,7 +794,7 @@ function render(){
     ?`<div class="brand"><b>Atlântica Natural</b><small>VENDAS & PROSPECÇÃO</small></div><div class="sp"></div>`
     :(isTab?`<h2>${esc(TITLES[r])}</h2>`:`<button class="icon-btn" data-a="back" aria-label="Voltar">${ic('back',22)}</button><h2>${esc(TITLES[r]||'')}</h2>`);
   app.innerHTML=`<header class="top">${DEMO?'<div class="demo-strip">Demonstração · dados fictícios · nada é salvo</div>':''}<div class="top-in">${head}
-    <span class="sync ${S.offline?'local':''}" title="${S.offline?'Sem conexão — salvando quando a internet voltar':'Salvo na nuvem'}"><i></i><span class="synct">${S.offline?'sem conexão':esc((Store.perfil&&Store.perfil.usuario)||'')}</span></span>
+    <span class="sync ${S.offline?'local':''}" title="${S.offline?'Sem conexão — salvando quando a internet voltar':'Salvo na nuvem'}"><i></i><span class="synct">${S.offline?'sem conexão':esc((Store.perfil&&((Store.perfil.nome||'').split(' ')[0]||Store.perfil.usuario))||'')}</span></span>
     <button class="icon-btn" data-a="go" data-r="notificacoes" aria-label="Notificações">${ic('bell',22)}${nN?`<span class="badge">${nN>9?'9+':nN}</span>`:''}</button></div></header>
   <main class="wrap">${body}</main>
   ${S.route==='catalogo'?cartBar():''}
@@ -806,7 +808,7 @@ function viewLock(){
   return`<div class="lock"><form class="box" id="lockForm" autocomplete="on">
   <span class="pill sea">${ic('lock',14)} Acesso das consultoras</span>
   <h1>Entrar</h1><p class="muted mt0">Atlântica Natural · Vendas & Prospecção</p>
-  <div class="field"><label for="lockUser">Usuário</label><input class="inp" id="lockUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Ex.: consultora1" value="${esc(ls.get('atl-ultimo-usuario')||'')}"></div>
+  <div class="field"><label for="lockUser">Usuário (seu nome completo)</label><input class="inp" id="lockUser" autocomplete="username" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Ex.: Maria da Silva" value="${esc(ls.get('atl-ultimo-usuario')||'')}"></div>
   ${S.semSenha?'':`<div class="field"><label for="lockPin">Senha</label><input class="inp" type="password" id="lockPin" autocomplete="current-password" placeholder="Sua senha"></div>`}
   <label class="check"><input type="checkbox" id="lockRemember" ${ls.get('atl-remember')==='0'?'':'checked'}> Lembrar neste aparelho</label>
   <p class="small" id="lockErr" style="color:var(--coral);min-height:18px">${esc(S.loginErro||'')}</p>
@@ -1682,7 +1684,7 @@ function viewAjustes(){
    <button class="btn pri block" style="margin-top:16px" type="submit">Salvar ajustes</button>
   </form>
   <div class="card"><h3>${ic('lock',18)} Seu acesso</h3>
-   <p class="small muted mt0">Você entra como <b>${esc((Store.perfil&&Store.perfil.usuario)||'')}</b>.${S.semSenha?' Por enquanto o app entra só com o usuário, sem senha.':' Pode trocar sua senha quando quiser.'}</p>
+   <p class="small muted mt0">Você entra digitando <b>${esc((Store.perfil&&(Store.perfil.nome||Store.perfil.usuario))||'')}</b> no usuário.${S.semSenha?' Por enquanto o app entra só com o usuário, sem senha.':' Pode trocar sua senha quando quiser.'}</p>
    ${S.semSenha?'':'<div class="row"><button class="btn" data-a="formSenha">Trocar minha senha</button></div>'}</div>
   <div class="card"><h3>${ic('download',18)} Dados e backup</h3>
    <p class="small muted mt0">Seus dados ficam salvos na nuvem, só no seu login, e aparecem em qualquer aparelho em que você entrar.</p>
@@ -2080,7 +2082,7 @@ document.addEventListener('submit',async ev=>{
   if(f.id==='sheetForm'&&sheetSubmit){const v={};f.querySelectorAll('[name]').forEach(el=>{v[el.name]=el.type==='checkbox'?el.checked:el.value});sheetSubmit(v,f);return}
   if(f.id==='lockForm'){const u=$('#lockUser').value,pw=($('#lockPin')||{}).value||'';if(!u.trim()||(!S.semSenha&&!pw)){$('#lockErr').textContent=S.semSenha?'Digite seu usuário.':'Preencha usuário e senha.';return}
     const btn=$('#lockBtn');btn.disabled=true;btn.textContent='Entrando…';
-    try{await Store.login(u,pw,$('#lockRemember').checked);ls.set('atl-ultimo-usuario',u.trim().toLowerCase())}catch(e){S.loginErro=e.message;const el=$('#lockErr');if(el)el.textContent=e.message;btn.disabled=false;btn.textContent='Entrar';const pi=$('#lockPin');if(pi){pi.value='';pi.focus()}}
+    try{await Store.login(u,pw,$('#lockRemember').checked);ls.set('atl-ultimo-usuario',u.trim())}catch(e){S.loginErro=e.message;const el=$('#lockErr');if(el)el.textContent=e.message;btn.disabled=false;btn.textContent='Entrar';const pi=$('#lockPin');if(pi){pi.value='';pi.focus()}}
     return}
   if(f.id==='cnpjForm'){const d=digits(S.ui.cnpjQ);if(d.length!==14){S.cnpj={erro:'Digite os 14 números do CNPJ.'};return render()}const e=arr('empresas').find(x=>digits(x.cnpj)===d);const c=arr('clientes').find(x=>digits(x.cpfCnpj)===d);S.cnpj={cnpj:d,emp:e&&e.id,cli:!e&&c?c.id:null};render();return}
   if(f.id==='empNotas'){const e=get('empresas',f.dataset.id);const fd=new FormData(f);Store.put('empresas',{...e,retorno:fd.get('retorno')||'',notas:fd.get('notas')||''});toast('Acompanhamento salvo');render();return}
