@@ -66,6 +66,15 @@ main.wrap{padding:18px 16px 60px}
 .kpi .t{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .kpi .v{font-family:Fraunces,serif;font-size:24px;font-weight:650;margin-top:4px}
 .kpi .s{font-size:12.5px;color:var(--muted)}
+.kpis.tres{grid-template-columns:repeat(3,1fr)}
+.kpi .de{font-size:15px;color:var(--muted);font-family:Manrope,sans-serif;font-weight:600}
+.kpi.click{cursor:pointer}.kpi.click:hover{border-color:var(--gold)}
+@media(max-width:560px){.kpi{padding:11px}.kpi .v{font-size:19px}.kpi .t{font-size:11px}.kpi .s{font-size:11.5px}.kpis{gap:8px}}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:13px;padding:2px 0}
+.meta.atraso{color:var(--coral);font-weight:700}
+details.mais{margin-top:14px}
+details.mais summary{cursor:pointer;color:var(--sea);font-weight:700;font-size:14px;padding:6px 0}
+.eu .sair{font-size:15px}
 .kpi.ok .v{color:var(--ok)}.kpi.bad .v{color:var(--coral)}.kpi.gold .v{color:var(--gold)}
 .aviso{background:var(--gold-bg);border:1px solid #e8d49a;color:#5d4708;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:600;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
@@ -133,9 +142,10 @@ table.hist td{padding:8px 4px;border-top:1px solid var(--line)}
   <header class="top">
     <div class="wrap">
       <div class="top-row">
-        <div><h1>Mensalidades</h1><small id="subTop">App Atlântica · controle interno</small></div>
+        <div><h1>Mensalidades</h1><small id="subTop">App Atlântica</small></div>
         <div class="eu">
           <button id="bEu" title="Trocar quem está usando"></button>
+          <button class="sair" id="bAj" title="Ajustes" aria-label="Ajustes">⚙</button>
           <button class="sair" id="bSair">Sair</button>
         </div>
       </div>
@@ -143,8 +153,7 @@ table.hist td{padding:8px 4px;border-top:1px solid var(--line)}
         <button data-aba="mes">Pagamentos</button>
         <button data-aba="ind">Indicações</button>
         <button data-aba="cli">Clientes</button>
-        <button data-aba="aj">Ajustes</button>
-      </nav>
+              </nav>
     </div>
   </header>
   <main class="wrap" id="conteudo"><div class="carregando">Carregando…</div></main>
@@ -272,7 +281,8 @@ $('#bEu').onclick=()=>{
   abrirModal(`<h2>Quem está usando?</h2><p class="muted">Fica registrado em cada pagamento e repasse marcado.</p><div class="quem" style="margin-top:14px">${Object.keys(SOCIOS).map(k=>`<button type="button" data-k="${k}" class="${S.eu===k?'on':''}">${av(k).replace('class="av','style="width:38px;height:38px;font-size:16px" class="av')}${esc(SOCIOS[k])}</button>`).join('')}</div>`);
   $('#sheet').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{S.eu=b.dataset.k;lsSet(LS_EU,S.eu);fecharModal();cabecalho();render()});
 };
-function cabecalho(){if(DEMO)$('#subTop').textContent='Demonstração · dados fictícios · nada é salvo';$('#bEu').innerHTML=`${av(S.eu)}${esc(SOCIOS[S.eu])}`;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.aba===S.aba))}
+function cabecalho(){if(DEMO)$('#subTop').textContent='Demonstração · nada é salvo';$('#bEu').innerHTML=`${av(S.eu)}${esc(SOCIOS[S.eu])}`;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.aba===S.aba))}
+$('#bAj').onclick=()=>{S.aba='aj';cabecalho();render();window.scrollTo(0,0)};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.aba=b.dataset.aba;cabecalho();render();window.scrollTo(0,0)});
 
 async function iniciarApp(){
@@ -292,112 +302,94 @@ function render(){
   const f={mes:telaMes,ind:telaInd,cli:telaCli,aj:telaAj}[S.aba];
   $('#conteudo').innerHTML=f();ligar();
 }
-function avisoValor(){return Number(S.aj.valor_mensal)>0?'':`<div class="aviso"><span>Defina o valor padrão da mensalidade para os valores aparecerem certos.</span><button class="btn sm" data-ir="aj">Ir para Ajustes</button></div>`}
+function avisoValor(){return Number(S.aj.valor_mensal)>0?'':`<div class="aviso"><span>Falta definir o valor da mensalidade.</span><button class="btn sm" data-ir="aj">Definir valor</button></div>`}
 
 function telaMes(){
   const mes=S.mes;
   const linhas=S.clientes.map(c=>({c,s:statusDe(c,mes)})).filter(x=>x.s.k!=='fora'&&x.s.k!=='naocobra');
-  const cont={todos:linhas.length,pago:0,avencer:0,vencido:0,naocobra:0};
-  let recebido=0,aberto=0,vencidoV=0,comPend=0;
-  for(const x of linhas){cont[x.s.k]=(cont[x.s.k]||0)+1;if(x.s.k==='pago')recebido+=Number(x.s.p.valor);else if(x.s.k==='avencer')aberto+=valorDe(x.c);else if(x.s.k==='vencido')vencidoV+=valorDe(x.c)}
-  for(const p of S.pags)if(!p.repasse_feito&&p.indicador&&Number(p.comissao_valor)>0)comPend+=Number(p.comissao_valor);
-  const totalAtraso=S.clientes.filter(c=>mesesAbertos(c).length).length;
+  const pagos=linhas.filter(x=>x.s.k==='pago'),falta=linhas.filter(x=>x.s.k!=='pago');
+  const recebido=pagos.reduce((a,x)=>a+Number(x.s.p.valor),0);
+  const aberto=falta.reduce((a,x)=>a+valorDe(x.c),0);
+  const venc=falta.filter(x=>x.s.k==='vencido').length;
+  let comPend=0;for(const p of S.pags)if(!p.repasse_feito&&p.indicador&&Number(p.comissao_valor)>0)comPend+=Number(p.comissao_valor);
   const q=S.busca.trim().toLowerCase();
-  let vis=linhas.filter(x=>S.filtro==='todos'||x.s.k===S.filtro);
-  if(q)vis=vis.filter(x=>(x.c.nome+' '+(x.c.usuario||'')+' '+(x.c.telefone||'')).toLowerCase().includes(q));
-  const ordem={vencido:0,avencer:1,pago:2,naocobra:3};
-  vis.sort((a,b)=>ordem[a.s.k]-ordem[b.s.k]||a.c.nome.localeCompare(b.c.nome,'pt-BR'));
-  const chips=[['todos','Todos'],['vencido','Vencidos'],['avencer','A vencer'],['pago','Pagos']].map(([k,t])=>`<button class="chip ${S.filtro===k?'on':''}" data-f="${k}">${t}<span class="n">${cont[k]||0}</span></button>`).join('');
+  let vis=S.filtro==='pago'?pagos:S.filtro==='falta'?falta:linhas;
+  if(q)vis=vis.filter(x=>(x.c.nome+' '+(x.c.telefone||'')).toLowerCase().includes(q));
+  const ordem={vencido:0,avencer:1,pago:2};
+  vis=vis.slice().sort((a,b)=>ordem[a.s.k]-ordem[b.s.k]||a.c.nome.localeCompare(b.c.nome,'pt-BR'));
+  const chips=[['todos','Todos',linhas.length],['falta','Não pagaram',falta.length],['pago','Pagaram',pagos.length]].map(([k,t,n])=>`<button class="chip ${S.filtro===k?'on':''}" data-f="${k}">${t}<span class="n">${n}</span></button>`).join('');
   return `${avisoValor()}
   <div class="mesbar"><div class="nav"><button data-mes="-1" aria-label="Mês anterior">‹</button><h2>${esc(nomeMes(mes))}</h2><button data-mes="1" aria-label="Próximo mês">›</button></div>
-  ${mes!==mesAtual()?'<button class="btn sm sec" data-mes="0">Mês atual</button>':''}</div>
-  <div class="kpis">
-    <div class="kpi ok"><div class="t">Recebido</div><div class="v">${brl(recebido)}</div><div class="s">${cont.pago} pago(s)</div></div>
-    <div class="kpi gold"><div class="t">A vencer</div><div class="v">${brl(aberto)}</div><div class="s">${cont.avencer} cliente(s)</div></div>
-    <div class="kpi bad"><div class="t">Vencido no mês</div><div class="v">${brl(vencidoV)}</div><div class="s">${totalAtraso} cliente(s) com algum atraso</div></div>
-    <div class="kpi"><div class="t">Repasses pendentes</div><div class="v">${brl(comPend)}</div><div class="s">todas as indicações</div></div>
+  ${mes!==mesAtual()?'<button class="btn sm sec" data-mes="0">Hoje</button>':''}</div>
+  <div class="kpis tres">
+    <div class="kpi ok"><div class="t">Pagaram</div><div class="v">${pagos.length}<span class="de"> de ${linhas.length}</span></div><div class="s">${brl(recebido)}</div></div>
+    <div class="kpi bad"><div class="t">Não pagaram</div><div class="v">${falta.length}</div><div class="s">${brl(aberto)}${venc?` · ${venc} vencido${venc>1?'s':''}`:''}</div></div>
+    <div class="kpi gold click" data-ir="ind"><div class="t">Falta repassar</div><div class="v">${brl(comPend)}</div><div class="s">comissões ›</div></div>
   </div>
-  <div class="filtros">${chips}<input class="inp busca" id="busca" placeholder="Buscar cliente…" value="${esc(S.busca)}"><button class="btn sm ghost" data-csv>Exportar CSV</button></div>
-  <div class="lista duas">${vis.length?vis.map(x=>itemMes(x.c,x.s,mes)).join(''):`<div class="vazio">Nenhum cliente aqui.</div>`}</div>`;
+  <div class="filtros">${chips}<input class="inp busca" id="busca" placeholder="Buscar…" value="${esc(S.busca)}"></div>
+  <div class="lista duas">${vis.length?vis.map(x=>itemMes(x.c,x.s,mes)).join(''):`<div class="vazio">Ninguém aqui.</div>`}</div>`;
 }
 function itemMes(c,s,mes){
-  const ab=mesesAbertos(c);
-  const outros=ab.filter(k=>k!==mes);
-  let acao='';
-  if(s.k==='pago')acao=`<button class="btn sm ghost" data-editpag="${s.p.id}">Ver / editar</button>`;
-  else if(s.k==='avencer'||s.k==='vencido')acao=`<button class="btn sm" data-pagar="${c.id}" data-m="${mes}">Marcar pago</button>`;
-  else acao=`<button class="btn sm ghost" data-pagar="${c.id}" data-m="${mes}">Registrar</button>`;
-  const det=s.k==='pago'?`Pago ${dataBR(s.p.pago_em)} · <span class="money">${brl(s.p.valor)}</span>${s.p.forma?' · '+esc(s.p.forma):''}`:`<span class="money">${brl(valorDe(c))}</span>`;
+  const atras=mesesAbertos(c).filter(k=>k!==mes).length;
+  const pago=s.k==='pago';
   return `<div class="item"><div class="info"><div class="nome">${esc(c.nome)}</div>
-    <div class="meta">${det}${c.indicado_por?' · '+tagInd(c.indicado_por):''}</div>
-    ${outros.length?`<div class="meta" style="color:var(--coral);font-weight:700">Também em aberto: ${outros.map(mesCurto).join(', ')}</div>`:''}
-    ${s.k==='pago'&&s.p.indicador?`<div class="meta">Comissão ${esc(SOCIOS[s.p.indicador])}: ${brl(s.p.comissao_valor)} · ${s.p.repasse_feito?'<span class="tag rep">✓ Repassada</span>':'<span class="tag avencer">Não repassada</span>'}</div>`:''}
-  </div><div class="acoes">${tagStatus(s)}${acao}</div></div>`;
+    <div class="meta">${pago?`Pago em ${dataBR(s.p.pago_em).slice(0,5)}`:brl(valorDe(c))}${c.indicado_por?` · indicação ${esc(SOCIOS[c.indicado_por])}`:''}</div>
+    ${atras?`<div class="meta atraso">+ ${atras} ${atras>1?'meses':'mês'} em atraso</div>`:''}
+  </div><div class="acoes">${tagStatus(s)}${pago?`<button class="link" data-editpag="${s.p.id}">editar</button>`:`<button class="btn sm" data-pagar="${c.id}" data-m="${mes}">Marcar pago</button>`}</div></div>`;
 }
 
 function telaInd(){
   const k=S.socio||S.eu;
   const cli=S.clientes.filter(c=>c.indicado_por===k);
   const pags=S.pags.filter(p=>p.indicador===k);
-  const tot=pags.reduce((a,p)=>a+(Number(p.comissao_valor)||0),0);
-  const rep=pags.filter(p=>p.repasse_feito).reduce((a,p)=>a+(Number(p.comissao_valor)||0),0);
+  const rep=pags.filter(p=>p.repasse_feito);
   const pend=pags.filter(p=>!p.repasse_feito&&Number(p.comissao_valor)>0);
+  const soma=l=>l.reduce((a,p)=>a+(Number(p.comissao_valor)||0),0);
   const mes=mesAtual();
   const pagosMes=cli.filter(c=>pagDe(c.id,mes)).length;
   return `${avisoValor()}
-  <div class="socios">${Object.keys(SOCIOS).map(s=>`<button data-socio="${s}" class="${s===k?'on':''}">${av(s)}${esc(SOCIOS[s])} <span class="muted">${S.clientes.filter(c=>c.indicado_por===s).length}</span></button>`).join('')}</div>
-  <div class="kpis">
-    <div class="kpi"><div class="t">Indicados</div><div class="v">${cli.length}</div><div class="s">${pagosMes} pagaram ${esc(nomeMes(mes).split(' ')[0].toLowerCase())}</div></div>
-    <div class="kpi"><div class="t">Comissão total</div><div class="v">${brl(tot)}</div><div class="s">${pags.length} pagamento(s)</div></div>
-    <div class="kpi ok"><div class="t">Já repassado</div><div class="v">${brl(rep)}</div><div class="s">&nbsp;</div></div>
-    <div class="kpi bad"><div class="t">Falta repassar</div><div class="v">${brl(tot-rep)}</div><div class="s">${pend.length} pagamento(s)</div></div>
+  <div class="socios">${Object.keys(SOCIOS).map(s=>`<button data-socio="${s}" class="${s===k?'on':''}">${av(s)}${esc(SOCIOS[s])}</button>`).join('')}</div>
+  <div class="kpis tres">
+    <div class="kpi"><div class="t">Indicados</div><div class="v">${cli.length}</div><div class="s">${pagosMes} pagaram este mês</div></div>
+    <div class="kpi ok"><div class="t">Já repassado</div><div class="v">${brl(soma(rep))}</div><div class="s">&nbsp;</div></div>
+    <div class="kpi bad"><div class="t">Falta repassar</div><div class="v">${brl(soma(pend))}</div><div class="s">&nbsp;</div></div>
   </div>
-  <div class="sec-t"><h3>Falta repassar para ${esc(SOCIOS[k])}</h3>${pend.length>1?`<button class="btn sm" data-reptodos="${k}">Marcar todos como repassados</button>`:''}</div>
-  <div class="lista">${pend.length?pend.map(p=>itemRep(p)).join(''):`<div class="vazio">Nada pendente. Tudo repassado ✓</div>`}</div>
-  <div class="sec-t"><h3>Indicados por ${esc(SOCIOS[k])}</h3><button class="btn sm sec" data-ir="cli">Definir indicações</button></div>
-  <div class="lista duas">${cli.length?cli.map(c=>{const s=statusDe(c,mes);const pc=S.pags.filter(p=>p.cliente_id===c.id);const ab=mesesAbertos(c);
-    return `<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div>
-    <div class="meta">${pc.length} pagamento(s) · total ${brl(pc.reduce((a,p)=>a+Number(p.valor),0))} · comissão ${fmtNum(pctDe(c))}%</div>
-    ${ab.length?`<div class="meta" style="color:var(--coral);font-weight:700">Em aberto: ${ab.map(mesCurto).join(', ')}</div>`:''}</div>
-    <div class="acoes">${tagStatus(s)}</div></div>`}).join(''):`<div class="vazio">Nenhum cliente marcado como indicado por ${esc(SOCIOS[k])}. Abra um cliente em “Clientes” e escolha quem indicou.</div>`}</div>
-  ${pags.filter(p=>p.repasse_feito).length?`<div class="sec-t"><h3>Repasses feitos</h3></div><div class="lista">${pags.filter(p=>p.repasse_feito).map(p=>itemRep(p)).join('')}</div>`:''}`;
-}
-function itemRep(p){
-  const c=cliPorId(p.cliente_id)||{nome:'(cliente removido)'};
-  return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)} · ${esc(nomeMes(mesKey(p.competencia)))}</div>
-  <div class="meta">Pago ${brl(p.valor)} em ${dataBR(p.pago_em)} · comissão ${fmtNum(p.comissao_pct)}% = <span class="money">${brl(p.comissao_valor)}</span></div>
-  ${p.repasse_feito?`<div class="meta">Repassado em ${dataBR(p.repasse_em)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div>`:''}</div>
-  <div class="acoes">${p.repasse_feito?`<span class="tag rep">✓ Repassado</span><button class="btn sm ghost" data-rep="${p.id}" data-v="0">Desfazer</button>`:`<button class="btn sm" data-rep="${p.id}" data-v="1">Marcar repassado</button>`}</div></div>`;
+  ${pend.length?`<div class="sec-t"><h3>Falta repassar</h3>${pend.length>1?`<button class="btn sm" data-reptodos="${k}">Repassei tudo</button>`:''}</div>
+  <div class="lista">${pend.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div class="meta">${esc(mesCurto(mesKey(p.competencia)))} · <span class="money">${brl(p.comissao_valor)}</span></div></div><div class="acoes"><button class="btn sm" data-rep="${p.id}" data-v="1">Repassei</button></div></div>`}).join('')}</div>`
+  :`<div class="vazio" style="margin-top:6px">Tudo repassado para ${esc(SOCIOS[k])} ✓</div>`}
+  <div class="sec-t"><h3>Indicados por ${esc(SOCIOS[k])}</h3></div>
+  <div class="lista duas">${cli.length?cli.map(c=>`<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div></div><div class="acoes">${tagStatus(statusDe(c,mes))}</div></div>`).join(''):`<div class="vazio">Ninguém ainda. Em “Clientes”, abra o cliente e escolha quem indicou.</div>`}</div>
+  ${rep.length?`<details class="mais"><summary>Ver repasses feitos (${rep.length})</summary><div class="lista" style="margin-top:10px">${rep.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div class="meta">${esc(mesCurto(mesKey(p.competencia)))} · ${brl(p.comissao_valor)} · repassado ${dataBR(p.repasse_em).slice(0,5)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div></div><div class="acoes"><button class="link" data-rep="${p.id}" data-v="0">desfazer</button></div></div>`}).join('')}</div></details>`:''}`;
 }
 
 function telaCli(){
   const q=S.buscaCli.trim().toLowerCase();
   let l=S.clientes.slice();
-  if(q)l=l.filter(c=>(c.nome+' '+(c.usuario||'')+' '+(c.telefone||'')).toLowerCase().includes(q));
-  const semInd=S.clientes.filter(c=>c.cobrar&&!c.indicado_por).length;
+  if(q)l=l.filter(c=>(c.nome+' '+(c.telefone||'')).toLowerCase().includes(q));
   return `${avisoValor()}
-  <div class="filtros"><input class="inp busca" id="buscaCli" placeholder="Buscar cliente…" value="${esc(S.buscaCli)}">
-  <button class="btn sm sec" data-sync>Atualizar com o app</button><button class="btn sm" data-novo>+ Novo cliente</button></div>
-  <p class="muted" style="margin:0 0 12px;font-size:13.5px">${S.clientes.length} cliente(s). Todo login novo do app entra aqui sozinho ao abrir esta página.${semInd?` ${semInd} sem “indicado por”.`:''}</p>
-  <div class="lista duas">${l.map(c=>{const ab=mesesAbertos(c);return `<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div>
-    <div class="meta">${c.app_user_id?'Login do app':'Cadastro manual'}${c.app_ativo===false?' · <b style="color:var(--coral)">desativado no app</b>':''} · ${brl(valorDe(c))} · dia ${diaDe(c)}</div>
-    <div class="meta">${c.indicado_por?'Indicado por '+tagInd(c.indicado_por):'<span class="muted">Sem indicação</span>'}</div></div>
-    <div class="acoes">${!c.cobrar?'<span class="tag naocobra">Não cobrado</span>':ab.length?`<span class="tag vencido">${ab.length} mês(es) vencido(s)</span>`:'<span class="tag pago">Em dia</span>'}</div></div>`}).join('')||'<div class="vazio">Nenhum cliente.</div>'}</div>`;
+  <div class="filtros"><input class="inp busca" id="buscaCli" placeholder="Buscar cliente…" value="${esc(S.buscaCli)}"><button class="btn sm" data-novo>+ Novo</button></div>
+  <div class="lista duas">${l.map(c=>{const ab=mesesAbertos(c).length;return `<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div>
+    <div class="meta">${c.indicado_por?'Indicação '+esc(SOCIOS[c.indicado_por]):'Sem indicação'}</div></div>
+    <div class="acoes">${!c.cobrar?'<span class="tag naocobra">Não cobrado</span>':ab?`<span class="tag vencido">${ab} em atraso</span>`:'<span class="tag pago">Em dia</span>'}</div></div>`}).join('')||'<div class="vazio">Nenhum cliente.</div>'}</div>
+  <p class="muted" style="font-size:13px;margin-top:14px">Quem cria login no app aparece aqui sozinho.</p>`;
 }
 
 function telaAj(){
   return `<div class="box" style="max-width:560px">
-  <h3 style="font-size:19px">Valores padrão</h3>
-  <p class="muted" style="margin:4px 0 0;font-size:13.5px">Valem para todo cliente que não tiver um valor próprio na ficha dele.</p>
-  <label class="lbl">Mensalidade padrão (R$)</label><input class="inp" id="ajValor" inputmode="decimal" value="${fmtVal(S.aj.valor_mensal)}">
-  <div class="grid2"><div><label class="lbl">Dia de vencimento</label><input class="inp" id="ajDia" type="number" min="1" max="28" value="${esc(S.aj.dia_vencimento)}"></div>
-  <div><label class="lbl">Comissão de indicação (%)</label><input class="inp" id="ajPct" inputmode="decimal" value="${fmtNum(S.aj.comissao_pct)}"></div></div>
-  <div class="foot" style="justify-content:flex-start"><button class="btn" data-salvaraj>Salvar valores</button></div></div>
+  <h3 style="font-size:19px">Valores</h3>
+  <label class="lbl">Mensalidade (R$)</label><input class="inp" id="ajValor" inputmode="decimal" value="${fmtVal(S.aj.valor_mensal)}">
+  <div class="grid2"><div><label class="lbl">Vence todo dia</label><input class="inp" id="ajDia" type="number" min="1" max="28" value="${esc(S.aj.dia_vencimento)}"></div>
+  <div><label class="lbl">Comissão (%)</label><input class="inp" id="ajPct" inputmode="decimal" value="${fmtNum(S.aj.comissao_pct)}"></div></div>
+  <div class="foot" style="justify-content:flex-start"><button class="btn" data-salvaraj>Salvar</button></div></div>
   <div class="box" style="max-width:560px;margin-top:14px">
-  <h3 style="font-size:19px">Senha do site</h3>
-  <p class="muted" style="margin:4px 0 0;font-size:13.5px">É uma só para Isabela, Joctãn e Rafael. Ao trocar, avise os outros dois.</p>
-  <label class="lbl">Nova senha (mínimo 8 caracteres)</label><input class="inp" id="novaSenha" type="password" autocomplete="new-password">
-  <label class="lbl">Repita a nova senha</label><input class="inp" id="novaSenha2" type="password" autocomplete="new-password">
+  <h3 style="font-size:19px">Planilha</h3>
+  <p class="muted" style="margin:4px 0 12px;font-size:13.5px">Baixa a lista de ${esc(nomeMes(S.mes).toLowerCase())} para abrir no Excel.</p>
+  <button class="btn sec" data-csv>Baixar planilha</button></div>
+  <div class="box" style="max-width:560px;margin-top:14px">
+  <h3 style="font-size:19px">Trocar senha</h3>
+  <p class="muted" style="margin:4px 0 0;font-size:13.5px">A senha é a mesma para os três. Se trocar, avise os outros.</p>
+  <label class="lbl">Nova senha (8 ou mais caracteres)</label><input class="inp" id="novaSenha" type="password" autocomplete="new-password">
+  <label class="lbl">Repita</label><input class="inp" id="novaSenha2" type="password" autocomplete="new-password">
   <div class="foot" style="justify-content:flex-start"><button class="btn" data-senha>Trocar senha</button></div></div>`;
 }
 
@@ -406,22 +398,24 @@ function modalPagar(c,mes,p){
   const editar=!!p;
   const ind=editar?p.indicador:c.indicado_por;
   const pct=editar&&p.comissao_pct!=null?Number(p.comissao_pct):pctDe(c);
-  abrirModal(`<h2>${editar?'Pagamento':'Marcar como pago'}</h2><p class="muted" style="margin:0">${esc(c.nome)} · ${esc(nomeMes(mes))}</p>
-  <div class="grid2"><div><label class="lbl">Valor pago (R$)</label><input class="inp" id="pValor" inputmode="decimal" value="${fmtVal(editar?Number(p.valor):valorDe(c))}"></div>
-  <div><label class="lbl">Data do pagamento</label><input class="inp" id="pData" type="date" value="${editar?String(p.pago_em).slice(0,10):ymd(new Date())}"></div></div>
+  abrirModal(`<h2>${esc(c.nome)}</h2><p class="muted" style="margin:0">${editar?'Pagamento de':'Pagou'} ${esc(nomeMes(mes).toLowerCase())}</p>
+  <div class="grid2"><div><label class="lbl">Valor (R$)</label><input class="inp" id="pValor" inputmode="decimal" value="${fmtVal(editar?Number(p.valor):valorDe(c))}"></div>
+  <div><label class="lbl">Dia que pagou</label><input class="inp" id="pData" type="date" value="${editar?String(p.pago_em).slice(0,10):ymd(new Date())}"></div></div>
+  <p class="muted" id="pResumo" style="font-size:13.5px;margin:12px 0 0"></p>
+  <details class="mais"><summary>Mais detalhes</summary>
   <div class="grid2"><div><label class="lbl">Forma</label><select class="inp" id="pForma"><option value="">—</option>${FORMAS.map(f=>`<option ${editar&&p.forma===f?'selected':(!editar&&f==='Pix'?'selected':'')}>${f}</option>`).join('')}</select></div>
-  <div><label class="lbl">Mês de referência</label><input class="inp" id="pMes" type="month" value="${mes.slice(0,7)}"></div></div>
-  <label class="lbl">Indicado por</label><select class="inp" id="pInd"><option value="">Ninguém (sem comissão)</option>${Object.keys(SOCIOS).map(k=>`<option value="${k}" ${ind===k?'selected':''}>${SOCIOS[k]}</option>`).join('')}</select>
-  <div class="grid2"><div><label class="lbl">Comissão (%)</label><input class="inp" id="pPct" inputmode="decimal" value="${fmtNum(pct)}"></div>
-  <div><label class="lbl">Valor da comissão</label><div class="inp" id="pCom" style="background:var(--sand)">—</div></div></div>
+  <div><label class="lbl">Mês</label><input class="inp" id="pMes" type="month" value="${mes.slice(0,7)}"></div></div>
+  <div class="grid2"><div><label class="lbl">Indicação de</label><select class="inp" id="pInd"><option value="">Ninguém</option>${Object.keys(SOCIOS).map(k=>`<option value="${k}" ${ind===k?'selected':''}>${SOCIOS[k]}</option>`).join('')}</select></div>
+  <div><label class="lbl">Comissão (%)</label><input class="inp" id="pPct" inputmode="decimal" value="${fmtNum(pct)}"></div></div>
   <label class="check"><input type="checkbox" id="pRep" ${editar&&p.repasse_feito?'checked':''}> Comissão já repassada</label>
   <label class="lbl">Observação</label><input class="inp" id="pObs" value="${esc(editar?p.obs:'')}">
-  ${editar?`<p class="muted" style="font-size:12.5px;margin-top:12px">Registrado por ${esc(p.registrado_por||'—')}${p.repasse_feito?` · repassado em ${dataBR(p.repasse_em)} por ${esc(p.repasse_por||'—')}`:''}</p>`:''}
-  <div class="foot">${editar?'<button class="btn warn" data-del style="margin-right:auto">Desfazer pagamento</button>':''}<button class="btn ghost" data-x>Cancelar</button><button class="btn" data-ok>${editar?'Salvar':'Confirmar pagamento'}</button></div>`);
-  const calc=()=>{const v=num($('#pValor').value)||0,pc=num($('#pPct').value)||0,i=$('#pInd').value;$('#pCom').textContent=i?brl(Math.round(v*pc)/100):'—';$('#pPct').disabled=!i;$('#pRep').disabled=!i};
+  ${editar?`<p class="muted" style="font-size:12.5px;margin-top:12px">Marcado por ${esc(p.registrado_por||'—')}</p>`:''}
+  </details>
+  <div class="foot">${editar?'<button class="btn warn" data-del style="margin-right:auto">Desfazer</button>':''}<button class="btn ghost" data-x>Cancelar</button><button class="btn" data-ok>${editar?'Salvar':'Confirmar'}</button></div>`);
+  const calc=()=>{const v=num($('#pValor').value)||0,pc=num($('#pPct').value)||0,i=$('#pInd').value;$('#pResumo').textContent=i?`Comissão de ${SOCIOS[i]}: ${brl(Math.round(v*pc)/100)}`:'';$('#pPct').disabled=!i;$('#pRep').disabled=!i};
   ['#pValor','#pPct','#pInd'].forEach(s=>$(s).addEventListener('input',calc));calc();
   $('#sheet [data-x]').onclick=fecharModal;
-  if(editar)$('#sheet [data-del]').onclick=()=>confirmar('Desfazer pagamento?',`${c.nome} · ${nomeMes(mes)} volta a ficar em aberto.`,'Desfazer',async()=>{const r=await sb.from('ctrl_pagamentos').delete().eq('id',p.id);if(r.error)throw r.error;await carregar(false);render();toast('Pagamento desfeito')},true);
+  if(editar)$('#sheet [data-del]').onclick=()=>confirmar('Desfazer pagamento?',`${c.nome} volta a ficar sem pagar em ${nomeMes(mes).toLowerCase()}.`,'Desfazer',async()=>{const r=await sb.from('ctrl_pagamentos').delete().eq('id',p.id);if(r.error)throw r.error;await carregar(false);render();toast('Pagamento desfeito')},true);
   $('#sheet [data-ok]').onclick=async e=>{
     const v=num($('#pValor').value);if(v==null||v<0){toast('Confira o valor.');return}
     const m=$('#pMes').value;if(!/^\d{4}-\d{2}$/.test(m)){toast('Confira o mês.');return}
@@ -433,36 +427,36 @@ function modalPagar(c,mes,p){
     e.target.disabled=true;
     try{
       const r=editar?await sb.from('ctrl_pagamentos').update(row).eq('id',p.id):await sb.from('ctrl_pagamentos').insert({...row,registrado_por:SOCIOS[S.eu]});
-      if(r.error)throw r.error;fecharModal();await carregar(false);render();toast(editar?'Pagamento salvo':'Pago ✓ '+c.nome);
+      if(r.error)throw r.error;fecharModal();await carregar(false);render();toast(editar?'Salvo':'Pago ✓ '+c.nome);
     }catch(err){e.target.disabled=false;toast(msgErro(err))}
   };
 }
 function modalCliente(c){
   const novo=!c;c=c||{nome:'',cobrar:true,inicio:mesAtual()};
-  const pags=novo?[]:S.pags.filter(p=>p.cliente_id===c.id);
   let hist='';
   if(!novo){const linhas=[];let k=mesAtual();const ini=mesKey(c.inicio);let g=0;
-    const ks=new Set(pags.map(p=>mesKey(p.competencia)));
-    while(g++<24&&(k>=ini||ks.has(k))){const s=statusDe(c,k);linhas.push(`<tr><td>${esc(nomeMes(k))}</td><td>${s.k==='pago'?brl(s.p.valor)+' · '+dataBR(s.p.pago_em):''}</td><td style="text-align:right">${tagStatus(s)}</td></tr>`);k=addMes(k,-1)}
-    hist=`<h3 style="font-size:17px;margin-top:22px">Histórico</h3><table class="hist">${linhas.join('')}</table>`}
+    while(g++<6&&k>=ini){const s=statusDe(c,k);linhas.push(`<tr><td>${esc(mesCurto(k))}</td><td>${s.k==='pago'?brl(s.p.valor):''}</td><td style="text-align:right">${tagStatus(s)}</td></tr>`);k=addMes(k,-1)}
+    if(linhas.length)hist=`<h3 style="font-size:16px;margin-top:20px">Últimos meses</h3><table class="hist">${linhas.join('')}</table>`}
+  const temProprio=c.valor_mensal!=null||c.dia_vencimento!=null||c.comissao_pct!=null||!!c.obs;
   abrirModal(`<h2>${novo?'Novo cliente':esc(c.nome)}</h2>
-  ${!novo&&c.app_user_id?`<p class="muted" style="margin:0;font-size:13px">Login do app: ${esc(c.usuario||'')}. O nome vem do app.</p>`:''}
-  <label class="lbl">Nome</label><input class="inp" id="cNome" value="${esc(c.nome)}" ${c.app_user_id?'disabled':''}>
-  <label class="lbl">Telefone / WhatsApp</label><input class="inp" id="cTel" inputmode="tel" value="${esc(c.telefone||'')}">
-  <label class="lbl">Indicado por</label><select class="inp" id="cInd"><option value="">Ninguém</option>${Object.keys(SOCIOS).map(k=>`<option value="${k}" ${c.indicado_por===k?'selected':''}>${SOCIOS[k]}</option>`).join('')}</select>
-  <div class="grid2"><div><label class="lbl">Mensalidade (R$)</label><input class="inp" id="cValor" inputmode="decimal" placeholder="Padrão: ${esc(brl(S.aj.valor_mensal))}" value="${c.valor_mensal==null?'':fmtVal(c.valor_mensal)}"></div>
-  <div><label class="lbl">Dia de vencimento</label><input class="inp" id="cDia" type="number" min="1" max="28" placeholder="Padrão: ${esc(S.aj.dia_vencimento)}" value="${c.dia_vencimento??''}"></div></div>
-  <div class="grid2"><div><label class="lbl">Comissão (%)</label><input class="inp" id="cPct" inputmode="decimal" placeholder="Padrão: ${esc(fmtNum(S.aj.comissao_pct))}%" value="${fmtNum(c.comissao_pct)}"></div>
-  <div><label class="lbl">Cobrar a partir de</label><input class="inp" id="cIni" type="month" value="${mesKey(c.inicio).slice(0,7)}"></div></div>
-  <label class="check"><input type="checkbox" id="cCobrar" ${c.cobrar?'checked':''}> Cobrar mensalidade deste cliente</label>
+  ${c.app_user_id?'':`<label class="lbl">Nome</label><input class="inp" id="cNome" value="${esc(c.nome)}">`}
+  <label class="lbl">WhatsApp</label><input class="inp" id="cTel" inputmode="tel" value="${esc(c.telefone||'')}">
+  <label class="lbl">Indicação de</label><select class="inp" id="cInd"><option value="">Ninguém</option>${Object.keys(SOCIOS).map(k=>`<option value="${k}" ${c.indicado_por===k?'selected':''}>${SOCIOS[k]}</option>`).join('')}</select>
+  <label class="check"><input type="checkbox" id="cCobrar" ${c.cobrar?'checked':''}> Cobrar mensalidade</label>
+  <details class="mais" ${temProprio?'open':''}><summary>Valores diferentes do padrão</summary>
+  <div class="grid2"><div><label class="lbl">Mensalidade (R$)</label><input class="inp" id="cValor" inputmode="decimal" placeholder="${esc(brl(S.aj.valor_mensal))}" value="${c.valor_mensal==null?'':fmtVal(c.valor_mensal)}"></div>
+  <div><label class="lbl">Vence dia</label><input class="inp" id="cDia" type="number" min="1" max="28" placeholder="${esc(S.aj.dia_vencimento)}" value="${c.dia_vencimento??''}"></div></div>
+  <div class="grid2"><div><label class="lbl">Comissão (%)</label><input class="inp" id="cPct" inputmode="decimal" placeholder="${esc(fmtNum(S.aj.comissao_pct))}" value="${fmtNum(c.comissao_pct)}"></div>
+  <div><label class="lbl">Cobrar desde</label><input class="inp" id="cIni" type="month" value="${mesKey(c.inicio).slice(0,7)}"></div></div>
   <label class="lbl">Observação</label><input class="inp" id="cObs" value="${esc(c.obs||'')}">
+  </details>
   ${hist}
   <div class="foot">${!novo&&!c.app_user_id?'<button class="btn warn" data-del style="margin-right:auto">Excluir</button>':''}${c.telefone?`<a class="btn sec" target="_blank" rel="noopener" href="https://wa.me/${esc(String(c.telefone).replace(/\D/g,'').replace(/^(?!55)/,'55'))}">WhatsApp</a>`:''}<button class="btn ghost" data-x>Fechar</button><button class="btn" data-ok>Salvar</button></div>`);
   $('#sheet [data-x]').onclick=fecharModal;
   const del=$('#sheet [data-del]');
-  if(del)del.onclick=()=>confirmar('Excluir cliente?',`${c.nome} e todos os pagamentos dele serão apagados.`,'Excluir',async()=>{const r=await sb.from('ctrl_clientes').delete().eq('id',c.id);if(r.error)throw r.error;await carregar(false);render();toast('Cliente excluído')},true);
+  if(del)del.onclick=()=>confirmar('Excluir cliente?',`${c.nome} e os pagamentos dele serão apagados.`,'Excluir',async()=>{const r=await sb.from('ctrl_clientes').delete().eq('id',c.id);if(r.error)throw r.error;await carregar(false);render();toast('Cliente excluído')},true);
   $('#sheet [data-ok]').onclick=async e=>{
-    const nome=$('#cNome').value.trim();if(!nome){toast('Digite o nome.');return}
+    const nome=c.app_user_id?c.nome:$('#cNome').value.trim();if(!nome){toast('Digite o nome.');return}
     const dia=num($('#cDia').value);if(dia!=null&&(dia<1||dia>28)){toast('Dia de vencimento entre 1 e 28.');return}
     const pct=num($('#cPct').value);if(pct!=null&&(pct<0||pct>100)){toast('Comissão entre 0 e 100%.');return}
     const ini=$('#cIni').value;
