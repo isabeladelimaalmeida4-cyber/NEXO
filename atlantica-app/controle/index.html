@@ -72,6 +72,10 @@ main.wrap{padding:18px 16px 60px}
 @media(max-width:560px){.kpi{padding:11px}.kpi .v{font-size:19px}.kpi .t{font-size:11px}.kpi .s{font-size:11.5px}.kpis{gap:8px}}
 .link{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:13px;padding:2px 0}
 .meta.atraso{color:var(--coral);font-weight:700}
+.mesTag{display:inline-block;background:var(--deep);color:#fff;border-radius:8px;padding:2px 9px;font-size:12.5px;font-weight:800;margin:4px 0 2px;white-space:nowrap}
+.meses{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.mm{border-radius:8px;padding:3px 8px;font-size:12px;font-weight:800;white-space:nowrap}
+.mm.pago{background:var(--ok-bg);color:var(--ok)}.mm.vencido{background:var(--coral-bg);color:var(--coral)}.mm.avencer{background:var(--gold-bg);color:var(--gold)}
 details.mais{margin-top:14px}
 details.mais summary{cursor:pointer;color:var(--sea);font-weight:700;font-size:14px;padding:6px 0}
 .eu .sair{font-size:15px}
@@ -194,7 +198,9 @@ const mesAtual=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth
 const mesKey=s=>String(s).slice(0,7)+'-01';
 const addMes=(k,n)=>{const [y,m]=k.split('-').map(Number);const d=new Date(y,m-1+n,1);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-01'};
 const nomeMes=k=>{const [y,m]=k.split('-').map(Number);const t=new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});return t.charAt(0).toUpperCase()+t.slice(1)};
-const mesCurto=k=>{const [y,m]=k.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.','')};
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const mesCurto=k=>{const [y,m]=k.split('-').map(Number);return MESES[m-1].slice(0,3).toLowerCase()+'/'+String(y).slice(2)};
+const mesLongo=k=>{const [y,m]=k.split('-').map(Number);return MESES[m-1]+'/'+y};
 const dataBR=s=>{if(!s)return'';const [y,m,d]=String(s).slice(0,10).split('-');return d+'/'+m+'/'+y};
 const num=v=>{if(v==null)return null;let t=String(v).trim().replace(/[R$\s]/g,'');if(!t)return null;if(t.includes(','))t=t.replace(/\./g,'').replace(',','.');const n=Number(t);return isFinite(n)?n:null};
 const fmtNum=n=>n==null?'':String(n).replace('.',',');
@@ -333,7 +339,7 @@ function itemMes(c,s,mes){
   const atras=mesesAbertos(c).filter(k=>k!==mes).length;
   const pago=s.k==='pago';
   return `<div class="item"><div class="info"><div class="nome">${esc(c.nome)}</div>
-    <div class="meta">${pago?`Pago em ${dataBR(s.p.pago_em).slice(0,5)}`:brl(valorDe(c))}${c.indicado_por?` · indicação ${esc(SOCIOS[c.indicado_por])}`:''}</div>
+    <div class="meta">${pago?`Pagou ${esc(mesLongo(mes).split('/')[0].toLowerCase())} em ${dataBR(s.p.pago_em).slice(0,5)}`:brl(valorDe(c))}${c.indicado_por?` · indicação ${esc(SOCIOS[c.indicado_por])}`:''}</div>
     ${atras?`<div class="meta atraso">+ ${atras} ${atras>1?'meses':'mês'} em atraso</div>`:''}
   </div><div class="acoes">${tagStatus(s)}${pago?`<button class="link" data-editpag="${s.p.id}">editar</button>`:`<button class="btn sm" data-pagar="${c.id}" data-m="${mes}">Marcar pago</button>`}</div></div>`;
 }
@@ -355,13 +361,19 @@ function telaInd(){
     <div class="kpi bad"><div class="t">Falta repassar</div><div class="v">${brl(soma(pend))}</div><div class="s">&nbsp;</div></div>
   </div>
   ${pend.length?`<div class="sec-t"><h3>Falta repassar</h3>${pend.length>1?`<button class="btn sm" data-reptodos="${k}">Repassei tudo</button>`:''}</div>
-  <div class="lista">${pend.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div class="meta">${esc(mesCurto(mesKey(p.competencia)))} · <span class="money">${brl(p.comissao_valor)}</span></div></div><div class="acoes"><button class="btn sm" data-rep="${p.id}" data-v="1">Repassei</button></div></div>`}).join('')}</div>`
+  <div class="lista">${pend.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div><span class="mesTag">${esc(mesLongo(mesKey(p.competencia)))}</span></div><div class="meta">Pagou ${brl(p.valor)} em ${dataBR(p.pago_em)} · comissão <span class="money">${brl(p.comissao_valor)}</span></div></div><div class="acoes"><button class="btn sm" data-rep="${p.id}" data-v="1">Repassei</button></div></div>`}).join('')}</div>`
   :`<div class="vazio" style="margin-top:6px">Tudo repassado para ${esc(SOCIOS[k])} ✓</div>`}
   <div class="sec-t"><h3>Indicados por ${esc(SOCIOS[k])}</h3></div>
-  <div class="lista duas">${cli.length?cli.map(c=>`<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div></div><div class="acoes">${tagStatus(statusDe(c,mes))}</div></div>`).join(''):`<div class="vazio">Ninguém ainda. Em “Clientes”, abra o cliente e escolha quem indicou.</div>`}</div>
-  ${rep.length?`<details class="mais"><summary>Ver repasses feitos (${rep.length})</summary><div class="lista" style="margin-top:10px">${rep.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div class="meta">${esc(mesCurto(mesKey(p.competencia)))} · ${brl(p.comissao_valor)} · repassado ${dataBR(p.repasse_em).slice(0,5)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div></div><div class="acoes"><button class="link" data-rep="${p.id}" data-v="0">desfazer</button></div></div>`}).join('')}</div></details>`:''}`;
+  <div class="lista duas">${cli.length?cli.map(c=>`<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div>${linhaMeses(c)}</div></div>`).join(''):`<div class="vazio">Ninguém ainda. Em “Clientes”, abra o cliente e escolha quem indicou.</div>`}</div>
+  ${rep.length?`<details class="mais"><summary>Ver repasses feitos (${rep.length})</summary><div class="lista" style="margin-top:10px">${rep.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div><span class="mesTag">${esc(mesLongo(mesKey(p.competencia)))}</span></div><div class="meta">Comissão ${brl(p.comissao_valor)} · repassada em ${dataBR(p.repasse_em)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div></div><div class="acoes"><button class="link" data-rep="${p.id}" data-v="0">desfazer</button></div></div>`}).join('')}</div></details>`:''}`;
 }
 
+function linhaMeses(c){
+  const ks=[];let k=mesAtual();const ini=mesKey(c.inicio);
+  while(ks.length<6&&k>=ini){ks.unshift(k);k=addMes(k,-1)}
+  if(!ks.length)return'';
+  return `<div class="meses">${ks.map(k=>{const s=statusDe(c,k);const t=s.k==='pago'?'✓':s.k==='vencido'?'✗':s.k==='avencer'?'…':'–';return `<span class="mm ${s.k}" title="${esc(mesLongo(k))}">${esc(mesCurto(k))} ${t}</span>`}).join('')}</div>`;
+}
 function telaCli(){
   const q=S.buscaCli.trim().toLowerCase();
   let l=S.clientes.slice();
@@ -435,7 +447,7 @@ function modalCliente(c){
   const novo=!c;c=c||{nome:'',cobrar:true,inicio:mesAtual()};
   let hist='';
   if(!novo){const linhas=[];let k=mesAtual();const ini=mesKey(c.inicio);let g=0;
-    while(g++<6&&k>=ini){const s=statusDe(c,k);linhas.push(`<tr><td>${esc(mesCurto(k))}</td><td>${s.k==='pago'?brl(s.p.valor):''}</td><td style="text-align:right">${tagStatus(s)}</td></tr>`);k=addMes(k,-1)}
+    while(g++<6&&k>=ini){const s=statusDe(c,k);linhas.push(`<tr><td>${esc(mesLongo(k))}</td><td>${s.k==='pago'?brl(s.p.valor):''}</td><td style="text-align:right">${tagStatus(s)}</td></tr>`);k=addMes(k,-1)}
     if(linhas.length)hist=`<h3 style="font-size:16px;margin-top:20px">Últimos meses</h3><table class="hist">${linhas.join('')}</table>`}
   const temProprio=c.valor_mensal!=null||c.dia_vencimento!=null||c.comissao_pct!=null||!!c.obs;
   abrirModal(`<h2>${novo?'Novo cliente':esc(c.nome)}</h2>
