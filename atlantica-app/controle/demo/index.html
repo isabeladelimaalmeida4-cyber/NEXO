@@ -399,7 +399,7 @@ function telaMes(){
   const recebido=pagos.reduce((a,x)=>a+Number(x.s.p.valor),0);
   const aberto=falta.reduce((a,x)=>a+valorDe(x.c),0);
   const venc=falta.filter(x=>x.s.k==='vencido').length;
-  let comPend=0;for(const p of S.pags)if(!p.repasse_feito&&p.indicador&&Number(p.comissao_valor)>0)comPend+=Number(p.comissao_valor);
+  let comPend=0;for(const p of S.pags)if(!p.repasse_feito&&p.indicador&&p.comissao_valor!=null)comPend+=Number(p.comissao_valor);
   const q=S.busca.trim().toLowerCase();
   let vis=S.filtro==='pago'?pagos:S.filtro==='falta'?falta:linhas;
   if(q)vis=vis.filter(x=>(x.c.nome+' '+(x.c.telefone||'')).toLowerCase().includes(q));
@@ -431,7 +431,7 @@ function telaInd(){
   const cli=S.clientes.filter(c=>c.indicado_por===k);
   const pags=S.pags.filter(p=>p.indicador===k);
   const rep=pags.filter(p=>p.repasse_feito);
-  const pend=pags.filter(p=>!p.repasse_feito&&Number(p.comissao_valor)>0);
+  const pend=pags.filter(p=>!p.repasse_feito&&p.comissao_valor!=null);
   const soma=l=>l.reduce((a,p)=>a+(Number(p.comissao_valor)||0),0);
   const mes=mesAtual();
   const pagosMes=cli.filter(c=>pagDe(c.id,mes)).length;
@@ -444,7 +444,12 @@ function telaInd(){
   </div>
   ${pend.length?`<div class="sec-t"><h3>Falta repassar</h3>${pend.length>1?`<button class="btn sm" data-reptodos="${k}">Repassei tudo</button>`:''}</div>
   <div class="lista">${pend.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div><span class="mesTag">${esc(mesLongo(mesKey(p.competencia)))}</span></div><div class="meta">Pagou ${brl(p.valor)} em ${dataBR(p.pago_em)} · comissão <span class="money">${brl(p.comissao_valor)}</span></div></div><div class="acoes"><button class="btn sm" data-rep="${p.id}" data-v="1">Repassei</button></div></div>`}).join('')}</div>`
-  :`<div class="vazio" style="margin-top:6px">Tudo repassado para ${esc(SOCIOS[k])} ✓</div>`}
+  :pags.length?`<div class="vazio" style="margin-top:6px">Tudo repassado para ${esc(SOCIOS[k])} ✓</div>`
+  :`<div class="box" style="margin-top:6px"><b>Como aparece um repasse aqui:</b><ol style="margin:8px 0 0;padding-left:20px;line-height:1.7">
+  <li>${Number(S.aj.valor_mensal)>0?'✓ Mensalidade definida':'Defina a mensalidade no ⚙'}</li>
+  <li>${cli.length?`✓ ${cli.length} cliente(s) com indicação de ${esc(SOCIOS[k])}`:`Em <b>Clientes</b>, abra o cliente (ou toque em <b>+ Novo</b>) e escolha “Indicação de ${esc(SOCIOS[k])}”`}</li>
+  <li>Em <b>Pagamentos</b>, toque em <b>Marcar pago</b> no mês que o cliente pagou</li>
+  <li>Volte aqui e toque em <b>Repassei</b></li></ol></div>`}
   <div class="sec-t"><h3>Indicados por ${esc(SOCIOS[k])}</h3></div>
   <div class="lista duas">${cli.length?cli.map(c=>`<div class="item click" data-cli="${c.id}"><div class="info"><div class="nome">${esc(c.nome)}</div>${linhaMeses(c)}</div></div>`).join(''):`<div class="vazio">Ninguém ainda. Em “Clientes”, abra o cliente e escolha quem indicou.</div>`}</div>
   ${rep.length?`<details class="mais"><summary>Ver repasses feitos (${rep.length})</summary><div class="lista" style="margin-top:10px">${rep.map(p=>{const c=cliPorId(p.cliente_id)||{nome:'(removido)'};return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)}</div><div><span class="mesTag">${esc(mesLongo(mesKey(p.competencia)))}</span></div><div class="meta">Comissão ${brl(p.comissao_valor)} · repassada em ${dataBR(p.repasse_em)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div></div><div class="acoes"><button class="link" data-rep="${p.id}" data-v="0">desfazer</button></div></div>`}).join('')}</div></details>`:''}`;
@@ -580,7 +585,7 @@ function ligar(){
     if(r.error){b.disabled=false;toast(msgErro(r.error));return}
     await carregar(false);render();toast(v?'Repasse marcado ✓':'Repasse desfeito');
   });
-  C.querySelectorAll('[data-reptodos]').forEach(b=>b.onclick=()=>{const k=b.dataset.reptodos;const ids=S.pags.filter(p=>p.indicador===k&&!p.repasse_feito&&Number(p.comissao_valor)>0).map(p=>p.id);const tot=S.pags.filter(p=>ids.includes(p.id)).reduce((a,p)=>a+Number(p.comissao_valor),0);
+  C.querySelectorAll('[data-reptodos]').forEach(b=>b.onclick=()=>{const k=b.dataset.reptodos;const ids=S.pags.filter(p=>p.indicador===k&&!p.repasse_feito&&p.comissao_valor!=null).map(p=>p.id);const tot=S.pags.filter(p=>ids.includes(p.id)).reduce((a,p)=>a+Number(p.comissao_valor),0);
     confirmar('Marcar todos como repassados?',`${ids.length} comissões de ${SOCIOS[k]}, total ${brl(tot)}.`,'Marcar repassados',async()=>{const r=await sb.from('ctrl_pagamentos').update({repasse_feito:true,repasse_em:ymd(new Date()),repasse_por:SOCIOS[S.eu]}).in('id',ids);if(r.error)throw r.error;await carregar(false);render();toast('Repasses marcados ✓')})});
   const sy=C.querySelector('[data-sync]');if(sy)sy.onclick=async()=>{sy.disabled=true;try{const r=await sb.rpc('ctrl_sincronizar');if(r.error)throw r.error;await carregar(false);render();toast(r.data?r.data+' novo(s) do app':'Lista já está em dia')}catch(e){sy.disabled=false;toast(msgErro(e))}};
   const nv=C.querySelector('[data-novo]');if(nv)nv.onclick=()=>modalCliente(null);
