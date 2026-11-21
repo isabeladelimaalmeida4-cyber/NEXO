@@ -390,7 +390,7 @@ function render(){
   const f={mes:telaMes,ind:telaInd,cli:telaCli,aj:telaAj}[S.aba];
   $('#conteudo').innerHTML=f();ligar();
 }
-function avisoValor(){return Number(S.aj.valor_mensal)>0?'':`<div class="aviso"><span>Falta definir o valor da mensalidade.</span><button class="btn sm" data-ir="aj">Definir valor</button></div>`}
+function avisoValor(){return Number(S.aj.valor_mensal)>0||!S.clientes.some(c=>c.cobrar&&c.valor_mensal==null)?'':`<div class="aviso"><span>Falta definir o valor da mensalidade.</span><button class="btn sm" data-ir="aj">Definir valor</button></div>`}
 
 function telaMes(){
   const mes=S.mes;
