@@ -155,7 +155,11 @@ table.hist td{padding:8px 4px;border-top:1px solid var(--line)}
 
 <script src="../vendor/supabase.js"></script>
 <script>
-(function(){
+(function boot(){
+if(!window.supabase){
+  if(!boot.t){boot.t=1;var sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';sc.onload=boot;sc.onerror=function(){document.body.innerHTML='<p style="padding:30px;font-family:sans-serif">Não consegui carregar. Verifique a internet e recarregue a página.</p>'};document.head.appendChild(sc)}
+  return;
+}
 'use strict';
 const SB_URL='https://lgffswhzrvnasvzqkvgt.supabase.co';
 const SB_KEY='sb_publishable_LGudHVZsK68JzrXp_ITT9w_tFufz18K';
