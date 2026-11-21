@@ -133,7 +133,7 @@ table.hist td{padding:8px 4px;border-top:1px solid var(--line)}
   <header class="top">
     <div class="wrap">
       <div class="top-row">
-        <div><h1>Mensalidades</h1><small>App Atlântica · controle interno</small></div>
+        <div><h1>Mensalidades</h1><small id="subTop">App Atlântica · controle interno</small></div>
         <div class="eu">
           <button id="bEu" title="Trocar quem está usando"></button>
           <button class="sair" id="bSair">Sair</button>
@@ -165,6 +165,8 @@ const SB_URL='https://lgffswhzrvnasvzqkvgt.supabase.co';
 const SB_KEY='sb_publishable_LGudHVZsK68JzrXp_ITT9w_tFufz18K';
 const EMAIL='painel@controle-atlantica.local';
 const SOCIOS={isabela:'Isabela',joctan:'Joctãn',rafael:'Rafael'};
+const DEMO=!!window.CTRL_DEMO;
+const LS_EU=DEMO?'ctrl-demo-eu':'ctrl-eu';
 const FORMAS=['Pix','Dinheiro','Cartão','Transferência','Boleto','Outro'];
 
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -190,7 +192,7 @@ const fmtNum=n=>n==null?'':String(n).replace('.',',');
 const fmtVal=n=>n==null?'':(Number(n)||0).toFixed(2).replace('.',',');
 const av=k=>`<span class="av ${k}">${esc((SOCIOS[k]||'?')[0])}</span>`;
 
-const S={eu:lsGet('ctrl-eu')||'',aba:'mes',mes:mesAtual(),filtro:'todos',busca:'',socio:'',buscaCli:'',clientes:[],pags:[],aj:{valor_mensal:0,dia_vencimento:10,comissao_pct:10},pagIdx:new Map()};
+const S={eu:lsGet(LS_EU)||(DEMO?'isabela':''),aba:'mes',mes:mesAtual(),filtro:'todos',busca:'',socio:'',buscaCli:'',clientes:[],pags:[],aj:{valor_mensal:0,dia_vencimento:10,comissao_pct:10},pagIdx:new Map()};
 if(!SOCIOS[S.eu])S.eu='';
 
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.add('hide'),2600)}
@@ -249,7 +251,7 @@ async function carregar(sync){
 const cliPorId=id=>S.clientes.find(c=>c.id===id);
 
 /* ---------- login ---------- */
-function telaLogin(){
+function telaLogin(){if(DEMO)$('#fLogin .sub').textContent='Demonstração: escolha um nome e digite qualquer senha.';
   $('#app').classList.add('hide');$('#login').classList.remove('hide');
   const q=$('#quemLogin');
   q.innerHTML=Object.keys(SOCIOS).map(k=>`<button type="button" data-k="${k}" class="${S.eu===k?'on':''}">${av(k).replace('class="av','style="width:38px;height:38px;font-size:16px" class="av')}${esc(SOCIOS[k])}</button>`).join('');
@@ -262,15 +264,15 @@ $('#fLogin').addEventListener('submit',async e=>{
   try{
     const {error}=await sb.auth.signInWithPassword({email:EMAIL,password:$('#senha').value});
     if(error){er.textContent=/invalid/i.test(error.message)?'Senha incorreta.':msgErro(error);return}
-    lsSet('ctrl-eu',S.eu);$('#senha').value='';await iniciarApp();
+    lsSet(LS_EU,S.eu);$('#senha').value='';await iniciarApp();
   }catch(err){er.textContent=msgErro(err)}finally{b.disabled=false;b.textContent='Entrar'}
 });
 $('#bSair').onclick=async()=>{await sb.auth.signOut();S.clientes=[];S.pags=[];telaLogin()};
 $('#bEu').onclick=()=>{
   abrirModal(`<h2>Quem está usando?</h2><p class="muted">Fica registrado em cada pagamento e repasse marcado.</p><div class="quem" style="margin-top:14px">${Object.keys(SOCIOS).map(k=>`<button type="button" data-k="${k}" class="${S.eu===k?'on':''}">${av(k).replace('class="av','style="width:38px;height:38px;font-size:16px" class="av')}${esc(SOCIOS[k])}</button>`).join('')}</div>`);
-  $('#sheet').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{S.eu=b.dataset.k;lsSet('ctrl-eu',S.eu);fecharModal();cabecalho();render()});
+  $('#sheet').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{S.eu=b.dataset.k;lsSet(LS_EU,S.eu);fecharModal();cabecalho();render()});
 };
-function cabecalho(){$('#bEu').innerHTML=`${av(S.eu)}${esc(SOCIOS[S.eu])}`;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.aba===S.aba))}
+function cabecalho(){if(DEMO)$('#subTop').textContent='Demonstração · dados fictícios · nada é salvo';$('#bEu').innerHTML=`${av(S.eu)}${esc(SOCIOS[S.eu])}`;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.aba===S.aba))}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.aba=b.dataset.aba;cabecalho();render();window.scrollTo(0,0)});
 
 async function iniciarApp(){
@@ -362,7 +364,7 @@ function telaInd(){
 }
 function itemRep(p){
   const c=cliPorId(p.cliente_id)||{nome:'(cliente removido)'};
-  return `<div class="item"><div class="info"><div class="nome">${esc(c.nome)} · ${esc(nomeMes(mesKey(p.competencia)))}</div>
+  return `<div class="item"><div class="info"><div class="nome" style="white-space:normal">${esc(c.nome)} · ${esc(nomeMes(mesKey(p.competencia)))}</div>
   <div class="meta">Pago ${brl(p.valor)} em ${dataBR(p.pago_em)} · comissão ${fmtNum(p.comissao_pct)}% = <span class="money">${brl(p.comissao_valor)}</span></div>
   ${p.repasse_feito?`<div class="meta">Repassado em ${dataBR(p.repasse_em)}${p.repasse_por?' por '+esc(p.repasse_por):''}</div>`:''}</div>
   <div class="acoes">${p.repasse_feito?`<span class="tag rep">✓ Repassado</span><button class="btn sm ghost" data-rep="${p.id}" data-v="0">Desfazer</button>`:`<button class="btn sm" data-rep="${p.id}" data-v="1">Marcar repassado</button>`}</div></div>`;
@@ -501,7 +503,7 @@ function ligar(){
     const r=await sb.from('ctrl_ajustes').upsert([{chave:'valor_mensal',valor:v,atualizado_por:quem,atualizado_em:new Date().toISOString()},{chave:'dia_vencimento',valor:Math.round(d),atualizado_por:quem,atualizado_em:new Date().toISOString()},{chave:'comissao_pct',valor:p,atualizado_por:quem,atualizado_em:new Date().toISOString()}]);
     sa.disabled=false;if(r.error){toast(msgErro(r.error));return}await carregar(false);render();toast('Valores salvos');
   };
-  const se=C.querySelector('[data-senha]');if(se)se.onclick=async()=>{
+  const se=C.querySelector('[data-senha]');if(se)se.onclick=async()=>{if(DEMO){toast('Na demonstração a senha não muda.');return}
     const a=$('#novaSenha').value,b=$('#novaSenha2').value;
     if(a.length<8){toast('A senha precisa ter pelo menos 8 caracteres.');return}if(a!==b){toast('As duas senhas não são iguais.');return}
     se.disabled=true;const r=await sb.auth.updateUser({password:a});se.disabled=false;
