@@ -619,7 +619,7 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
     S.ready=true;render();
   },
   limpar(){S.sacolaAberta=false;if(typeof renderSacola==='function')renderSacola();document.body.style.overflow='';this.uid=null;this.perfil=null;this.q={};this.pend={};S.data=Object.fromEntries(KINDS.map(k=>[k,{}]));S.config={...DEF_CONFIG};S.draft=null;S.cart={};S.route='inicio';S.stack=[]},
-  async sair(){try{await sbc.auth.signOut()}catch(e){}authStorage.removeItem('atl-auth');this.limpar();S.needLogin=true;render()},
+  async sair(){try{await Promise.race([sbc.auth.signOut({scope:'local'}),new Promise(r=>setTimeout(r,1500))])}catch(e){}authStorage.removeItem('atl-auth');try{Object.keys(localStorage).filter(k=>/^sb-.*-auth-token/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}ls.set('atl-ultimo-usuario','');this.limpar();S.needLogin=true;S.loginErro='';render()},
   enqueue(key,fn){const prev=this.q[key]||Promise.resolve();const p=prev.then(async()=>{try{await fn();delete this.pend[key];if(S.offline&&!Object.keys(this.pend).length){S.offline=false;schedule()}}catch(e){this.pend[key]=fn;this.err(e)}});this.q[key]=p;return p},
   flush(){const ks=Object.keys(this.pend);if(!ks.length)return;ks.forEach(k=>{const fn=this.pend[k];this.enqueue(k,fn)})},
   async run(q){const{error}=await q;if(error)throw error},
@@ -1210,7 +1210,8 @@ function viewMais(){
    ${t('rede','network','Minha rede',S.rede?`${(S.rede.rede||[]).length} pessoa(s) conectada(s)`:'Sua equipe conectada')}
    ${t('notificacoes','bell','Notificações',`${notificacoes().length} pendente(s)`)}
    ${t('ajustes','gear','Ajustes','Mensagens, senha e backup')}
-  </div>`;
+  </div>
+  ${DEMO?'':`<div class="card" style="margin-top:14px;display:flex;align-items:center;gap:12px"><div class="grow"><div class="small muted">Conectada como</div><b>${esc((Store.perfil&&(Store.perfil.nome||Store.perfil.usuario))||'')}</b></div><button class="btn danger" data-a="sair">${ic('x',16)} Sair</button></div>`}`;
 }
 function viewProdutos(){
   const u=S.ui;let l=arr('produtos');
