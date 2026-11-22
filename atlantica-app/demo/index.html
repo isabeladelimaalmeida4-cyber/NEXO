@@ -560,7 +560,7 @@ function get(k,id){if(!id)return undefined;const o=S.data[k]&&S.data[k][id];if(o
 const SB_URL='https://lgffswhzrvnasvzqkvgt.supabase.co';
 const SB_KEY='sb_publishable_LGudHVZsK68JzrXp_ITT9w_tFufz18K';
 const EMAIL_DOM='@atlantica.local';
-/* o usuário é o nome completo da consultora; por dentro vira uma chave sem acento nem espaço (Joctã Emanuel → joctaemanuel) */
+/* o usuário é o nome completo da consultora; por dentro vira uma chave sem acento nem espaço (Maria da Silva → mariadasilva) */
 const usuarioChave=s=>{s=String(s||'').trim();if(s.includes('@'))return s.toLowerCase();return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9._-]/g,'')};
 const authStorage={
   _s(){try{return ls.get('atl-remember')==='0'?window.sessionStorage:window.localStorage}catch(e){return null}},
@@ -664,7 +664,7 @@ async function carregarModoLogin(){
   S.modoCarregado=true;schedule();
 }
 if(DEMO)Object.assign(Store,{mode:'demo',
-  async init(){seedDemo();this.uid='demo';this.perfil={usuario:'demonstracao',nome:'Isabela Almeida',ativo:true};S.needLogin=false;S.semSenha=false;S.modoCarregado=true;S.ready=true;render()},
+  async init(){seedDemo();this.uid='demo';this.perfil={usuario:'demonstracao',nome:'Maria Souza',ativo:true};S.needLogin=false;S.semSenha=false;S.modoCarregado=true;S.ready=true;render()},
   async login(){await this.init()},
   put(kind,obj){const o=JSON.parse(JSON.stringify(obj));o.atualizadoEm=Date.now();S.data[kind]={...S.data[kind],[o.id]:o};return Promise.resolve()},
   del(kind,id){const m={...S.data[kind]};delete m[id];S.data[kind]=m;return Promise.resolve()},
@@ -2110,7 +2110,7 @@ function seedDemo(){
   const r=demoRand(20261119),t=today(),mk=curMonth(),now=Date.now(),dia=864e5;
   const pick=a=>a[Math.floor(r()*a.length)];
   S.data=Object.fromEntries(KINDS.map(k=>[k,{}]));
-  S.config={...DEF_CONFIG,vendedor:'Isabela',whatsapp:'',cidade:'Rondonópolis',lojaUrl:'loja.atlanticanatural.com.br/demonstracao',
+  S.config={...DEF_CONFIG,vendedor:'Maria',whatsapp:'',cidade:'Rondonópolis',lojaUrl:'loja.atlanticanatural.com.br/demonstracao',
     metas:[{id:'m_fat',nome:'Faturamento',tipo:'vendido',alvo:3000},{id:'m_cli',nome:'Clientes atendidas',tipo:'clientesAtendidos',alvo:15},{id:'m_cont',nome:'Novos contatos',tipo:'contatos',alvo:40},{id:'m_eq',nome:'Novas consultoras na equipe',tipo:'manual',unidade:'un',alvo:3,ajustes:{[mk]:2}}],
     metaMensal:3000,metaClientes:15,metaContatos:40,carreira:{vp:85,vq:6800,linhas:2,maior:3900,viagem:28000,mes:mk}};
   const prods=montarCatalogo();const P=k=>prods.find(p=>p.nome.includes(k))||prods[0];
@@ -2161,7 +2161,7 @@ function seedDemo(){
 let _demoRede=null;
 function demoRedeBase(){
   const m=(o)=>Object.assign({vendas_faixa:'R$ 1 a 2 mil',vendas_ordem:3,meta_pct:50,clientes_faixa:'6 a 15',contatos_faixa:'11 a 30 no mês',atividade:'Nesta semana',grad_idx:-1,ativa:true,carreira_mes:curMonth(),telefone:null,desde:addDays(today(),-60)+'T12:00:00Z'},o);
-  return{eu:m({user_id:'demo',nome:'Isabela Almeida',usuario:'demonstracao',grad_idx:1,meta_pct:70,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4}),patrocinadora:null,rede:[
+  return{eu:m({user_id:'demo',nome:'Maria Souza',usuario:'demonstracao',grad_idx:1,meta_pct:70,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4}),patrocinadora:null,rede:[
     m({user_id:'d1',patrocinador_id:'demo',nivel:1,nome:'Carla Mendes',usuario:'consultora2',grad_idx:0,meta_pct:80,vendas_faixa:'R$ 2 a 5 mil',vendas_ordem:4,clientes_faixa:'16 a 30',desde:addDays(today(),-150)+'T12:00:00Z'}),
     m({user_id:'d2',patrocinador_id:'demo',nivel:1,nome:'Juliana Prado',usuario:'consultora3',meta_pct:50,desde:addDays(today(),-110)+'T12:00:00Z'}),
     m({user_id:'d3',patrocinador_id:'demo',nivel:1,nome:'Roberta Lima',usuario:'consultora4',grad_idx:0,ativa:false,meta_pct:30,vendas_faixa:'R$ 500 a 1 mil',vendas_ordem:2,atividade:'Neste mês',contatos_faixa:'Até 10 no mês'}),
