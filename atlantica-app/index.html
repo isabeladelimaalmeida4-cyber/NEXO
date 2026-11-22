@@ -599,13 +599,20 @@ const Store={mode:'sb',uid:null,perfil:null,q:{},pend:{},downloads:null,lastLoad
   },
   async start(sess){
     this.uid=sess.user.id;
-    const{data:perfil,error}=await sbc.from('app_consultoras').select('usuario,nome,ativo').eq('user_id',this.uid).maybeSingle();
+    const{data:perfil,error}=await sbc.from('app_consultoras').select('usuario,nome,ativo,aviso').eq('user_id',this.uid).maybeSingle();
     if(error&&/fetch|network/i.test(error.message||'')){S.ready=true;S.offline=true;S.needLogin=false;this.perfil={usuario:'',nome:''};render();return}
-    if(!perfil||!perfil.ativo){await sbc.auth.signOut();this.uid=null;S.ready=true;S.needLogin=true;S.loginErro='Este usuário não tem acesso liberado ao app.';render();return}
-    this.perfil=perfil;S.needLogin=false;S.loginErro='';
+    if(!perfil||!perfil.ativo){await this.bloqueado(perfil);return}
+    this.perfil=perfil;S.needLogin=false;S.loginErro='';S.loginAviso='';
     await this.load();
   },
+  async bloqueado(perfil){
+    try{await Promise.race([sbc.auth.signOut({scope:'local'}),new Promise(r=>setTimeout(r,1500))])}catch(e){}
+    authStorage.removeItem('atl-auth');try{Object.keys(localStorage).filter(k=>/^sb-.*-auth-token/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
+    this.limpar();this.uid=null;S.ready=true;S.needLogin=true;
+    S.loginAviso=(perfil&&perfil.aviso)||'';S.loginErro=S.loginAviso?'':'Este usuário não tem acesso liberado ao app.';render();
+  },
   async load(silencioso){
+    if(silencioso&&this.uid){try{const{data:pf,error:pe}=await sbc.from('app_consultoras').select('ativo,aviso').eq('user_id',this.uid).maybeSingle();if(!pe&&pf&&!pf.ativo){await this.bloqueado(pf);return}}catch(e){}}
     try{
       const data=Object.fromEntries(KINDS.map(k=>[k,{}]));let cfg=null,from=0;const step=1000;
       for(;;){const{data:rows,error}=await sbc.from('app_registros').select('tipo,id,dados').order('tipo').order('id').range(from,from+step-1);
@@ -808,6 +815,7 @@ function viewLock(){
   return`<div class="lock"><form class="box" id="lockForm" autocomplete="on">
   <span class="pill sea">${ic('lock',14)} Acesso das consultoras</span>
   <h1>Entrar</h1><p class="muted mt0">Atlântica Natural · Vendas & Prospecção</p>
+  ${S.loginAviso?`<div class="note warn" id="lockAviso" style="text-align:left">${ic('alert',18)}<div><b>Acesso temporariamente suspenso</b><br>${esc(S.loginAviso).replace(/\n/g,'<br>')}</div></div>`:''}
   <div class="field"><label for="lockUser">Usuário (seu nome completo)</label><input class="inp" id="lockUser" autocomplete="username" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Ex.: Maria da Silva" value="${esc(ls.get('atl-ultimo-usuario')||'')}"></div>
   ${S.semSenha?'':`<div class="field"><label for="lockPin">Senha</label><input class="inp" type="password" id="lockPin" autocomplete="current-password" placeholder="Sua senha"></div>`}
   <label class="check"><input type="checkbox" id="lockRemember" ${ls.get('atl-remember')==='0'?'':'checked'}> Lembrar neste aparelho</label>
@@ -2083,6 +2091,7 @@ document.addEventListener('submit',async ev=>{
   if(f.id==='sheetForm'&&sheetSubmit){const v={};f.querySelectorAll('[name]').forEach(el=>{v[el.name]=el.type==='checkbox'?el.checked:el.value});sheetSubmit(v,f);return}
   if(f.id==='lockForm'){const u=$('#lockUser').value,pw=($('#lockPin')||{}).value||'';if(!u.trim()||(!S.semSenha&&!pw)){$('#lockErr').textContent=S.semSenha?'Digite seu usuário.':'Preencha usuário e senha.';return}
     const btn=$('#lockBtn');btn.disabled=true;btn.textContent='Entrando…';
+    S.loginAviso='';{const av=$('#lockAviso');if(av)av.remove()}
     try{await Store.login(u,pw,$('#lockRemember').checked);ls.set('atl-ultimo-usuario',u.trim())}catch(e){S.loginErro=e.message;const el=$('#lockErr');if(el)el.textContent=e.message;btn.disabled=false;btn.textContent='Entrar';const pi=$('#lockPin');if(pi){pi.value='';pi.focus()}}
     return}
   if(f.id==='cnpjForm'){const d=digits(S.ui.cnpjQ);if(d.length!==14){S.cnpj={erro:'Digite os 14 números do CNPJ.'};return render()}const e=arr('empresas').find(x=>digits(x.cnpj)===d);const c=arr('clientes').find(x=>digits(x.cpfCnpj)===d);S.cnpj={cnpj:d,emp:e&&e.id,cli:!e&&c?c.id:null};render();return}
