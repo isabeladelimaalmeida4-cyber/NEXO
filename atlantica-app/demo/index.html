@@ -1715,6 +1715,16 @@ function openSheet(title,body,{submit='Salvar',onSubmit=null,extra='',noFooter=f
   document.body.style.overflow='hidden';
   const f=$('#sheetForm input:not([type=hidden]):not([type=file]):not([type=checkbox]),#sheetForm textarea');if(f&&!f.readOnly&&window.innerWidth>700)f.focus();
 }
+/* conferir a mensagem antes de abrir o WhatsApp: todo link wa.me com texto passa por aqui */
+function previewWa(link){
+  const u=new URL(link.getAttribute('href'));const num=u.pathname.replace(/\D/g,'');const txt=u.searchParams.get('text')||'';
+  S._waPrev={base:'https://wa.me/'+num,act:link.dataset.a||'',id:link.dataset.id||''};
+  const loc=num.replace(/^55/,'');const ruim=num&&![10,11].includes(loc.length);
+  const para=num?`Para: <b>${esc(fmtPhone(loc)||loc)}</b>${ruim?`<br><span style="color:var(--coral,#c8553d)">Esse número tem ${loc.length} dígitos com o DDD (o certo são 11 para celular). Confira o telefone no cadastro, senão o WhatsApp não encontra a pessoa.</span>`:''}`:'Você escolhe o contato quando o WhatsApp abrir.';
+  openSheet('Conferir mensagem',`<p class="small muted" style="margin:0 0 10px">${para}</p>
+   <div class="field"><label for="f_waMsg">Mensagem (pode editar antes de enviar)</label><textarea class="inp" id="f_waMsg" style="min-height:220px;line-height:1.45">${esc(txt)}</textarea></div>
+   <div class="row" style="margin-top:12px;flex-wrap:wrap"><a class="btn wa" id="waPrevGo" href="${esc(link.getAttribute('href'))}" target="_blank" rel="noopener" data-direto data-a="waPrevEnviar">${ic('wa',17)} Abrir no WhatsApp</a><button type="button" class="btn" data-a="waPrevCopiar">${ic('copy',16)} Copiar</button><button type="button" class="btn ghost" data-a="closeSheet">Cancelar</button></div>`,{noFooter:true});
+}
 function closeSheet(){$('#sheet').innerHTML='';sheetSubmit=null;document.body.style.overflow=''}
 const F=(name,label,val='',o={})=>{const id='f_'+name;
   if(o.type==='select')return`<div class="field"><label for="${id}">${label}</label><select class="inp" id="${id}" name="${name}">${o.options.map(x=>{const[v,l]=Array.isArray(x)?x:[x,x];return`<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`}).join('')}</select></div>`;
@@ -2006,6 +2016,8 @@ const A={
   metaReset:()=>formMetas(metasPadrao({})),
   formSenha:()=>DEMO?toast('Na demonstração não há senha para trocar.'):formSenha(),
   sair:()=>confirmSheet('Sair desta conta neste aparelho?',()=>{closeSheet();Store.sair()},'Sair'),
+  waPrevEnviar:()=>{const p=S._waPrev;S._waPrev=null;if(p&&p.act&&A[p.act]&&p.act!=='waPrevEnviar'){try{A[p.act]({dataset:{a:p.act,id:p.id}})}catch(e){}}setTimeout(closeSheet,50);return'link'},
+  waPrevCopiar:()=>{const t=$('#f_waMsg');if(t)copy(t.value,'Mensagem copiada ✓')},
   waEmp:el=>{const e=get('empresas',el.dataset.id);if(e){const o={...e,contatadoEm:today()};if(!e.status||e.status==='novo')o.status='contatado';Store.put('empresas',o);setTimeout(render,300)}return'link'},
   copyMsg:el=>{const e=get('empresas',el.dataset.id);copy(msgEmpresa(e,S.params.script),'Mensagem copiada ✓')},
   setScript:el=>{const v=el.dataset.v;S.params.script=v==='padrao'?'padrao':+v;render()},
@@ -2048,7 +2060,7 @@ const A={
   sacolaCopiar:()=>copy(sacolaTexto(),'Lista copiada ✓'),
   sacolaLimpar:()=>{if(!S.sacolaConf){S.sacolaConf=1;renderSacola();setTimeout(()=>{if(S.sacolaConf){S.sacolaConf=0;renderSacola()}},4000);return}S.sacolaConf=0;salvarSacola([])},
   cartFechar:()=>{const it=cartItems(),tot=sum(it,x=>x.q*x.p.preco);const txt=`*Pedido — ${S.config.negocio}*\n\n${it.map(x=>`${x.q}x ${x.p.nome} — ${brl(x.q*x.p.preco)}`).join('\n')}\n\n*Total: ${brl(tot)}*`;
-    openSheet('Fechar pedido',`<div class="preview">${esc(txt)}</div>${F('tel','Enviar para (WhatsApp)','',{im:'tel',ph:'Deixe vazio para escolher o contato'})}`,{submit:'Criar venda',extra:`<a class="btn wa" id="cartWaA" href="${esc(waLink('',txt))}" target="_blank" rel="noopener">${ic('wa',16)} WhatsApp</a>`,onSubmit:()=>{S.draft=newDraft({itens:it.map(x=>({produtoId:x.p.id,nome:x.p.nome,qtd:String(x.q),preco:(num(x.p.preco)).toFixed(2).replace('.',',')}))});S.cart={};closeSheet();go('novaVenda')}});S._cartTxt=txt},
+    openSheet('Fechar pedido',`<div class="preview">${esc(txt)}</div>${F('tel','Enviar para (WhatsApp)','',{im:'tel',ph:'Deixe vazio para escolher o contato'})}`,{submit:'Criar venda',extra:`<a class="btn wa" id="cartWaA" href="${esc(waLink('',txt))}" target="_blank" rel="noopener" data-direto>${ic('wa',16)} WhatsApp</a>`,onSubmit:()=>{S.draft=newDraft({itens:it.map(x=>({produtoId:x.p.id,nome:x.p.nome,qtd:String(x.q),preco:(num(x.p.preco)).toFixed(2).replace('.',',')}))});S.cart={};closeSheet();go('novaVenda')}});S._cartTxt=txt},
   copyCatalogo:()=>copy(textoCatalogo(),'Catálogo copiado ✓'),
   insVar:el=>{const t=document.getElementById(el.dataset.t);if(!t)return;const s=t.selectionStart??t.value.length;t.value=t.value.slice(0,s)+el.dataset.v+t.value.slice(t.selectionEnd??s);t.dispatchEvent(new Event('input',{bubbles:true}));t.focus()},
 };
@@ -2058,6 +2070,7 @@ function virarCliente(e){
 }
 document.addEventListener('click',ev=>{
   if(DEMO){const a=ev.target.closest('a[href^="tel:"]');if(a){ev.preventDefault();ev.stopPropagation();toast('Na demonstração as ligações ficam desativadas.');return}}
+  {const w=ev.target.closest('a[href^="https://wa.me/"]');if(w&&w.dataset.direto===undefined&&/[?&]text=/.test(w.getAttribute('href'))){ev.preventDefault();ev.stopPropagation();previewWa(w);return}}
   const el=ev.target.closest('[data-a]');if(!el)return;
   const a=el.dataset.a;
   if(el.tagName==='A'){if(A[a])A[a](el,ev);ev.stopPropagation();return}
@@ -2069,6 +2082,7 @@ document.addEventListener('input',ev=>{
   const el=ev.target;
   if(el.dataset.ui!==undefined&&el.tagName!=='SELECT'){S.ui[el.dataset.ui]=el.value;if(el.dataset.ui.startsWith('base'))S.ui.baseLimit=60;render();return}
   if(el.dataset.d!==undefined&&el.type!=='checkbox'&&el.tagName!=='SELECT'){setDraft(el.dataset.d,el.value);render();return}
+  if(el.id==='f_waMsg'&&S._waPrev){const a=$('#waPrevGo');if(a)a.href=S._waPrev.base+(el.value.trim()?'?text='+encodeURIComponent(el.value):'');return}
   if(el.id==='f_tel'&&S._cartTxt){const a=$('#cartWaA');if(a)a.href=waLink(el.value,S._cartTxt);return}
   if(el.dataset.prev){const pv=document.getElementById(el.dataset.prev);const c=S.config;const ex={empresa:'Padaria Sol',cidade:'Campo Grande',uf:'MS',atividade:'padaria e confeitaria',seunome:($('#cVend')||{}).value||'Você',negocio:($('#cNeg')||{}).value||c.negocio,cliente:'Ana',valor:brl(120),vencimento:fmtDate(today())};if(pv)pv.textContent=fill(el.value,ex)}
 });
