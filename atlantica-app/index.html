@@ -119,6 +119,9 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.4}
 /* lists */
 .list{display:flex;flex-direction:column;gap:10px;margin:10px 0}
 .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;cursor:pointer;display:block}
+.item.venc{background:#fff3ee;border-color:#eab9a6;border-left:6px solid var(--coral)}.item.venc .t{color:var(--coral)}
+.pill.venc{background:var(--coral);color:#fff;font-weight:700}.vline{color:var(--coral);font-weight:600;font-size:12.5px;margin-top:3px;display:flex;align-items:center;gap:4px}
+.vbanner{display:flex;align-items:center;gap:10px;background:var(--coral);color:#fff;border-radius:14px;padding:12px 14px;margin:0 0 10px;cursor:pointer;font-size:14px}.vbanner b{font-size:15px}.vbanner .sp{flex:1}
 .item:active{background:#fbf8f1}
 .item .t{font-weight:800;font-size:15px;line-height:1.25}
 .item .s{font-size:12.5px;color:var(--muted);margin-top:3px}
@@ -1163,19 +1166,22 @@ function viewNovaVenda(){
 }
 
 /* ---- Clientes ---- */
-function clienteResumo(c){const vs=vendasCliente(c.id),t=today();return{vs,total:sum(vs,v=>v.total),ultima:vs[0]?vs[0].data:'',aberto:sum(vs,emAberto),vencido:sum(vs,v=>sum((v.parcelas||[]).filter(p=>!p.pagoEm&&p.venc<t),p=>p.valor))}}
+function clienteResumo(c){const vs=vendasCliente(c.id),t=today();return{vs,total:sum(vs,v=>v.total),ultima:vs[0]?vs[0].data:'',aberto:sum(vs,emAberto),vencido:sum(vs,v=>sum((v.parcelas||[]).filter(p=>!p.pagoEm&&p.venc<t),p=>p.valor)),vencDesde:vs.flatMap(v=>(v.parcelas||[]).filter(p=>!p.pagoEm&&p.venc<t).map(p=>p.venc)).sort()[0]||''}}
 function viewClientes(){
   const u=S.ui;let l=arr('clientes').map(c=>({c,...clienteResumo(c)}));
-  if(u.cliCat)l=l.filter(x=>x.c.categoria===u.cliCat);
+  const todosV=l.filter(x=>x.vencido>0);
+  if(u.cliCat==='__venc')l=todosV;else if(u.cliCat)l=l.filter(x=>x.c.categoria===u.cliCat);
   if(u.cliQ){const q=norm(u.cliQ),qd=digits(u.cliQ);l=l.filter(x=>norm([x.c.nome,x.c.cidade,x.c.email,x.c.categoria].join(' ')).includes(q)||(qd.length>=4&&(digits(x.c.telefone).includes(qd)||digits(x.c.cpfCnpj).includes(qd))))}
   l.sort(u.cliSort==='total'?(a,b)=>b.total-a.total:u.cliSort==='ultima'?(a,b)=>(a.ultima||'0').localeCompare(b.ultima||'0'):u.cliSort==='aberto'?(a,b)=>b.aberto-a.aberto:(a,b)=>a.c.nome.localeCompare(b.c.nome,'pt'));
+  l.sort((a,b)=>(b.vencido>0)-(a.vencido>0)); /* quem está com conta vencida fica sempre no topo */
   const cats=S.config.categorias||[];
   return`
   <div class="row" style="margin:4px 0 10px"><button class="btn pri" data-a="formCliente">${ic('plus',17)} Novo cliente</button><span class="small muted">${arr('clientes').length} cadastrados</span></div>
-  <div class="scrollx"><button class="chip ${!u.cliCat?'on':''}" data-a="ui" data-k="cliCat" data-v="">Todos</button>${cats.map(c=>`<button class="chip ${u.cliCat===c?'on':''}" data-a="ui" data-k="cliCat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+  ${todosV.length&&u.cliCat!=='__venc'?`<div class="vbanner" data-a="ui" data-k="cliCat" data-v="__venc">${ic('alert',20)}<div><b>${todosV.length} cliente${todosV.length>1?'s':''} com pagamento vencido</b><br>${brl(sum(todosV,x=>x.vencido))} para cobrar</div><span class="sp"></span><span style="font-weight:700">Ver ›</span></div>`:''}
+  <div class="scrollx"><button class="chip ${!u.cliCat?'on':''}" data-a="ui" data-k="cliCat" data-v="">Todos</button>${todosV.length?`<button class="chip ${u.cliCat==='__venc'?'on':''}" style="${u.cliCat==='__venc'?'background:var(--coral);border-color:var(--coral);color:#fff':'color:var(--coral);border-color:var(--coral)'}" data-a="ui" data-k="cliCat" data-v="__venc">Vencidos (${todosV.length})</button>`:''}${cats.map(c=>`<button class="chip ${u.cliCat===c?'on':''}" data-a="ui" data-k="cliCat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
   <div class="search">${ic('search',18)}<input class="inp" id="cliQ" data-ui="cliQ" value="${esc(u.cliQ)}" placeholder="Nome, telefone, cidade…"></div>
   <div class="filters"><select class="inp" id="cSort" data-ui="cliSort" style="grid-column:1/-1">${[['nome','Nome A–Z'],['total','Quem mais compra'],['ultima','Há mais tempo sem comprar'],['aberto','Maior valor em aberto']].map(([k,l])=>`<option value="${k}" ${u.cliSort===k?'selected':''}>Ordenar: ${l}</option>`).join('')}</select></div>
-  ${l.length?`<div class="list">${l.map(x=>`<div class="item" data-a="go" data-r="cliente" data-id="${x.c.id}"><div class="hd"><div class="av">${esc(initials(x.c.nome))}</div><div class="grow"><div class="t">${esc(x.c.nome)}</div><div class="s">${esc([x.c.categoria,x.c.cidade].filter(Boolean).join(' · ')||'—')}</div><div class="s">${x.vs.length?`${x.vs.length} compra${x.vs.length>1?'s':''} · última ${fmtDate(x.ultima)}`:'Ainda sem compras'}</div></div><div class="right"><div class="amt">${brl0(x.total)}</div><div style="display:flex;flex-direction:column;align-items:flex-end">${x.vencido>0?`<span class="pill warn" style="margin-top:4px">${ic('alert',13)} ${brl0(x.vencido)} vencido</span>`:''}${x.aberto-x.vencido>0.004?`<span class="pill gold" style="margin-top:4px">${brl0(x.aberto-x.vencido)} ${x.vencido>0?'a vencer':'aberto'}</span>`:''}</div></div></div></div>`).join('')}</div>`
+  ${l.length?`<div class="list">${l.map(x=>`<div class="item ${x.vencido>0?'venc':''}" data-a="go" data-r="cliente" data-id="${x.c.id}"><div class="hd"><div class="av">${esc(initials(x.c.nome))}</div><div class="grow"><div class="t">${esc(x.c.nome)}</div>${x.vencido>0?`<div class="vline">${ic('alert',14)} Pagamento vencido há ${diffDays(x.vencDesde,today())} dia${diffDays(x.vencDesde,today())>1?'s':''}</div>`:''}<div class="s">${esc([x.c.categoria,x.c.cidade].filter(Boolean).join(' · ')||'—')}</div><div class="s">${x.vs.length?`${x.vs.length} compra${x.vs.length>1?'s':''} · última ${fmtDate(x.ultima)}`:'Ainda sem compras'}</div></div><div class="right"><div class="amt">${brl0(x.total)}</div><div style="display:flex;flex-direction:column;align-items:flex-end">${x.vencido>0?`<span class="pill venc" style="margin-top:4px">${brl0(x.vencido)} vencido</span>`:''}${x.aberto-x.vencido>0.004?`<span class="pill gold" style="margin-top:4px">${brl0(x.aberto-x.vencido)} ${x.vencido>0?'a vencer':'aberto'}</span>`:''}</div></div></div></div>`).join('')}</div>`
    :`<div class="empty">${arr('clientes').length?'Nenhum cliente com esses filtros.':'<h3>Nenhum cliente ainda</h3>Cadastre aqui ou converta empresas da sua base de prospecção.'}</div>`}`;
 }
 function viewCliente(){
