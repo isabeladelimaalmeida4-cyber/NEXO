@@ -400,7 +400,7 @@ const UFS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA'
 const DEF_CONFIG={
   negocio:'Atlântica Natural',vendedor:'',whatsapp:'',cidade:'Rondonópolis',lojaUrl:'',
   msgProsp:'Olá! Tudo bem? Sou {seunome}, consultora independente Atlântica Natural. Vi que a {empresa} atua com {atividade} em {cidade} e acredito que a nossa linha ozonizada combina com o seu público. Posso te enviar o catálogo?',
-  msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!',
+  msgCobranca:'Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, por favor, me envie o comprovante por aqui para eu dar baixa. Obrigada!',
   categorias:['Cliente final','Recompra mensal','Salão / parceiro','Empresa','VIP'],
   metaMensal:3000,metaClientes:25,metaContatos:40,carreira:null,
   pinHash:'',atlanticaUrl:'https://atlantica-natural.onrender.com',lojaAtlantica:'https://loja.atlanticanatural.com.br',evUrl:'https://ev.atlanticanatural.com.br/login?returnUrl=https%3A%2F%2Fev.atlanticanatural.com.br%2F'
@@ -1208,7 +1208,10 @@ function viewCliente(){
    ${emp?`<button class="btn sm" style="margin-top:12px" data-a="go" data-r="empresa" data-id="${emp.id}">${ic('target',15)} Ver ficha da prospecção</button>`:''}</div>
   <button class="btn danger block" data-a="delCliente" data-id="${c.id}">${ic('trash',16)} Excluir cliente</button>`;
 }
-const msgCob=(c,p)=>fill(S.config.msgCobranca,{cliente:(c.nome||'').split(' ')[0],valor:brl(p.valor),vencimento:fmtDate(p.venc),negocio:S.config.negocio,seunome:S.config.vendedor});
+const COB_ANTIGA='Olá, {cliente}! Tudo bem? Passando para lembrar da parcela de {valor} com vencimento em {vencimento}. Se já pagou, pode desconsiderar. Obrigada!';
+const cobTpl=()=>{const m=S.config.msgCobranca;return!m||m===COB_ANTIGA?DEF_CONFIG.msgCobranca:m};
+/* parcela já vencida: "com vencimento em" vira "que venceu em" */
+const msgCob=(c,p)=>fill(p.venc<today()?cobTpl().replace('com vencimento em','que venceu em'):cobTpl(),{cliente:(c.nome||'').split(' ')[0],valor:brl(p.valor),vencimento:fmtDate(p.venc),negocio:S.config.negocio,seunome:S.config.vendedor});
 
 /* ---- Mais ---- */
 function viewMais(){
@@ -1693,9 +1696,9 @@ function viewAjustes(){
    ${vars([['tProsp','empresa'],['tProsp','cidade'],['tProsp','uf'],['tProsp','atividade'],['tProsp','seunome'],['tProsp','negocio']])}
    <div class="preview" id="pvProsp">${esc(fill(c.msgProsp,ex))}</div>
    <h3 style="margin-top:18px">Mensagem de cobrança</h3>
-   <textarea class="inp" id="tCob" name="msgCobranca" data-prev="pvCob">${esc(c.msgCobranca)}</textarea>
+   <textarea class="inp" id="tCob" name="msgCobranca" data-prev="pvCob">${esc(cobTpl())}</textarea>
    ${vars([['tCob','cliente'],['tCob','valor'],['tCob','vencimento'],['tCob','seunome'],['tCob','negocio']])}
-   <div class="preview" id="pvCob">${esc(fill(c.msgCobranca,ex))}</div>
+   <div class="preview" id="pvCob">${esc(fill(cobTpl(),ex))}</div>
    <button class="btn pri block" style="margin-top:16px" type="submit">Salvar ajustes</button>
   </form>
   <div class="card"><h3>${ic('lock',18)} Seu acesso</h3>
